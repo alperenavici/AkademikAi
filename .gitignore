@@ -1,0 +1,69 @@
+# Build results
+bin/
+obj/
+.vs/
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+*.sln.iml
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Entity Framework Migrations (if secrets or local only)
+/appsettings.*.json
+/appsettings.Development.json
+
+# Dotnet tools
+*.dbmdl
+*.pdb
+
+# Test results
+TestResults/
+
+# Others
+*.vspscc
+*.vssscc
+
+# Local secrets
+secrets.json
+
+# Publish outputs
+publish/
+
+# NuGet
+*.nupkg
+.nuget/
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Backup & temp files
+*.bak
+*.tmp
+~$*
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Azure Pipelines
+*.azure-pipelines.yml
+
+# Paket
+.paket/
+paket-files/ 
