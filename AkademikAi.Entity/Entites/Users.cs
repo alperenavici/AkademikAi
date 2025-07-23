@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AkademikAi.Entity.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace AkademikAi.Entity.Entites
         public Guid Id { get; set; }
       
         public string Name { get; set; }
+        public UserRole UserRole { get;set; }
         public string Phone { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }

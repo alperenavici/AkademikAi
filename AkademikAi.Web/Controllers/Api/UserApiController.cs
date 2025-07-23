@@ -3,6 +3,8 @@ using AkademikAi.Data.Context;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using AkademikAi.Entity.Entites;
 
 
 
@@ -15,7 +17,7 @@ namespace AkademikAi.Web.Controllers.Api
 
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        private AppDbContext _context;
+        
 
 
         public UserApiController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
@@ -66,6 +68,7 @@ namespace AkademikAi.Web.Controllers.Api
                 var result = await _userManager.CreateAsync(user, dto.Password);
                 if (result.Succeeded)
                 {
+                    
                     return Ok("Kayıt başarılı.");
                 }
                 else
@@ -81,6 +84,26 @@ namespace AkademikAi.Web.Controllers.Api
         {
             await _signInManager.SignOutAsync();
             return Ok("Çıkış başarılı.");
+
+        }
+
+        [HttpGet("get-user")]
+        public async Task<IActionResult> GetUser()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound("Kullanıcı bulunamadı.");
+            }
+            var userDto = new
+            {
+                user.Id,
+                user.UserName,
+                user.Email
+
+            };
+            return Ok(userDto);
+
 
         }
     }

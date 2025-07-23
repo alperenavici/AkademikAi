@@ -24,6 +24,9 @@ namespace AkademikAi.Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            
+           
             modelBuilder.Entity<Questions>(entity =>
             {
                 entity.HasKey(q => q.Id);
@@ -93,6 +96,7 @@ namespace AkademikAi.Data.Context
                 entity.Property(u => u.PasswordHash).IsRequired();
                 entity.Property(u => u.CreatedAt).IsRequired();
                 entity.HasIndex(u => u.Email).IsUnique();
+                //entity.Property(q => q.UserRole).HasDefaultValue(0);
             });
 
             modelBuilder.Entity<UserAnswers>(entity =>

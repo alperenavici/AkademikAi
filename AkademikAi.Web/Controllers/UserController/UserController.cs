@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.Data;
 using AkademikAi.Core.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace AkademikAi.Web.Controllers.UserController
@@ -71,6 +72,7 @@ namespace AkademikAi.Web.Controllers.UserController
                 var result = await _userManager.CreateAsync(user, dto.Password);
                 if (result.Succeeded)
                 {
+                   
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
@@ -84,5 +86,39 @@ namespace AkademikAi.Web.Controllers.UserController
             }
             return View(dto);
         }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult Profile()
+        {
+            var user = _userManager.GetUserAsync(User).Result;
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+        [HttpGet]
+        public IActionResult GetUser()
+        {
+            var user = _userManager.GetUserAsync(User).Result;
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var userDto = new UserDto
+            {
+                Name = user.UserName,
+                Surname = user.Email,
+                CreatedAt = DateTime.UtcNow 
+            };
+            return Ok(userDto);
+        }
+        
+
     }
+
+
+    
 }
