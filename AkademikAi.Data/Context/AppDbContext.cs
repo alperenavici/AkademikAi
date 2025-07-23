@@ -1,15 +1,14 @@
 ﻿using AkademikAi.Entity.Entites;
-using AkademikAi.Entity.Enums;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 
 namespace AkademikAi.Data.Context
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<IdentityUser>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+       public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
          {
         }
        public DbSet<Questions> Questions { get; set; }
@@ -24,6 +23,7 @@ namespace AkademikAi.Data.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Questions>(entity =>
             {
                 entity.HasKey(q => q.Id);

@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AkademikAi.Data\AkademikAi.Data.csproj" />
+  </ItemGroup>
+
 </Project>
