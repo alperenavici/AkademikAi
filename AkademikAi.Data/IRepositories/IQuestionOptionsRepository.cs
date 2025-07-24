@@ -8,5 +8,6 @@ namespace AkademikAi.Data.IRepositories
 {
     public interface IQuestionOptionsRepository
     {
+
     }
 }
