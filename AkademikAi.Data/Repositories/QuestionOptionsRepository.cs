@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AkademikAi.Data.Repositories
 {
-    public class QuestionOptionsRepository:GenericRepository<Entity.Entites.QuestionsOptions>
+    public class QuestionOptionsRepository:GenericRepository<Entity.Entites.QuestionsOptions>,IQuestionOptionsRepository
     {
         private readonly AppDbContext _context;
         public QuestionOptionsRepository(AppDbContext context) : base(context)

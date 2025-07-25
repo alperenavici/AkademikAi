@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AkademikAi.Entity.Entites;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,11 @@ namespace AkademikAi.Data.IRepositories
 {
     public interface IQuestionTopicRepository
     {
+        Task<List<QuestionsTopic>> GetTopicsByQuestionIdAsync(Guid questionId);
+        Task<List<QuestionsTopic>> GetQuestionsByTopicIdAsync(Guid topicId);
+        Task<QuestionsTopic> GetQuestionTopicByIdAsync(Guid questionId);
+        Task<List<QuestionsTopic>> GetQuestionsTopicsByQuestionTextAsync(string questionText);
+
     }
+
 }

@@ -3,6 +3,7 @@ using AkademikAi.Data.IRepositories;
 using AkademikAi.Entity.Entites;
 using Microsoft.EntityFrameworkCore;
 using AkademikAi.Entity.Enums;
+using AkademikAi.Data.IRepositories;
 
 namespace AkademikAi.Data.Repositories
 {

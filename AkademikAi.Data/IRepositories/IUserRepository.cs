@@ -11,7 +11,6 @@ namespace AkademikAi.Data.IRepositories
         Task<List<Users>> GetAllUsersAsync();
         Task<Users> GetUserByEmailAsync(string email);
         Task<List<Users>> GetUsersByPhoneAsync(string phone);
-        Task<List<Users>> GetUsersByNameAsync(string name);
-        Task<List<Users>> GetUsersBySurnameAsync(string name,string surname);
+        Task<List<Users>> GetUsersByNameAndSurnameAsync(string name,string surname);
     }
 }
