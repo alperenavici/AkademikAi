@@ -1,6 +1,7 @@
 ﻿using AkademikAi.Data.Context;
 using AkademikAi.Data.IRepositories;
 using AkademikAi.Entity.Entites;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,34 @@ namespace AkademikAi.Data.Repositories
         public UserPerformanceSummariesRepository(AppDbContext context) : base(context)
         {
 
+        }
+
+        public async Task<UserPerformanceSummaries> GetByUserIdAndTopicIdAsync(Guid userId, Guid topicId)
+        {
+            
+            return await _context.UserPerformanceSummaries
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.TopicId == topicId);
+        }
+
+        public async Task<List<UserPerformanceSummaries>> GetAllSummariesForUserAsync(Guid userId)
+        {
+            return await _context.UserPerformanceSummaries
+                .Where(p => p.UserId == userId)
+                .Include(p => p.Topic) 
+                .OrderBy(p => (double)p.CorrectAnswers / p.TotalAnsweredQuestions) 
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<UserPerformanceSummaries>> GetWeakestTopicsForUserAsync(Guid userId, int count = 5)
+        {
+            return await _context.UserPerformanceSummaries
+                .Where(p => p.UserId == userId && p.TotalAnsweredQuestions > 5) 
+                .Include(p => p.Topic)
+                .OrderBy(p => (double)p.CorrectAnswers / p.TotalAnsweredQuestions)
+                .Take(count) 
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }

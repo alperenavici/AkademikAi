@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AkademikAi.Entity.Entites;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,8 @@ namespace AkademikAi.Data.IRepositories
 {
     public interface IUserRecommendationRepository
     {
+        Task<List<UserRecommendation>> GetActiveRecommendationsForUserAsync(Guid userId);
+        Task<bool> HasActiveRecommendationForTopicAsync(Guid userId, Guid topicId, int recommendationType);
+        Task<List<UserRecommendation>> GetRecommendationsByTypeAsync(int recommendationType)
     }
 }

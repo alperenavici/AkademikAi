@@ -3,13 +3,14 @@ using AkademikAi.Entity.Entites;
 using Microsoft.EntityFrameworkCore;
 using AkademikAi.Data.IRepositories;
 
+
 namespace AkademikAi.Data.Repositories
 {
     public class TopicRepository:GenericRepository<Topics>, ITopicRepository
     {
         private readonly AppDbContext _context;
-        public TopicRepository(AppDbContext context)
-        {
+        public TopicRepository(AppDbContext context):base(context) {
+        
         }
 
         public async Task<List<Topics>> GetAllTopicsAsync()
