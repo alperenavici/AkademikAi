@@ -11,6 +11,6 @@ namespace AkademikAi.Data.IRepositories
     {
         Task<List<UserRecommendation>> GetActiveRecommendationsForUserAsync(Guid userId);
         Task<bool> HasActiveRecommendationForTopicAsync(Guid userId, Guid topicId, int recommendationType);
-        Task<List<UserRecommendation>> GetRecommendationsByTypeAsync(int recommendationType)
+        Task<List<UserRecommendation>> GetRecommendationsByTypeAsync(int recommendationType);
     }
 }

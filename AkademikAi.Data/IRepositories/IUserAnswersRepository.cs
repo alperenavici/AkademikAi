@@ -13,7 +13,6 @@ namespace AkademikAi.Data.IRepositories
         Task<List<UserAnswers>> GetUserAnswersByUserIdAsync(Guid userId);
         Task<UserAnswers> GetUserAnswerByIdAsync(Guid userAnswerId);
         Task<List<UserAnswers>> GetUserAnswersByQuestionTextAsync(string questionText);
-        Task<List<UserNotifications>> GetUserNotificationsByCreatedDateAsync(DateTime createdAt);
-        Task<UserNotifications> GetUserNotificationsByNotificationTypeAndUserIdAsync(string notificationType, Guid userId);
+        
     }
 }
