@@ -1,7 +1,9 @@
 using AkademikAi.Data.Context;
+using AkademikAi.Data.IRepositories;
+using AkademikAi.Data.Repositories;
+using AkademikAi.Service.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,24 +15,36 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register Repositories
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<ITopicRepository, TopicRepository>();
+builder.Services.AddScoped<IQuestionOptionsRepository, QuestionOptionsRepository>();
+builder.Services.AddScoped<IQuestionTopicRepository, QuestionTopicRepository>();
+builder.Services.AddScoped<IUserAnswersRepository, UserAnswerRepository>();
+builder.Services.AddScoped<IUserPerformanceSummariesRepository, UserPerformanceSummariesRepository>();
+builder.Services.AddScoped<IUserRecommendationRepository, UserRecommendationRepository>();
+builder.Services.AddScoped<IUserNotificationsRepository, UserNotificationsRepository>();
+
+// Register Services
+builder.Services.AddAkademikAiServices();
+
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage(); // Hata detaylarýný gösterir
+    app.UseDeveloperExceptionPage(); // Hata detaylarÄ±nÄ± gÃ¶sterir
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        // Swagger UI'ýn hangi endpoint'i kullanacaðýný belirtir. Genellikle /swagger/v1/swagger.json olur.
+        // Swagger UI'Ä±n hangi endpoint'i kullanacaÄŸÄ±nÄ± belirtir. Genellikle /swagger/v1/swagger.json olur.
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "AkademikAi API V1");
     });
-
 }
 else
 {

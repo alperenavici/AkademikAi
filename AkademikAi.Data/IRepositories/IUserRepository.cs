@@ -3,7 +3,7 @@ using AkademikAi.Entity.Enums;
 
 namespace AkademikAi.Data.IRepositories
 {
-    public interface IUserRepository
+    public interface IUserRepository : IGenericRepository<Users>
     {
         Task<Users> GetUserByIdAsync(Guid UserId);
         Task<List<Users>> GetByUserRoleAsync(UserRole userRole);

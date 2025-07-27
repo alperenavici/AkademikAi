@@ -9,6 +9,7 @@ namespace AkademikAi.Entity.Enums
     public enum UserRole
     {
         Student=0,
-        Admin=1
+        Teacher=1,
+        Admin=2
     }
 }

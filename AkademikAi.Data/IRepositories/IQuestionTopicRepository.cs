@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace AkademikAi.Data.IRepositories
 {
-    public interface IQuestionTopicRepository
+    public interface IQuestionTopicRepository : IGenericRepository<QuestionsTopic>
     {
         Task<List<QuestionsTopic>> GetTopicsByQuestionIdAsync(Guid questionId);
         Task<List<QuestionsTopic>> GetQuestionsByTopicIdAsync(Guid topicId);
         Task<QuestionsTopic> GetQuestionTopicByIdAsync(Guid questionId);
         Task<List<QuestionsTopic>> GetQuestionsTopicsByQuestionTextAsync(string questionText);
-
     }
-
 }

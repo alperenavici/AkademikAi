@@ -16,6 +16,7 @@ namespace AkademikAi.Data.Repositories
 
         public UserRecommendationRepository(AppDbContext context) : base(context)
         {
+            _context = context;
         }
 
         public async Task<List<UserRecommendation>> GetActiveRecommendationsForUserAsync(Guid userId)
@@ -48,6 +49,13 @@ namespace AkademikAi.Data.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
-    }
 
+        public async Task<List<UserRecommendation>> GetUserRecommendationsByUserIdAsync(Guid userId)
+        {
+            return await _context.UserRecommendations
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+        }
+    }
 }

@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace AkademikAi.Data.IRepositories
 {
-    public interface IUserRecommendationRepository
+    public interface IUserRecommendationRepository : IGenericRepository<UserRecommendation>
     {
         Task<List<UserRecommendation>> GetActiveRecommendationsForUserAsync(Guid userId);
         Task<bool> HasActiveRecommendationForTopicAsync(Guid userId, Guid topicId, int recommendationType);
         Task<List<UserRecommendation>> GetRecommendationsByTypeAsync(int recommendationType);
+        Task<List<UserRecommendation>> GetUserRecommendationsByUserIdAsync(Guid userId);
     }
 }

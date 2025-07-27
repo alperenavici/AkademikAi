@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AkademikAi.Data.IRepositories
 {
-    public interface ITopicRepository
+    public interface ITopicRepository : IGenericRepository<Topics>
     {
         Task<List<Topics>> GetAllTopicsAsync();
         Task<Topics> GetTopicByIdAsync(Guid topicId);

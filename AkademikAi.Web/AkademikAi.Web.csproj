@@ -24,6 +24,7 @@
     <ProjectReference Include="..\AkademikAi.Core\AkademikAi.Core.csproj" />
     <ProjectReference Include="..\AkademikAi.Data\AkademikAi.Data.csproj" />
     <ProjectReference Include="..\AkademikAi.Entity\AkademikAi.Entity.csproj" />
+    <ProjectReference Include="..\AkademikAi.Service\AkademikAi.Service.csproj" />
   </ItemGroup>
 
 </Project>

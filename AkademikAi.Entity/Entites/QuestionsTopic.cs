@@ -8,6 +8,7 @@ namespace AkademikAi.Entity.Entites
 {
     public class QuestionsTopic
     {
+        public Guid Id { get; set; }
         public Guid QuestionId { get; set; }
         public Guid TopicId { get; set; }
         public Questions Question { get; set; }

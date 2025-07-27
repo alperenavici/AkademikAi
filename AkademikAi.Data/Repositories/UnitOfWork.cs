@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AkademikAi.Data.Repositories
 {
-    public class UnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
         private IDbContextTransaction _transaction;
@@ -31,15 +31,15 @@ namespace AkademikAi.Data.Repositories
 
       
 
-        public IUserRepository Users => _userRepository ??= new UserRepository(_context);
-        public IQuestionRepository Questions => _questionRepository ??= new QuestionRepository(_context);
-        public ITopicRepository Topics => _topicRepository ??= new TopicRepository(_context);
-        public IQuestionOptionsRepository QuestionOptions => _questionOptionRepository ??= new QuestionOptionsRepository(_context);
-        public IQuestionTopicRepository QuestionTopics => _questionTopicRepository ??= new QuestionTopicRepository(_context);
-        public IUserRecommendationRepository UserRecommendations => _userRecommendationRepository ??= new UserRecommendationRepository(_context);
-        public IUserPerformanceSummariesRepository PerformanceSummaries => _performanceSummaryRepository ??= new UserPerformanceSummariesRepository(_context);
-        public IUserNotificationsRepository Notifications => _notificationRepository ??= new UserNotificationsRepository(_context);
-        public IUserAnswersRepository UserAnswers => _userAnswerRepository ??= new UserAnswerRepository(_context);
+        public IUserRepository users => _userRepository ??= new UserRepository(_context);
+        public IQuestionRepository questions => _questionRepository ??= new QuestionRepository(_context);
+        public ITopicRepository topics => _topicRepository ??= new TopicRepository(_context);
+        public IQuestionOptionsRepository questionsOptions => _questionOptionRepository ??= new QuestionOptionsRepository(_context);
+        public IQuestionTopicRepository questionsTopic => _questionTopicRepository ??= new QuestionTopicRepository(_context);
+        public IUserRecommendationRepository userRecommendations => _userRecommendationRepository ??= new UserRecommendationRepository(_context);
+        public IUserPerformanceSummariesRepository userPerformanceSummaries => _performanceSummaryRepository ??= new UserPerformanceSummariesRepository(_context);
+        public IUserNotificationsRepository userNotifications => _notificationRepository ??= new UserNotificationsRepository(_context);
+        public IUserAnswersRepository userAnswers => _userAnswerRepository ??= new UserAnswerRepository(_context);
 
 
         // --- DEĞİŞİKLİK KAYDETME METOTLARI ---
