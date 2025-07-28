@@ -2,7 +2,317 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AkademikAi - Hızlı Öğren, Motive Kal, Akıllı Çalış</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- TEMEL STİLLER VE RESETLEME --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f8f8;
+            color: #1f2937;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- HEADER / ÜST BİLGİ --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+            .header .logo {
+                font-size: 1.75rem;
+                font-weight: 700;
+            }
+
+            .header .nav-links {
+                display: flex;
+                gap: 0.5rem;
+            }
+
+                .header .nav-links a {
+                    padding: 0.5rem 1rem;
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    transition: background-color 0.2s;
+                }
+
+                    .header .nav-links a:hover {
+                        background-color: #e5e7eb;
+                    }
+
+            .header .user-actions {
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+
+                .header .user-actions .user-icon {
+                    width: 24px;
+                    height: 24px;
+                    color: #6b7280;
+                }
+
+        /* --- HERO / ANA BÖLÜM --- */
+        .hero-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 2rem;
+        }
+
+        .hero-left {
+            flex: 1;
+            position: relative;
+            /* Cihaz görsellerinin taşmasını önlemek için */
+            min-height: 500px;
+        }
+
+            .hero-left .device-stack {
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+
+            .hero-left .phone-frame {
+                position: absolute;
+                width: 320px; /* Telefonun genişliği */
+                top: 50%;
+                left: 65%;
+                transform: translate(-50%, -50%);
+                z-index: 1;
+            }
+
+            .hero-left .laptop-frame {
+                position: absolute;
+                width: 650px; /* Laptopun genişliği */
+                top: 50%;
+                left: 35%;
+                transform: translate(-50%, -50%);
+                z-index: 2;
+            }
+
+            .hero-left .screen-content {
+                position: absolute;
+                width: 470px; /* Laptop ekranına sığacak içerik genişliği */
+                top: 75%;
+                left: 35%;
+                transform: translate(-50%, -50%);
+                z-index: 3;
+                padding: 2rem;
+            }
+
+            .hero-left h1 {
+                font-size: 3.5rem;
+                font-weight: 800;
+                line-height: 1.2;
+                color: #111827;
+            }
+
+            .hero-left p {
+                font-size: 0.9rem;
+                color: #4b5563;
+                margin-top: 1.5rem;
+                line-height: 1.6;
+                max-width: 400px;
+            }
+
+            .hero-left .cta-button {
+                margin-top: 2rem;
+                padding: 0.8rem 1.8rem;
+                background-color: #1d4ed8;
+                color: #ffffff;
+                border: none;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .hero-left .cta-button:hover {
+                    background-color: #1e40af;
+                }
+
+        .hero-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+            .hero-right .woman-image {
+                max-width: 85%;
+                height: auto;
+            }
+
+        @@media (max-width: 1200px) {
+            .hero-left .laptop-frame {
+                width: 580px;
+            }
+
+            .hero-left .screen-content {
+                width: 420px;
+            }
+
+            .hero-left h1 {
+                font-size: 3rem;
+            }
+
+            .hero-right .woman-image {
+                max-width: 95%;
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .header .nav-links {
+                display: none;
+            }
+
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-right {
+                order: -1;
+                margin-bottom: 2rem;
+            }
+
+                .hero-right .woman-image {
+                    max-width: 350px;
+                }
+
+            .hero-left {
+                min-height: auto;
+            }
+
+                .hero-left .device-stack {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    position: static;
+                }
+
+                .hero-left .phone-frame,
+                .hero-left .laptop-frame {
+                    display: none;
+                }
+
+                .hero-left .screen-content {
+                    position: static;
+                    transform: none;
+                    width: 100%;
+                    padding: 0;
+                }
+
+                .hero-left p {
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+        }
+
+        @@media (max-width: 576px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .header .logo {
+                font-size: 1.5rem;
+            }
+
+            .hero-left h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo">AkademikAi.com</div>
+            <nav class="nav-links">
+                <a href="#">Ana Sayfa</a>
+                <a href="#">Hakkımızda</a>
+                <a href="#">İletişim</a>
+                <a href="#">Ödeme</a>
+            </nav>
+            <div class="user-actions">
+                <a href="#">Log In</a>
+                <a href="#">Sign Up</a>
+                <svg class="user-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <main class="hero-section">
+            <!-- Sol Taraf: Metin ve Cihaz Görselleri -->
+            <div class="hero-left">
+                <div class="device-stack">
+                    <!--
+                        Bu görselleri kendi projenizdeki dosyalarla değiştirin.
+                        Görsellerin arka planları transparan olmalıdır (PNG formatı idealdir).
+                    -->
+                    <img src="~/images/Mockup.png" alt="Telefon çerçevesi" class="phone-frame">
+                    <img src="~/images/Device.png" alt="Laptop çerçevesi" class="laptop-frame">
+
+                    <!-- Laptop Ekranının İçeriği -->
+                    <div class="screen-content">
+                        <h1>
+                            Hızlı Öğren.<br>
+                            Motive Kal<br>
+                            Akıllı Çalış
+                        </h1>
+                        <p>
+                            Binlerce sorunun içinde kaybolmak yerine, en çok ihtiyacın olan konulara odaklan.
+                            Akademik.ai, performansını analiz ederek sana özel bir çalışma planı sunar ve yapay zeka ile hedeflerine en akıllı yoldan ulaşmanı sağlar.
+                        </p>
+                        <button class="cta-button">Detayları Gör</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Taraf: Kadın Görseli -->
+            <div class="hero-right">
+                <!-- Bu görseli kendi projenizdeki dosyayla değiştirin -->
+                <img src="~/images/girl.png" alt="Laptop kullanan gülümseyen kadın" class="woman-image">
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

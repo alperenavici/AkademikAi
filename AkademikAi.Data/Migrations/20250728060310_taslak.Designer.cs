@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AkademikAi.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250723104910_identity")]
-    partial class identity
+    [Migration("20250728060310_taslak")]
+    partial class taslak
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,6 +81,9 @@ namespace AkademikAi.Data.Migrations
                         .HasMaxLength(1)
                         .HasColumnType("nvarchar(1)");
 
+                    b.Property<int>("OptionOrder")
+                        .HasColumnType("int");
+
                     b.Property<string>("OptionText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -101,6 +104,9 @@ namespace AkademikAi.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("TopicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("QuestionId", "TopicId");
@@ -140,7 +146,13 @@ namespace AkademikAi.Data.Migrations
                     b.Property<DateTime>("AnsweredAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SelectedOptionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserAnswer")
@@ -168,12 +180,22 @@ namespace AkademikAi.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("NotificationType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -196,10 +218,22 @@ namespace AkademikAi.Data.Migrations
                     b.Property<int>("CorrectAnswers")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastUpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("SuccessRate")
+                        .HasColumnType("float");
+
                     b.Property<Guid>("TopicId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("TotalAnsweredQuestions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalQuestionsAnswered")
                         .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
@@ -221,6 +255,9 @@ namespace AkademikAi.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("AppliedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -228,6 +265,19 @@ namespace AkademikAi.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsApplied")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RecommendationText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RecommendationType")
                         .HasColumnType("int");
@@ -278,6 +328,9 @@ namespace AkademikAi.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("UserRole")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
