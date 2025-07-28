@@ -35,7 +35,7 @@ namespace AkademikAi.Web.Controllers.UserController
             var result =await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false); //false 3 defa yanlış girerse kitleme
             if(result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Profile", "User");
             }
             else 
             { 
@@ -96,7 +96,7 @@ namespace AkademikAi.Web.Controllers.UserController
             {
                 return NotFound();
             }
-            return View(user);
+            return View("Dashboard",user);
         }
 
         [HttpGet]

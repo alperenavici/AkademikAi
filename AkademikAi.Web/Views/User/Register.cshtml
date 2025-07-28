@@ -8,17 +8,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kayıt Ol</title>
-    <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Harici CSS Dosyası -->
     <link rel="stylesheet" href="~/css/Register.css">
 </head>
 <body>
 
     <div class="signup-container">
-        <!-- Sol Taraf: Kayıt Formu -->
         <div class="signup-form-section">
             <div class="form-content">
                 <h2>KAYIT OL</h2>
@@ -49,20 +46,20 @@
                     <button type="submit" class="btn btn-primary">Kayıt Ol</button>
                     
                 </form>
-                <form action="/User/Login" method="get">
+                <form asp-action="/User/Login" method="get">
                     <p class="login-link">Zaten bir hesabınız var mı? <a href="/User/Login">Giriş Yap</a></p>
-                <button type="button" class="btn btn-secondary">Geri Dön</button>
                 </form>
+
+                <button type="button" class="btn btn-secondary" onclick="history.back()">Geri Dön</button>
+
             </div>
         </div>
 
-        <!-- Sağ Taraf: Görsel Alanı -->
         <div class="visual-section">
             <div class="decorative-ring">
                 <img src="/images/circle.png" alt="Circle">
             </div>
             <div class="image-card image-1">
-                <!-- NOT: Bu görsel yollarını kendi projenize göre güncelleyin -->
                 <img src="~/images/mask1.png" alt="Kitap tutan öğrenci">
             </div>
             <div class="image-card image-2">
