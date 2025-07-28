@@ -28,8 +28,7 @@ namespace AkademikAi.Service.Services
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null) return false;
 
-            // User activation logic can be added here
-            // For now, we'll just return true as the user exists
+            
             return true;
         }
 
@@ -52,8 +51,7 @@ namespace AkademikAi.Service.Services
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null) return false;
 
-            // User deactivation logic can be added here
-            // For now, we'll just return true as the user exists
+            
             return true;
         }
 

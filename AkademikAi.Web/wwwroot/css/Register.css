@@ -1,0 +1,209 @@
+﻿/* --- TEMEL AYARLAR VE RESETLEME --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #e9e9e9;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    
+
+}
+
+.signup-container {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    justify-content:center;
+    align-content:center;
+   
+}
+
+.signup-form-section {
+    flex: 1.1; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-content {
+    width: 100%;
+    max-width: 360px;
+}
+
+    .form-content h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 40px;
+        text-align: left;
+    }
+
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+    .input-group .icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    .input-group .icon-right {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        cursor: pointer;
+    }
+
+
+    .input-group input {
+        width: 100%;
+        padding: 15px 50px;
+        border: 1px solid #e0e0e0;
+        border-radius: 30px; /* Tam yuvarlak köşeler */
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #6c63ff;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+        }
+
+.btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background-color: #6c63ff;
+    color: #fff;
+}
+
+    .btn-primary:hover {
+        background-color: #574ffc;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+    }
+
+.btn-secondary {
+    background-color: #ebeaff;
+    color: #6c63ff;
+}
+
+    .btn-secondary:hover {
+        background-color: #d9d6ff;
+    }
+
+/* --- SAĞ TARAF: GÖRSELLER --- */
+.visual-section {
+    flex: 0.9;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    min-height: 650px;
+}
+
+.decorative-ring {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    border: 30px solid transparent;
+    z-index: 1;
+}
+
+.image-card {
+    position: absolute;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+    .image-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.image-1 {
+    width: 180px;
+    height: 280px;
+    left: 50%;
+    transform: translateX(-150%);
+    z-index: 2;
+}
+
+.image-2 {
+    width: 200px;
+    height: 320px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3; /* Ortadaki görsel en üstte */
+}
+
+.image-3 {
+    width: 180px;
+    height: 280px;
+    left: 50%;
+    transform: translateX(50%);
+    z-index: 2;
+}
+
+/* --- MOBİL UYUMLULUK --- */
+@media (max-width: 960px) {
+    .signup-container {
+        flex-direction: column;
+        max-width: 450px;
+    }
+
+    /* Mobilde görsel alanı gizle */
+    .visual-section {
+        display: none;
+    }
+
+    .signup-form-section {
+        padding: 40px 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 1rem;
+    }
+
+    .signup-form-section {
+        padding: 30px 20px;
+    }
+
+    .form-content h2 {
+        font-size: 1.6rem;
+        margin-bottom: 30px;
+    }
+}

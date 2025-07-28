@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol</title>
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Harici CSS Dosyası -->
+    <link rel="stylesheet" href="~/css/Register.css">
+</head>
+<body>
+
+    <div class="signup-container">
+        <!-- Sol Taraf: Kayıt Formu -->
+        <div class="signup-form-section">
+            <div class="form-content">
+                <h2>KAYIT OL</h2>
+                <form asp-action="Register" asp-controller="User" method="post">
+                    <div class="input-group">
+                        <span class="icon"><!-- ID Kart ikonu --> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 2H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM8 6h8M8 10h8M8 14h4"></path></svg></span>
+                        <input type="text" placeholder="Ad" required>
+                    </div>
+                    <div class="input-group">
+                        <span class="icon"><!-- ID Kart ikonu --> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 2H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM8 6h8M8 10h8M8 14h4"></path></svg></span>
+                        <input type="text" placeholder="Soyad" required>
+                    </div>
+                    <div class="input-group">
+                        <span class="icon"><!-- Email ikonu --> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
+                        <input type="email" placeholder="example@gmail.com" required>
+                    </div>
+                    <div class="input-group">
+                        <span class="icon"><!-- Şifre ikonu --> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+                        <input type="password" placeholder="•••••••••••••••" required>
+                        <span class="icon-right"><!-- Göz ikonu (Şifre görünürlüğü için) --> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+                    </div>
+                    <div class="input-group">
+                        <span class="icon"><!-- Şifre Onay ikonu --> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></span>
+                        <input type="password" placeholder="Confirm Password" required>
+                        <span class="icon-right"><!-- Göz ikonu --> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+                    
+                </form>
+                <form action="/User/Login" method="get">
+                    <p class="login-link">Zaten bir hesabınız var mı? <a href="/User/Login">Giriş Yap</a></p>
+                <button type="button" class="btn btn-secondary">Geri Dön</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sağ Taraf: Görsel Alanı -->
+        <div class="visual-section">
+            <div class="decorative-ring">
+                <img src="/images/circle.png" alt="Circle">
+            </div>
+            <div class="image-card image-1">
+                <!-- NOT: Bu görsel yollarını kendi projenize göre güncelleyin -->
+                <img src="~/images/mask1.png" alt="Kitap tutan öğrenci">
+            </div>
+            <div class="image-card image-2">
+                <img src="~/images/mask2.png" alt="Defter tutan öğrenci">
+            </div>
+            <div class="image-card image-3">
+                <img src="/images/mask3.png" alt="Tablet tutan öğrenci">
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
