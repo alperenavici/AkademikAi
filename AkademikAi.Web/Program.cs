@@ -29,11 +29,23 @@ builder.Services.AddScoped<IUserAnswersRepository, UserAnswerRepository>();
 builder.Services.AddScoped<IUserPerformanceSummariesRepository, UserPerformanceSummariesRepository>();
 builder.Services.AddScoped<IUserRecommendationRepository, UserRecommendationRepository>();
 builder.Services.AddScoped<IUserNotificationsRepository, UserNotificationsRepository>();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 // Register Services
 builder.Services.AddAkademikAiServices();
 
 var app = builder.Build();
+
+
+
+app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -86,160 +86,149 @@
         .hero-section {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-top: 2rem;
             gap: 2rem;
+            margin-top: 2rem;
+            min-height: 60vh;
         }
 
         .hero-left {
-            flex: 1;
-            position: relative;
-            /* Cihaz görsellerinin taşmasını önlemek için */
-            min-height: 500px;
+            /* Sol tarafın sağ taraftan biraz daha fazla yer kaplamasını sağlıyoruz. */
+            flex: 1.1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-            .hero-left .device-stack {
-                position: relative;
-                width: 100%;
-                height: 100%;
-            }
+        .hero-right {
+            flex: 0.9;
+        }
 
-            .hero-left .phone-frame {
+        /* --- YENİ VE KARARLI YAPI --- */
+        .device-stack {
+            /* Bu bizim ana konumlandırma konteynerimiz.
+                   Tüm görseller ve metinler buna göre hizalanacak. */
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Laptop görselinin maksimum genişliği */
+            /* Görselin en-boy oranını koruyarak küçülmesini sağlar.
+                   Bu, kaymayı önleyen en önemli kısımdır. */
+            aspect-ratio: 700 / 460;
+        }
+
+            .device-stack img {
+                /* Görsellerin konteyner dışına taşmasını engeller. */
                 position: absolute;
-                width: 320px; /* Telefonun genişliği */
-                top: 50%;
-                left: 65%;
-                transform: translate(-50%, -50%);
-                z-index: 1;
+                object-fit: contain;
             }
 
-            .hero-left .laptop-frame {
-                position: absolute;
-                width: 650px; /* Laptopun genişliği */
-                top: 50%;
-                left: 35%;
-                transform: translate(-50%, -50%);
-                z-index: 2;
-            }
+        .laptop-frame {
+            width: 120%;
+            height: 120%;
+            top: 5%;
+            right: 0%;
+            z-index: 1; /* En alttaki katman */
+        }
 
-            .hero-left .screen-content {
-                position: absolute;
-                width: 470px; /* Laptop ekranına sığacak içerik genişliği */
-                top: 75%;
-                left: 35%;
-                transform: translate(-50%, -50%);
-                z-index: 3;
-                padding: 2rem;
-            }
+        .phone-frame {
+            width: 19%; /* Genişliği ana konteynere göre oranlı */
+            bottom: 45%;
+            right: 10%;
+            z-index: 1; 
+        }
 
-            .hero-left h1 {
-                font-size: 3.5rem;
+        .screen-content {
+            position: absolute;
+            z-index: 2; 
+            top: 68%;
+            left: 25%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            text-align: left;
+            padding: 0.5rem;
+        }
+
+            .screen-content h1 {
+                font-size: clamp(1.5rem, 2vw, 4rem); /* Ekran boyutuna göre esnek font boyutu */
                 font-weight: 800;
                 line-height: 1.2;
                 color: #111827;
             }
 
-            .hero-left p {
-                font-size: 0.9rem;
+            .screen-content p {
+                font-size: clamp(0.5rem, 1.5vw, 0.85rem); /* Esnek font boyutu */
                 color: #4b5563;
-                margin-top: 1.5rem;
-                line-height: 1.6;
-                max-width: 400px;
+                margin: 0.5rem auto 0;
+                line-height: 1.5;
+                max-width: 100%;
             }
 
-            .hero-left .cta-button {
-                margin-top: 2rem;
-                padding: 0.8rem 1.8rem;
+            .screen-content .cta-button {
+                margin-top: 0.2rem;
+                margin-left:0;
+                padding: clamp(0.1rem, 0.5vw, 0.3rem) clamp(0.4rem, 1vw, 1rem);
                 background-color: #1d4ed8;
                 color: #ffffff;
                 border: none;
-                border-radius: 8px;
-                font-size: 1rem;
-                font-weight: 600;
+                border-radius: 5px;
+                font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+                font-weight: 500;
                 cursor: pointer;
                 transition: background-color 0.2s;
+                transform:scale(0.9);
             }
 
-                .hero-left .cta-button:hover {
+                .screen-content .cta-button:hover {
                     background-color: #1e40af;
                 }
 
-        .hero-right {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+        .hero-right .woman-image {
+            width: 150%;
+            max-width: 510px;
+            height: auto;
+            display: block;
+            margin-left: auto;
         }
 
-            .hero-right .woman-image {
-                max-width: 85%;
-                height: auto;
-            }
-
-        @@media (max-width: 1200px) {
-            .hero-left .laptop-frame {
-                width: 580px;
-            }
-
-            .hero-left .screen-content {
-                width: 420px;
-            }
-
-            .hero-left h1 {
-                font-size: 3rem;
-            }
-
-            .hero-right .woman-image {
-                max-width: 95%;
-            }
-        }
-
+        /* --- RESPONSIVE / MOBİL UYUMLULUK --- */
         @@media (max-width: 992px) {
             .header .nav-links {
-                display: none;
+                display: none; /* Menüyü gizle */
             }
 
             .hero-section {
+                /* Düzeni dikey (alt alta) yap */
                 flex-direction: column;
                 text-align: center;
             }
 
             .hero-right {
-                order: -1;
+                order: -1; /* Kadın görselini en üste al */
                 margin-bottom: 2rem;
             }
 
                 .hero-right .woman-image {
                     max-width: 350px;
+                    margin: 0 auto;
                 }
-
-            .hero-left {
-                min-height: auto;
+            /* Mobil görünümde cihaz görsellerini gizle ve metni normal akışa döndür */
+            .device-stack {
+                position: static;
+                aspect-ratio: auto; /* Oranlamayı iptal et */
+                max-width: 500px; /* Metin genişliğini sınırla */
+                margin: 0 auto;
             }
 
-                .hero-left .device-stack {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    position: static;
-                }
+            .laptop-frame,
+            .phone-frame {
+                display: none; /* Cihazları gizle */
+            }
 
-                .hero-left .phone-frame,
-                .hero-left .laptop-frame {
-                    display: none;
-                }
-
-                .hero-left .screen-content {
-                    position: static;
-                    transform: none;
-                    width: 100%;
-                    padding: 0;
-                }
-
-                .hero-left p {
-                    margin-left: auto;
-                    margin-right: auto;
-                }
+            .screen-content {
+                position: static;
+                transform: none; /* Konumlandırmayı sıfırla */
+                width: 100%;
+                padding: 0;
+            }
         }
 
         @@media (max-width: 576px) {
@@ -251,8 +240,12 @@
                 font-size: 1.5rem;
             }
 
-            .hero-left h1 {
-                font-size: 2.5rem;
+            .screen-content h1 {
+                font-size: 2.2rem; /* En küçük ekranlar için başlık boyutu */
+            }
+
+            .hero-right .woman-image {
+                max-width: 90%; /* Görselin ekranı doldurmasını sağla */
             }
         }
     </style>
@@ -270,7 +263,7 @@
                 <a href="#">Ödeme</a>
             </nav>
             <div class="user-actions">
-                <a href="#">Log In</a>
+                <a asp-controller="User" asp-action="Login">Log In</a>
                 <a href="#">Sign Up</a>
                 <svg class="user-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -280,28 +273,25 @@
 
         <!-- HERO SECTION -->
         <main class="hero-section">
-            <!-- Sol Taraf: Metin ve Cihaz Görselleri -->
             <div class="hero-left">
                 <div class="device-stack">
-                    <!--
-                        Bu görselleri kendi projenizdeki dosyalarla değiştirin.
-                        Görsellerin arka planları transparan olmalıdır (PNG formatı idealdir).
-                    -->
-                    <img src="~/images/Mockup.png" alt="Telefon çerçevesi" class="phone-frame">
+                   
+                    <img src="~/images/PHONE.png" alt="Telefon çerçevesi" class="phone-frame">
                     <img src="~/images/Device.png" alt="Laptop çerçevesi" class="laptop-frame">
 
-                    <!-- Laptop Ekranının İçeriği -->
                     <div class="screen-content">
                         <h1>
-                            Hızlı Öğren.<br>
-                            Motive Kal<br>
-                            Akıllı Çalış
+                                Hızlı Öğren.<br>
+                                Motive Kal<br>
+                                Akıllı Çalış
                         </h1>
                         <p>
-                            Binlerce sorunun içinde kaybolmak yerine, en çok ihtiyacın olan konulara odaklan.
-                            Akademik.ai, performansını analiz ederek sana özel bir çalışma planı sunar ve yapay zeka ile hedeflerine en akıllı yoldan ulaşmanı sağlar.
+                        Binlerce sorunun içinde kaybolmak yerine, en çok ihtiyacın olan konulara odaklan.
+                        Akademik.ai, performansını analiz ederek sana özel bir çalışma planı sunar ve yapay zeka ile hedeflerine en akıllı yoldan ulaşmanı sağlar. 
+                            
                         </p>
                         <button class="cta-button">Detayları Gör</button>
+                        
                     </div>
                 </div>
             </div>

@@ -31,7 +31,7 @@ namespace AkademikAi.Web.Controllers.UserController
                 ModelState.AddModelError(string.Empty, "Geçersiz Giriş İsteği");
                 return View(dto);
             }
-
+            
             var result =await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false); //false 3 defa yanlış girerse kitleme
             if(result.Succeeded)
             {
@@ -39,7 +39,7 @@ namespace AkademikAi.Web.Controllers.UserController
             }
             else 
             { 
-                ModelState.AddModelError(string.Empty, "Geçersiz Giriş İsteği");
+                ViewBag.ErrorA(string.Empty, "Geçersiz Giriş İsteği");
                 return View(dto); 
             }
                 
