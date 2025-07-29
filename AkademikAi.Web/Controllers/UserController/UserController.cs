@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using AkademikAi.Core.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 
 namespace AkademikAi.Web.Controllers.UserController
@@ -25,24 +26,25 @@ namespace AkademikAi.Web.Controllers.UserController
         [HttpPost]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var user=await _userManager.FindByEmailAsync(dto.Email);
-            if(user==null)
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Geçersiz Giriş İsteği");
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return View(dto);
             }
-            
-            var result =await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false); //false 3 defa yanlış girerse kitleme
-            if(result.Succeeded)
+
+            var result = await _signInManager.PasswordSignInAsync(user.UserName ?? string.Empty, dto.Password, isPersistent: false, lockoutOnFailure: false);
+
+            if (result.Succeeded)
             {
-                return RedirectToAction("Profile", "User");
+                return RedirectToAction("Dashboard", "User");
             }
-            else 
-            { 
-                ViewBag.ErrorA(string.Empty, "Geçersiz Giriş İsteği");
-                return View(dto); 
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return View(dto);
             }
-                
+
 
         }
         [HttpPost]
@@ -96,8 +98,21 @@ namespace AkademikAi.Web.Controllers.UserController
             {
                 return NotFound();
             }
-            return View("Dashboard",user);
+            return View("Profile",user);
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Dashboard()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View("Dashboard", user);
+        }
+
 
         [HttpGet]
         public IActionResult GetUser()
