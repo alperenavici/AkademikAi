@@ -68,6 +68,7 @@ namespace AkademikAi.Web.Controllers.UserController
                 var user = new IdentityUser
                 {
                     UserName=dto.Email,
+                    PhoneNumber = dto.Phone,
                     Email = dto.Email
                     //EmailConfirmed = true // E-posta onayını zorunlu kılmak için
                 };

@@ -1,0 +1,464 @@
+@model AkademikAi.Entity.Entites.Users
+@{
+    ViewData["Title"] = "MR Sonuçlarınız - AkademikAI";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">AkademikAI</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="@Url.Action("Dashboard", "User")" class="nav-link">
+                    <i class="fas fa-compass"></i>
+                    <span>Pusulanız</span>
+                </a>
+                <a href="@Url.Action("Solve", "User")" class="nav-link">
+                    <i class="fas fa-brain"></i>
+                    <span>Odaklanma Alanı</span>
+                </a>
+                <a href="@Url.Action("Performance", "User")" class="nav-link active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>MR Sonuçlarınız</span>
+                </a>
+                <a href="@Url.Action("Exams", "User")" class="nav-link">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Simülasyon Merkezi</span>
+                </a>
+                <a href="@Url.Action("Profile", "User")" class="nav-link">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Kişisel Alan</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <form asp-action="Logout" asp-controller="User" method="post" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Çıkış Yap</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>MR Sonuçlarınız 📊</h1>
+                <p>Detaylı performans analizi ve gelişim grafikleriniz.</p>
+            </header>
+
+            <!-- Filtreler -->
+            <section class="filters-section">
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label for="course-filter">Ders:</label>
+                        <select id="course-filter" class="filter-select">
+                            <option value="">Tüm Dersler</option>
+                            <option value="matematik">Matematik</option>
+                            <option value="fizik">Fizik</option>
+                            <option value="kimya">Kimya</option>
+                            <option value="biyoloji">Biyoloji</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="topic-filter">Konu:</label>
+                        <select id="topic-filter" class="filter-select">
+                            <option value="">Tüm Konular</option>
+                            <option value="geometri">Geometri</option>
+                            <option value="cebir">Cebir</option>
+                            <option value="trigonometri">Trigonometri</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="date-filter">Tarih:</label>
+                        <select id="date-filter" class="filter-select">
+                            <option value="7">Son 7 Gün</option>
+                            <option value="30" selected>Son 30 Gün</option>
+                            <option value="90">Son 3 Ay</option>
+                            <option value="365">Son 1 Yıl</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Genel İstatistikler -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">1,240</div>
+                            <div class="stat-label">Toplam Soru</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">1,092</div>
+                            <div class="stat-label">Doğru Cevap</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">%88</div>
+                            <div class="stat-label">Başarı Oranı</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">45.2</div>
+                            <div class="stat-label">Ort. Süre (dk)</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Grafikler -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <h3>Zamana Göre Gelişim Grafiği</h3>
+                    <canvas id="progressChart" width="400" height="200"></canvas>
+                </div>
+            </section>
+
+            <!-- Konu Kırılımı -->
+            <section class="topic-breakdown">
+                <h3>Konu Kırılımı</h3>
+                <div class="topic-table">
+                    <div class="topic-row header">
+                        <div class="topic-name">Konu</div>
+                        <div class="topic-stats">Soru Sayısı</div>
+                        <div class="topic-success">Başarı Oranı</div>
+                        <div class="topic-progress">İlerleme</div>
+                    </div>
+                    <div class="topic-row">
+                        <div class="topic-name">Geometri</div>
+                        <div class="topic-stats">320</div>
+                        <div class="topic-success">%92</div>
+                        <div class="topic-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 92%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="topic-row">
+                        <div class="topic-name">Cebir</div>
+                        <div class="topic-stats">280</div>
+                        <div class="topic-success">%85</div>
+                        <div class="topic-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="topic-row">
+                        <div class="topic-name">Trigonometri</div>
+                        <div class="topic-stats">180</div>
+                        <div class="topic-success">%78</div>
+                        <div class="topic-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="topic-row">
+                        <div class="topic-name">Analitik Geometri</div>
+                        <div class="topic-stats">150</div>
+                        <div class="topic-success">%82</div>
+                        <div class="topic-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 82%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Koç Önerileri -->
+            <section class="ai-recommendations">
+                <h3>AI Koç Önerileri</h3>
+                <div class="recommendations-grid">
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="recommendation-content">
+                            <h4>Trigonometri Konusunu Güçlendir</h4>
+                            <p>Bu konudaki başarı oranın %78. Trigonometri sorularına daha fazla odaklanmanı öneriyorum.</p>
+                        </div>
+                    </div>
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-target"></i>
+                        </div>
+                        <div class="recommendation-content">
+                            <h4>Hızını Artır</h4>
+                            <p>Ortalama soru çözme süren 45.2 dakika. Hız antrenmanları yaparak bunu 35 dakikaya düşürebilirsin.</p>
+                        </div>
+                    </div>
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="recommendation-content">
+                            <h4>Günlük Hedef Belirle</h4>
+                            <p>Günde en az 20 soru çözerek tutarlı bir ilerleme sağlayabilirsin.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <style>
+        .filters-section {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #666666;
+        }
+
+        .stats-section {
+            margin-bottom: 30px;
+        }
+
+        .topic-breakdown {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .topic-breakdown h3 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .topic-table {
+            background: rgba(15, 15, 15, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333333;
+        }
+
+        .topic-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 2fr;
+            padding: 16px 20px;
+            border-bottom: 1px solid #333333;
+            align-items: center;
+        }
+
+        .topic-row.header {
+            background: rgba(51, 51, 51, 0.8);
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .topic-row:last-child {
+            border-bottom: none;
+        }
+
+        .topic-name {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .topic-stats, .topic-success {
+            color: #cccccc;
+            text-align: center;
+        }
+
+        .topic-progress {
+            width: 100%;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #333333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #666666 0%, #999999 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .ai-recommendations {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .ai-recommendations h3 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .recommendation-card {
+            background: rgba(15, 15, 15, 0.5);
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-card:hover {
+            border-color: #666666;
+            transform: translateY(-2px);
+        }
+
+        .recommendation-icon {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        .recommendation-content h4 {
+            color: #ffffff;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .recommendation-content p {
+            color: #cccccc;
+            line-height: 1.6;
+        }
+    </style>
+
+    <script>
+        // Chart.js ile gelişim grafiği
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        const progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1. Hafta', '2. Hafta', '3. Hafta', '4. Hafta', '5. Hafta', '6. Hafta', '7. Hafta'],
+                datasets: [{
+                    label: 'Başarı Oranı (%)',
+                    data: [65, 70, 75, 80, 85, 80, 88],
+                    borderColor: '#ffffff',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#cccccc',
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#cccccc'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Filtre değişikliklerini dinle
+        document.getElementById('course-filter').addEventListener('change', function() {
+            console.log('Ders filtresi değişti:', this.value);
+        });
+
+        document.getElementById('topic-filter').addEventListener('change', function() {
+            console.log('Konu filtresi değişti:', this.value);
+        });
+
+        document.getElementById('date-filter').addEventListener('change', function() {
+            console.log('Tarih filtresi değişti:', this.value);
+        });
+    </script>
+</body>
+</html> 

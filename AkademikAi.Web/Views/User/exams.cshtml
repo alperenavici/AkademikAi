@@ -1,0 +1,637 @@
+@model AkademikAi.Entity.Entites.Users
+@{
+    ViewData["Title"] = "Simülasyon Merkezi - AkademikAI";
+    
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+   <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">AkademikAI</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="@Url.Action("Dashboard", "User")" class="nav-link">
+                    <i class="fas fa-compass"></i>
+                    <span>Pusulanız</span>
+                </a>
+                <a href="@Url.Action("Solve", "User")" class="nav-link">
+                    <i class="fas fa-brain"></i>
+                    <span>Odaklanma Alanı</span>
+                </a>
+                <a href="@Url.Action("Performance", "User")" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>MR Sonuçlarınız</span>
+                </a>
+                <a href="@Url.Action("Exams", "User")" class="nav-link active">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Simülasyon Merkezi</span>
+                </a>
+                <a href="@Url.Action("Profile", "User")" class="nav-link">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Kişisel Alan</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <form asp-action="Logout" asp-controller="User" method="post" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Çıkış Yap</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Simülasyon Merkezi 🎯</h1>
+                <p>Gerçek sınav koşullarında kendini test et ve performansını ölç.</p>
+            </header>
+
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="ready-exams">
+                        <i class="fas fa-clipboard-list"></i>
+                        Hazır Sınavlar
+                    </button>
+                    <button class="tab-button" data-tab="custom-exams">
+                        <i class="fas fa-cogs"></i>
+                        Özel Test Oluştur
+                    </button>
+                    <button class="tab-button" data-tab="past-results">
+                        <i class="fas fa-history"></i>
+                        Geçmiş Sonuçlarım
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Hazır Sınavlar Tab -->
+                    <div id="ready-exams" class="tab-panel active">
+                        <div class="exam-grid">
+                            <div class="exam-card">
+                                <div class="exam-header">
+                                    <h3>TYT Matematik Denemesi</h3>
+                                    <span class="exam-difficulty easy">Kolay</span>
+                                </div>
+                                <div class="exam-details">
+                                    <div class="exam-info">
+                                        <span><i class="fas fa-clock"></i> 45 dakika</span>
+                                        <span><i class="fas fa-question-circle"></i> 40 soru</span>
+                                        <span><i class="fas fa-users"></i> 1,234 katılım</span>
+                                    </div>
+                                    <p>TYT matematik konularını kapsayan kapsamlı deneme sınavı.</p>
+                                </div>
+                                <button class="btn-start-exam">
+                                    <i class="fas fa-play"></i>
+                                    Sınavı Başlat
+                                </button>
+                            </div>
+
+                            <div class="exam-card">
+                                <div class="exam-header">
+                                    <h3>AYT Fizik Denemesi</h3>
+                                    <span class="exam-difficulty hard">Zor</span>
+                                </div>
+                                <div class="exam-details">
+                                    <div class="exam-info">
+                                        <span><i class="fas fa-clock"></i> 60 dakika</span>
+                                        <span><i class="fas fa-question-circle"></i> 30 soru</span>
+                                        <span><i class="fas fa-users"></i> 856 katılım</span>
+                                    </div>
+                                    <p>AYT fizik konularını içeren detaylı deneme sınavı.</p>
+                                </div>
+                                <button class="btn-start-exam">
+                                    <i class="fas fa-play"></i>
+                                    Sınavı Başlat
+                                </button>
+                            </div>
+
+                            <div class="exam-card">
+                                <div class="exam-header">
+                                    <h3>TYT Genel Deneme</h3>
+                                    <span class="exam-difficulty medium">Orta</span>
+                                </div>
+                                <div class="exam-details">
+                                    <div class="exam-info">
+                                        <span><i class="fas fa-clock"></i> 135 dakika</span>
+                                        <span><i class="fas fa-question-circle"></i> 120 soru</span>
+                                        <span><i class="fas fa-users"></i> 2,156 katılım</span>
+                                    </div>
+                                    <p>Tüm TYT konularını kapsayan genel deneme sınavı.</p>
+                                </div>
+                                <button class="btn-start-exam">
+                                    <i class="fas fa-play"></i>
+                                    Sınavı Başlat
+                                </button>
+                            </div>
+
+                            <div class="exam-card">
+                                <div class="exam-header">
+                                    <h3>AYT Kimya Denemesi</h3>
+                                    <span class="exam-difficulty easy">Kolay</span>
+                                </div>
+                                <div class="exam-details">
+                                    <div class="exam-info">
+                                        <span><i class="fas fa-clock"></i> 45 dakika</span>
+                                        <span><i class="fas fa-question-circle"></i> 25 soru</span>
+                                        <span><i class="fas fa-users"></i> 678 katılım</span>
+                                    </div>
+                                    <p>AYT kimya konularını içeren temel deneme sınavı.</p>
+                                </div>
+                                <button class="btn-start-exam">
+                                    <i class="fas fa-play"></i>
+                                    Sınavı Başlat
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Özel Test Oluştur Tab -->
+                    <div id="custom-exams" class="tab-panel">
+                        <div class="custom-exam-form">
+                            <h3>Özel Test Oluştur</h3>
+                            <form class="exam-form">
+                                <div class="form-group">
+                                    <label for="exam-name">Test Adı:</label>
+                                    <input type="text" id="exam-name" placeholder="Örn: Geometri Özel Test">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="exam-subject">Ders:</label>
+                                    <select id="exam-subject">
+                                        <option value="">Ders Seçin</option>
+                                        <option value="matematik">Matematik</option>
+                                        <option value="fizik">Fizik</option>
+                                        <option value="kimya">Kimya</option>
+                                        <option value="biyoloji">Biyoloji</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="exam-topic">Konu:</label>
+                                    <select id="exam-topic">
+                                        <option value="">Konu Seçin</option>
+                                        <option value="geometri">Geometri</option>
+                                        <option value="cebir">Cebir</option>
+                                        <option value="trigonometri">Trigonometri</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="question-count">Soru Sayısı:</label>
+                                        <input type="number" id="question-count" min="5" max="50" value="20">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exam-duration">Süre (dakika):</label>
+                                        <input type="number" id="exam-duration" min="10" max="180" value="30">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="exam-difficulty">Zorluk Seviyesi:</label>
+                                    <select id="exam-difficulty">
+                                        <option value="easy">Kolay</option>
+                                        <option value="medium" selected>Orta</option>
+                                        <option value="hard">Zor</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn-create-exam">
+                                    <i class="fas fa-plus"></i>
+                                    Test Oluştur
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Geçmiş Sonuçlarım Tab -->
+                    <div id="past-results" class="tab-panel">
+                        <div class="results-table">
+                            <div class="table-header">
+                                <h3>Geçmiş Sınav Sonuçlarım</h3>
+                            </div>
+                            <div class="table-content">
+                                <div class="result-row header">
+                                    <div class="result-exam">Sınav Adı</div>
+                                    <div class="result-date">Tarih</div>
+                                    <div class="result-score">Puan</div>
+                                    <div class="result-correct">Doğru</div>
+                                    <div class="result-wrong">Yanlış</div>
+                                    <div class="result-success">Başarı %</div>
+                                    <div class="result-action">İşlem</div>
+                                </div>
+                                
+                                <div class="result-row">
+                                    <div class="result-exam">TYT Matematik Denemesi</div>
+                                    <div class="result-date">15.01.2024</div>
+                                    <div class="result-score">85.5</div>
+                                    <div class="result-correct">34</div>
+                                    <div class="result-wrong">6</div>
+                                    <div class="result-success">85%</div>
+                                    <div class="result-action">
+                                        <button class="btn-view-result">
+                                            <i class="fas fa-eye"></i>
+                                            Görüntüle
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="result-row">
+                                    <div class="result-exam">AYT Fizik Denemesi</div>
+                                    <div class="result-date">12.01.2024</div>
+                                    <div class="result-score">78.2</div>
+                                    <div class="result-correct">21</div>
+                                    <div class="result-wrong">9</div>
+                                    <div class="result-success">70%</div>
+                                    <div class="result-action">
+                                        <button class="btn-view-result">
+                                            <i class="fas fa-eye"></i>
+                                            Görüntüle
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="result-row">
+                                    <div class="result-exam">TYT Genel Deneme</div>
+                                    <div class="result-date">08.01.2024</div>
+                                    <div class="result-score">92.1</div>
+                                    <div class="result-correct">108</div>
+                                    <div class="result-wrong">12</div>
+                                    <div class="result-success">90%</div>
+                                    <div class="result-action">
+                                        <button class="btn-view-result">
+                                            <i class="fas fa-eye"></i>
+                                            Görüntüle
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .tab-container {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: rgba(15, 15, 15, 0.8);
+            border-bottom: 1px solid #333333;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 16px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: #cccccc;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+
+        .tab-button.active {
+            background: rgba(26, 26, 26, 0.8);
+            color: #ffffff;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .tab-panel {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .exam-card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .exam-card:hover {
+            border-color: #666666;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .exam-header h3 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .exam-difficulty {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .exam-difficulty.easy {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .exam-difficulty.medium {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        .exam-difficulty.hard {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .exam-info {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #cccccc;
+        }
+
+        .exam-info span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-start-exam {
+            width: 100%;
+            background: linear-gradient(135deg, #333333 0%, #666666 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-start-exam:hover {
+            background: linear-gradient(135deg, #666666 0%, #999999 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-exam-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .custom-exam-form h3 {
+            color: #ffffff;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .exam-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 16px;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            background: rgba(26, 26, 26, 0.8);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #666666;
+            box-shadow: 0 0 0 3px rgba(102, 102, 102, 0.1);
+        }
+
+        .btn-create-exam {
+            background: linear-gradient(135deg, #333333 0%, #666666 100%);
+            color: #ffffff;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-create-exam:hover {
+            background: linear-gradient(135deg, #666666 0%, #999999 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .results-table {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #333333 0%, #666666 100%);
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .table-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .result-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            padding: 16px 20px;
+            border-bottom: 1px solid #333333;
+            align-items: center;
+        }
+
+        .result-row.header {
+            background: rgba(51, 51, 51, 0.8);
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-row:hover {
+            background: rgba(51, 51, 51, 0.3);
+        }
+
+        .result-exam, .result-date, .result-score, .result-correct, .result-wrong, .result-success {
+            color: #cccccc;
+        }
+
+        .result-exam {
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .btn-view-result {
+            background: #666666;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-view-result:hover {
+            background: #999999;
+            transform: translateY(-1px);
+        }
+    </style>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons and panels
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Show corresponding panel
+                const targetTab = this.getAttribute('data-tab');
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        // Exam start functionality
+        document.querySelectorAll('.btn-start-exam').forEach(button => {
+            button.addEventListener('click', function() {
+                const examCard = this.closest('.exam-card');
+                const examName = examCard.querySelector('h3').textContent;
+                
+                if (confirm(`${examName} sınavını başlatmak istediğinizden emin misiniz?`)) {
+                    // Redirect to solve page with exam parameters
+                    window.location.href = '/User/Solve';
+                }
+            });
+        });
+
+        // Custom exam form submission
+        document.querySelector('.exam-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const examName = document.getElementById('exam-name').value;
+            const examSubject = document.getElementById('exam-subject').value;
+            const questionCount = document.getElementById('question-count').value;
+            const duration = document.getElementById('exam-duration').value;
+            
+            if (!examName || !examSubject) {
+                alert('Lütfen tüm gerekli alanları doldurun.');
+                return;
+            }
+            
+            alert(`${examName} adlı özel test başarıyla oluşturuldu!`);
+            this.reset();
+        });
+
+        // View result functionality
+        document.querySelectorAll('.btn-view-result').forEach(button => {
+            button.addEventListener('click', function() {
+                const resultRow = this.closest('.result-row');
+                const examName = resultRow.querySelector('.result-exam').textContent;
+                
+                alert(`${examName} sonuçları görüntüleniyor...`);
+                // Here you can redirect to a detailed result page
+            });
+        });
+    </script>
+</body>
+</html> 

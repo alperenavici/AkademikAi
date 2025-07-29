@@ -1,0 +1,309 @@
+/* Soru Çözme Arayüzü - "Odaklanma Alanı" */
+
+.question-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+    background-color: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-light);
+}
+
+/* Header */
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: var(--spacing-xl);
+}
+
+.question-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.question-number {
+    background-color: var(--color-primary);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.question-subject {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.timer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: #f8f9fa;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.timer svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-accent);
+}
+
+/* Question Content */
+.question-content {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.question-text {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.question-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-light);
+}
+
+/* Options */
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border: 2px solid #e9ecef;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.option:hover {
+    border-color: var(--color-primary);
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-light);
+}
+
+.option.selected {
+    border-color: var(--color-primary);
+    background-color: #e3f2fd;
+}
+
+.option.correct {
+    border-color: var(--color-success);
+    background-color: #e8f5e8;
+}
+
+.option.incorrect {
+    border-color: var(--color-error);
+    background-color: #fef2f2;
+}
+
+.option-label {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+}
+
+.option.selected .option-label {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.option.correct .option-label {
+    background-color: var(--color-success);
+    color: white;
+}
+
+.option.incorrect .option-label {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.option-text {
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-text-primary);
+}
+
+.option-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.option.correct .option-icon {
+    color: var(--color-success);
+}
+
+.option.incorrect .option-icon {
+    color: var(--color-error);
+}
+
+/* Action Buttons */
+.question-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 2px solid var(--color-text-secondary);
+    color: var(--color-text-secondary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-text-secondary);
+    color: white;
+}
+
+.btn-large {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    font-size: 1rem;
+}
+
+/* Progress Bar */
+.progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #e9ecef;
+    z-index: 1000;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+/* Result Modal */
+.result-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.result-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.result-content {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: var(--shadow-heavy);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.result-modal.show .result-content {
+    transform: scale(1);
+}
+
+.result-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-lg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+}
+
+.result-icon.correct {
+    background-color: #e8f5e8;
+    color: var(--color-success);
+}
+
+.result-icon.incorrect {
+    background-color: #fef2f2;
+    color: var(--color-error);
+}
+
+.result-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+}
+
+.result-message {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+}
+
+.result-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .question-container {
+        margin: var(--spacing-md);
+        padding: var(--spacing-lg);
+    }
+    
+    .question-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: flex-start;
+    }
+    
+    .question-actions {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .result-actions {
+        flex-direction: column;
+    }
+} 

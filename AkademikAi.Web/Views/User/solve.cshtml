@@ -1,0 +1,556 @@
+@model AkademikAi.Entity.Entites.Users
+@{
+    ViewData["Title"] = "Odaklanma Alanı - AkademikAI";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">AkademikAI</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="@Url.Action("Dashboard", "User")" class="nav-link">
+                    <i class="fas fa-compass"></i>
+                    <span>Pusulanız</span>
+                </a>
+                <a href="@Url.Action("Solve", "User")" class="nav-link active">
+                    <i class="fas fa-brain"></i>
+                    <span>Odaklanma Alanı</span>
+                </a>
+                <a href="@Url.Action("Performance", "User")" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>MR Sonuçlarınız</span>
+                </a>
+                <a href="@Url.Action("Exams", "User")" class="nav-link">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Simülasyon Merkezi</span>
+                </a>
+                <a href="@Url.Action("Profile", "User")" class="nav-link">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Kişisel Alan</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <form asp-action="Logout" asp-controller="User" method="post" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Çıkış Yap</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header Bar -->
+            <div class="solve-header">
+                <div class="header-left">
+                    <h2>Geometri - Üçgenler</h2>
+                    <span class="question-progress">Soru 3 / 20</span>
+                </div>
+                <div class="header-right">
+                    <div class="timer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timer">14:32</span>
+                    </div>
+                    <button class="btn-exit">
+                        <i class="fas fa-times"></i>
+                        Çıkış
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="question-container">
+                <div class="question-content">
+                    <div class="question-text">
+                        <h3>Soru 3</h3>
+                        <p>Bir üçgenin iç açıları toplamı kaç derecedir?</p>
+                        <div class="question-image">
+                            <img src="https://via.placeholder.com/400x200/667eea/ffffff?text=Üçgen+Şekli" alt="Üçgen Şekli" style="max-width: 100%; border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <div class="options-container">
+                        <button class="option-btn" data-option="A">
+                            <span class="option-label">A</span>
+                            <span class="option-text">90°</span>
+                        </button>
+                        <button class="option-btn" data-option="B">
+                            <span class="option-label">B</span>
+                            <span class="option-text">180°</span>
+                        </button>
+                        <button class="option-btn" data-option="C">
+                            <span class="option-label">C</span>
+                            <span class="option-text">270°</span>
+                        </button>
+                        <button class="option-btn" data-option="D">
+                            <span class="option-label">D</span>
+                            <span class="option-text">360°</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-action btn-secondary" id="showSolution">
+                        <i class="fas fa-lightbulb"></i>
+                        Çözümü Gör
+                    </button>
+                    <div class="navigation-buttons">
+                        <button class="btn-action btn-secondary" id="prevQuestion">
+                            <i class="fas fa-chevron-left"></i>
+                            Önceki Soru
+                        </button>
+                        <button class="btn-action btn-primary" id="nextQuestion">
+                            Sonraki Soru
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Solution Area -->
+                <div class="solution-area" id="solutionArea" style="display: none;">
+                    <div class="solution-header">
+                        <h4><i class="fas fa-check-circle"></i> Çözüm</h4>
+                        <button class="btn-close-solution" id="closeSolution">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="solution-content">
+                        <p><strong>Doğru Cevap: B) 180°</strong></p>
+                        <p>Bir üçgenin iç açıları toplamı her zaman 180 derecedir. Bu, geometrinin temel kurallarından biridir ve tüm üçgenler için geçerlidir.</p>
+                        <div class="solution-steps">
+                            <h5>Çözüm Adımları:</h5>
+                            <ol>
+                                <li>Üçgenin üç iç açısı vardır: α, β, γ</li>
+                                <li>Bu açıların toplamı: α + β + γ = 180°</li>
+                                <li>Bu kural tüm üçgenler için geçerlidir</li>
+                                <li>Dik üçgen, eşkenar üçgen, ikizkenar üçgen fark etmez</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 15%;"></div>
+                </div>
+                <div class="progress-text">3 / 20 soru tamamlandı</div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .solve-header {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-left h2 {
+            margin: 0 0 5px 0;
+            color: #ffffff;
+            font-size: 1.5rem;
+        }
+
+        .question-progress {
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .btn-exit {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid #333333;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-exit:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #666666;
+        }
+
+        .question-container {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .question-content {
+            margin-bottom: 40px;
+        }
+
+        .question-text h3 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .question-text p {
+            color: #cccccc;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .question-image {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .option-btn {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            border-color: #666666;
+            background: rgba(51, 51, 51, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected {
+            border-color: #666666;
+            background: rgba(51, 51, 51, 0.8);
+        }
+
+        .option-btn.correct {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .option-btn.incorrect {
+            border-color: #666666;
+            background: rgba(102, 102, 102, 0.3);
+        }
+
+        .option-label {
+            background: #666666;
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .option-text {
+            font-size: 1rem;
+            color: #cccccc;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #333333;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-action {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #333333 0%, #666666 100%);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #666666 0%, #999999 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(51, 51, 51, 0.8);
+            color: #cccccc;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(102, 102, 102, 0.8);
+            color: #ffffff;
+        }
+
+        .solution-area {
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid #333333;
+            border-radius: 12px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+
+        .solution-header {
+            background: #666666;
+            color: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .solution-header h4 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-close-solution {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .solution-content {
+            padding: 20px;
+        }
+
+        .solution-content p {
+            margin-bottom: 16px;
+            line-height: 1.6;
+            color: #cccccc;
+        }
+
+        .solution-steps {
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .solution-steps h5 {
+            margin: 0 0 12px 0;
+            color: #ffffff;
+        }
+
+        .solution-steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .solution-steps li {
+            margin-bottom: 8px;
+            color: #cccccc;
+        }
+
+        .progress-container {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333333;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #333333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #666666 0%, #999999 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+    </style>
+
+    <script>
+        let selectedOption = null;
+        let currentQuestion = 3;
+        let totalQuestions = 20;
+        let timeLeft = 14 * 60 + 32; // 14:32 in seconds
+
+        // Timer functionality
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                alert('Süre doldu! Sınav otomatik olarak sonlandırılıyor.');
+                // Redirect to results page
+                return;
+            }
+            
+            timeLeft--;
+        }
+
+        setInterval(updateTimer, 1000);
+
+        // Option selection
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove selection from other options
+                document.querySelectorAll('.option-btn').forEach(b => {
+                    b.classList.remove('selected');
+                });
+                
+                // Add selection to clicked option
+                this.classList.add('selected');
+                selectedOption = this.getAttribute('data-option');
+                
+                // Show correct/incorrect feedback
+                setTimeout(() => {
+                    if (selectedOption === 'B') {
+                        this.classList.add('correct');
+                    } else {
+                        this.classList.add('incorrect');
+                        document.querySelector('[data-option="B"]').classList.add('correct');
+                    }
+                }, 500);
+            });
+        });
+
+        // Show solution
+        document.getElementById('showSolution').addEventListener('click', function() {
+            document.getElementById('solutionArea').style.display = 'block';
+            this.style.display = 'none';
+        });
+
+        // Close solution
+        document.getElementById('closeSolution').addEventListener('click', function() {
+            document.getElementById('solutionArea').style.display = 'none';
+            document.getElementById('showSolution').style.display = 'inline-flex';
+        });
+
+        // Navigation buttons
+        document.getElementById('prevQuestion').addEventListener('click', function() {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                updateQuestionProgress();
+                resetQuestion();
+            }
+        });
+
+        document.getElementById('nextQuestion').addEventListener('click', function() {
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                updateQuestionProgress();
+                resetQuestion();
+            } else {
+                alert('Son soruya ulaştınız! Sınavı tamamlamak istiyor musunuz?');
+            }
+        });
+
+        function updateQuestionProgress() {
+            document.querySelector('.question-progress').textContent = `Soru ${currentQuestion} / ${totalQuestions}`;
+            const progressPercentage = (currentQuestion / totalQuestions) * 100;
+            document.querySelector('.progress-fill').style.width = `${progressPercentage}%`;
+            document.querySelector('.progress-text').textContent = `${currentQuestion} / ${totalQuestions} soru tamamlandı`;
+        }
+
+        function resetQuestion() {
+            // Reset option selections
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Hide solution
+            document.getElementById('solutionArea').style.display = 'none';
+            document.getElementById('showSolution').style.display = 'inline-flex';
+            
+            selectedOption = null;
+        }
+
+        // Exit button
+        document.querySelector('.btn-exit').addEventListener('click', function() {
+            if (confirm('Sınavdan çıkmak istediğinizden emin misiniz? İlerlemeniz kaydedilecek.')) {
+                window.location.href = '/User/Dashboard';
+            }
+        });
+    </script>
+</body>
+</html> 
