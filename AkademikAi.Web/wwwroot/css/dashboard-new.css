@@ -298,56 +298,45 @@
     color: var(--color-text-primary);
 }
 
+/* --- Modern GitHub-Style Heatmap --- */
 .heatmap {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: var(--spacing-lg);
+    gap: 2px;
+    margin-bottom: 1rem;
+    justify-content: start;
+    width: max-content;
 }
-
 .heatmap-day {
-    aspect-ratio: 1;
-    border-radius: var(--radius-sm);
-    background-color: #e9ecef;
-    position: relative;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    background-color: #ebedf0;
+    transition: transform 0.1s;
     cursor: pointer;
-    transition: all 0.2s ease;
 }
-
+.heatmap-day.level-1 { background-color: #9be9a8; }
+.heatmap-day.level-2 { background-color: #40c463; }
+.heatmap-day.level-3 { background-color: #30a14e; }
+.heatmap-day.level-4 { background-color: #216e39; }
 .heatmap-day:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(60,60,60,0.15);
 }
-
-.heatmap-day.low {
-    background-color: #e8f5e8;
-}
-
-.heatmap-day.medium {
-    background-color: var(--color-success);
-}
-
-.heatmap-day.high {
-    background-color: #2e7d32;
-}
-
 .heatmap-legend {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    font-size: 0.8rem;
-    color: var(--color-text-secondary);
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
 }
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-
-.legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
+.heatmap-legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    display: inline-block;
 }
 
 /* Quick Actions */
@@ -398,6 +387,26 @@
 .action-description {
     font-size: 0.9rem;
     color: var(--color-text-secondary);
+}
+
+/* --- Modern Card and Profile Styles --- */
+.card {
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(60,60,60,0.07);
+    border: none;
+    padding: 2rem;
+    background: #fff;
+}
+.card-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 1rem;
+}
+.profile-picture {
+    border-radius: 50%;
+    border: 3px solid #e3f2fd;
+    box-shadow: 0 2px 8px rgba(60,60,60,0.10);
 }
 
 /* Responsive */
