@@ -75,7 +75,7 @@ namespace AkademikAi.Web.Controllers.UserController
                 var result = await _userManager.CreateAsync(user, dto.Password);
                 if (result.Succeeded)
                 {
-                   
+                    TempData["SuccessMessage"] = "Registration successful. You can now log in.";
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
@@ -131,7 +131,27 @@ namespace AkademikAi.Web.Controllers.UserController
             };
             return Ok(userDto);
         }
-        
+
+        [HttpGet]
+        public IActionResult exams()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult performance()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult solve()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult profilenew()
+        {
+            return View();
+        }
 
     }
 
