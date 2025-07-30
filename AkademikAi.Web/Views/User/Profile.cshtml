@@ -211,7 +211,7 @@
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 1.5rem;
-            border: 4px solid var(--color-background-light);
+            border: 4px solid #dbeafe;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
@@ -221,6 +221,7 @@
 
         .profile-name {
             margin-bottom: 0.5rem;
+            color: var(--color-text-primary);
         }
 
         .profile-email {
@@ -231,6 +232,57 @@
         .form-grid {
             display: grid;
             gap: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .input-group input {
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
+            background: var(--color-surface);
+            color: var(--color-text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-group input[readonly] {
+            background: var(--color-surface-hover);
+            color: var(--color-text-secondary);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-text-inverse);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-medium);
         }
 
         .stats-list {
@@ -262,6 +314,7 @@
             .stat-item .value {
                 font-weight: 600;
                 font-size: 1.1rem;
+                color: var(--color-text-primary);
             }
 
         .value-with-progress {
@@ -269,6 +322,7 @@
             text-align: right;
             font-weight: 600;
             font-size: 1.1rem;
+            color: var(--color-text-primary);
         }
 
         .progress-bar {
@@ -283,6 +337,13 @@
             background-color: var(--color-primary);
             height: 100%;
             border-radius: 99px;
+        }
+
+        .card-title {
+            color: var(--color-text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
         }
 
         /* Mobil ve küçük ekranlar için */
