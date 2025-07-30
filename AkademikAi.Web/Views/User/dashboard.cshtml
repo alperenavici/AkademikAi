@@ -1,5 +1,5 @@
-﻿@{
-    ViewData["Title"] = "Profile";
+@{
+    ViewData["Title"] = "Ana Sayfa - AkademikAI";
 }
 
 <!DOCTYPE html>
@@ -7,73 +7,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ana Sayfa - AkademikAI</title>
+    <title>@ViewData["Title"]</title>
+    <!-- Orijinal CSS dosyanız -->
     <link rel="stylesheet" href="~/css/dashboard.css">
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- YAN NAVİGASYON (SIDEBAR) -->
+        <!-- YAN NAVİGASYON (SIDEBAR) - Eski tasarıma göre uyarlandı -->
         <aside class="sidebar">
             <div class="logo">AkademikAI</div>
             <nav class="sidebar-nav">
                 <ul>
+                    <!-- Aktif sayfa olduğu için 'active' sınıfı eklendi -->
                     <li>
-                        <a asp-action="Dashboard" asp-controller="User" method="get" class="active">
+                        <a asp-action="Dashboard" asp-controller="User" class="active">
                             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                             <span>Ana Sayfa</span>
                         </a>
                     </li>
                     <li>
-                        <a asp-action="profile" asp-controller="User" method="get">
+                        <a asp-action="Profile" asp-controller="User">
                             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                             <span>Profil</span>
                         </a>
                     </li>
+                    <!-- Diğer linkler buraya eklenebilir -->
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <form asp-action="logout" asp-controller="user" method="post">
-                    
-                <button class="btn-logout">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    <span>Çıkış Yap</span>
-                </button>
+                <form asp-action="Logout" asp-controller="User" method="post">
+                    <button type="submit" class="btn-logout">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>Çıkış Yap</span>
+                    </button>
                 </form>
             </div>
         </aside>
 
         <!-- ANA İÇERİK ALANI -->
         <main class="main-content">
+            <!-- Başarı mesajı -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="message message-success">
+                    <span>@TempData["SuccessMessage"]</span>
+                </div>
+            }
+
             <header class="main-header">
-                <h1>Hoş Geldin, Ahmet!</h1>
+                <h1>Hoş geldin, @User.Identity?.Name!</h1>
                 <p>Bugün öğrenmeye hazır mısın?</p>
             </header>
 
-            <!-- İstatistik Kartları -->
+            <!-- AI Koç Kartı -->
+            <div class="card ai-coach-card">
+                <div class="ai-coach-header">
+                    <div class="ai-coach-icon">💡</div>
+                    <h3 class="card-header" style="padding: 0; border: none;">AI Koç Önerisi</h3>
+                </div>
+                <p class="ai-coach-message">
+                    Matematik konusunda son 3 günde %15 gerileme gösteriyorsun.
+                    Trigonometri konusuna odaklanmanı öneriyorum. Hemen pratiğe başlayalım!
+                </p>
+                <a href="#" class="ai-coach-action">Hemen Pratiğe Başla →</a>
+            </div>
+
+            <!-- Stats Grid -->
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="value">12</div>
-                    <div class="label">Tamamlanan Dersler</div>
+                <div class="card stat-card">
+                    <span class="stat-label">Çözülen Soru</span>
+                    <div class="stat-value">1,240</div>
+                    <span class="stat-change positive">+12%</span>
                 </div>
-                <div class="stat-card">
-                    <div class="value">1.240</div>
-                    <div class="label">Çözülen Soru</div>
+                <div class="card stat-card">
+                    <span class="stat-label">Genel Başarı</span>
+                    <div class="stat-value">88%</div>
+                    <span class="stat-change positive">+5%</span>
                 </div>
-                <div class="stat-card">
-                    <div class="value">%88</div>
-                    <div class="label">Genel Başarı</div>
+                <div class="card stat-card">
+                    <span class="stat-label">Tamamlanan Ders</span>
+                    <div class="stat-value">12</div>
+                    <span class="stat-change positive">+8%</span>
                 </div>
-                <div class="stat-card">
-                    <div class="value">4</div>
-                    <div class="label">Aktif Ders</div>
+                <div class="card stat-card">
+                    <span class="stat-label">Aktif Ders</span>
+                    <div class="stat-value">4</div>
+                    <span class="stat-change negative">-3%</span>
                 </div>
             </div>
 
-            <!-- Devam Eden Dersler -->
+            <!-- Activity Heatmap -->
             <div class="card">
-                <h2 class="card-header">Devam Eden Derslerin</h2>
-                <!-- Buraya dinamik olarak ders listesi gelebilir -->
-                <p>Şu an devam eden bir dersin bulunmuyor. Yeni bir derse başla!</p>
+                <h3 class="card-header">Aktivite Isı Haritası (Son 30 Gün)</h3>
+                <div class="heatmap">
+                    <!-- Örnek günler -->
+                    <div class="heatmap-day" style="background-color: #ebedf0;" title="0 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #9be9a8;" title="5 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #40c463;" title="15 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #30a14e;" title="25 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #216e39;" title="35+ Soru"></div>
+                    <!-- Diğer 25 gün... -->
+                    <div class="heatmap-day" style="background-color: #9be9a8;" title="8 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #40c463;" title="18 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #ebedf0;" title="2 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #30a14e;" title="22 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #9be9a8;" title="11 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #216e39;" title="40 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #ebedf0;" title="0 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #9be9a8;" title="5 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #40c463;" title="15 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #30a14e;" title="25 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #216e39;" title="35+ Soru"></div>
+                    <div class="heatmap-day" style="background-color: #9be9a8;" title="8 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #40c463;" title="18 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #ebedf0;" title="2 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #30a14e;" title="22 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #9be9a8;" title="11 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #216e39;" title="40 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #ebedf0;" title="0 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #9be9a8;" title="5 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #40c463;" title="15 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #30a14e;" title="25 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #216e39;" title="35+ Soru"></div>
+                    <div class="heatmap-day" style="background-color: #9be9a8;" title="8 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #40c463;" title="18 Soru"></div>
+                    <div class="heatmap-day" style="background-color: #ebedf0;" title="2 Soru"></div>
+                </div>
             </div>
         </main>
     </div>

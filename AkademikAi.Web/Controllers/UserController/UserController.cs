@@ -37,7 +37,7 @@ namespace AkademikAi.Web.Controllers.UserController
 
             if (result.Succeeded)
             {
-                return RedirectToAction("Dashboard", "User");
+                return RedirectToAction("dashboard", "User");
             }
             else
             {
@@ -147,11 +147,7 @@ namespace AkademikAi.Web.Controllers.UserController
         {
             return View();
         }
-        [HttpGet]
-        public IActionResult profilenew()
-        {
-            return View();
-        }
+       
 
     }
 

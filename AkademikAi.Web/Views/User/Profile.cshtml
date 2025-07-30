@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body<div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">AkademikAI</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="@Url.Action("Dashboard", "User")" class="nav-link">
+                    <i class="fas fa-compass"></i>
+                    <span>Pusulanız</span>
+                </a>
+                <a href="@Url.Action("Solve", "User")" class="nav-link ">
+                    <i class="fas fa-brain"></i>
+                    <span>Odaklanma Alanı</span>
+                </a>
+                <a href="@Url.Action("Performance", "User")" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>MR Sonuçlarınız</span>
+                </a>
+                <a href="@Url.Action("Exams", "User")" class="nav-link">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Simülasyon Merkezi</span>
+                </a>
+                <a href="@Url.Action("Profile", "User")" class="nav-link active">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Kişisel Alan</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <form asp-action="Logout" asp-controller="User" method="post" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Çıkış Yap</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- ANA İÇERİK ALANI -->
+        <main class="main-content">
+            <!-- Sayfa Başlığı -->
+            <div class="welcome-section">
+                <h1 class="welcome-title">Profilim</h1>
+                <p class="welcome-subtitle">Hesap ayarlarını yönet ve istatistiklerini görüntüle.</p>
+            </div>
+
+            <div class="profile-content-grid">
+                <!-- Sol Sütun: Profil Kartı -->
+                <div class="profile-card-container">
+                    <div class="card text-center">
+                        <img src="https://i.imgur.com/8fCB22s.jpg" alt="Profil Fotoğrafı" class="profile-picture">
+                        <h2 class="profile-name">Ahmet Yılmaz</h2>
+                        <p class="profile-email">ahmet.yilmaz@example.com</p>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">Ders İstatistikleri</h3>
+                        <ul class="stats-list">
+                            <li class="stat-item">
+                                <span class="label">Tamamlanan Ders</span>
+                                <span class="value">12</span>
+                            </li>
+                            <li class="stat-item">
+                                <span class="label">Toplam Soru</span>
+                                <span class="value">1.240</span>
+                            </li>
+                            <li class="stat-item">
+                                <span class="label">Genel Başarı</span>
+                                <div class="value-with-progress">
+                                    %88
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 88%;"></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sağ Sütun: Formlar -->
+                <div class="profile-details-container">
+                    <div class="card">
+                        <h3 class="card-title">Kişisel Bilgileri Düzenle</h3>
+                        <form asp-action="UpdateProfile" asp-controller="User" method="post" class="form-grid">
+                            <div class="input-group">
+                                <label for="name">Ad</label>
+                                <input type="text" id="name" name="FirstName" value="Ahmet">
+                            </div>
+                            <div class="input-group">
+                                <label for="surname">Soyad</label>
+                                <input type="text" id="surname" name="LastName" value="Yılmaz">
+                            </div>
+                            <div class="input-group">
+                                <label for="phone">Telefon Numarası</label>
+                                <input type="tel" id="phone" name="PhoneNumber" value="555 123 4567">
+                            </div>
+                            <div class="input-group">
+                                <label for="email">E-posta Adresi</label>
+                                <input type="email" id="email" name="Email" value="ahmet.yilmaz@example.com" readonly>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Bilgileri Güncelle</button>
+                        </form>
+                    </div>
+
+                    <!-- YENİ EKLENEN ŞİFRE DEĞİŞTİRME KARTI -->
+                    <div class="card">
+                        <h3 class="card-title">Şifre Değiştirme</h3>
+                        <form asp-action="ChangePassword" asp-controller="User" method="post" class="form-grid">
+                            <div class="input-group">
+                                <label for="current-password">Mevcut Şifre</label>
+                                <input type="password" id="current-password" name="CurrentPassword" placeholder="Mevcut şifrenizi girin">
+                            </div>
+                            <div class="input-group">
+                                <label for="new-password">Yeni Şifre</label>
+                                <input type="password" id="new-password" name="NewPassword" placeholder="En az 6 karakter">
+                            </div>
+                            <div class="input-group">
+                                <label for="confirm-password">Yeni Şifre (Tekrar)</label>
+                                <input type="password" id="confirm-password" name="ConfirmPassword" placeholder="Yeni şifreyi doğrulayın">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Şifreyi Güncelle</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bu stil bloğu, yeni CSS sisteminde eksik olabilecek
+         profil sayfasına özel yerleşimleri tamamlar. -->
+    <style>
+        .profile-content-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+            align-items: start; /* Sütunları yukarıdan hizalar */
+        }
+
+        .profile-card-container, .profile-details-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            border: 4px solid var(--color-background-light);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .profile-name {
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-email {
+            color: var(--color-text-secondary);
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .stats-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+            .stat-item:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+
+            .stat-item .label {
+                color: var(--color-text-secondary);
+            }
+
+            .stat-item .value {
+                font-weight: 600;
+                font-size: 1.1rem;
+            }
+
+        .value-with-progress {
+            width: 150px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            background-color: var(--color-border);
+            border-radius: 99px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            background-color: var(--color-primary);
+            height: 100%;
+            border-radius: 99px;
+        }
+
+        /* Mobil ve küçük ekranlar için */
+        @@media (max-width: 992px) {
+            .profile-content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

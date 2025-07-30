@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using AkademikAi.Data.Seed;
 
 
 namespace AkademikAi.Data.Context
@@ -16,7 +17,7 @@ namespace AkademikAi.Data.Context
        public DbSet<Topics> Topics { get; set; }
        public DbSet<QuestionsTopic> QuestionsTopics { get; set; }
        public DbSet<UserAnswers> UserAnswers { get; set; }
-       public DbSet<Users> Users { get; set; }
+               public new DbSet<Users> Users { get; set; }
        public DbSet<UserNotifications> UserNotifications { get; set; }
        public DbSet<UserRecommendation> UserRecommendations { get; set; }
        public DbSet<UserPerformanceSummaries> UserPerformanceSummaries { get; set; }
@@ -24,8 +25,6 @@ namespace AkademikAi.Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            
            
             modelBuilder.Entity<Questions>(entity =>
             {
@@ -36,7 +35,7 @@ namespace AkademikAi.Data.Context
                 entity.Property(q => q.Source).HasMaxLength(100);
                 entity.Property(q => q.IsActive).HasDefaultValue(true);
 
-                entity.HasOne<Users>()
+                entity.HasOne(q => q.GeneratedForUser)
                       .WithMany()
                       .HasForeignKey(q => q.GeneratedForUserId)
                       .OnDelete(DeleteBehavior.Restrict);
@@ -70,7 +69,8 @@ namespace AkademikAi.Data.Context
                 entity.HasOne<Topics>()
                       .WithMany()
                       .HasForeignKey(t => t.ParentTopicId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .IsRequired(false);
             });
 
             modelBuilder.Entity<QuestionsTopic>(entity =>
@@ -124,7 +124,8 @@ namespace AkademikAi.Data.Context
 
                 entity.HasOne(un => un.User)
                       .WithMany(u => u.UserNotifications)
-                      .HasForeignKey(un => un.UserId);
+                      .HasForeignKey(un => un.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<UserRecommendation>(entity =>
@@ -136,11 +137,13 @@ namespace AkademikAi.Data.Context
 
                 entity.HasOne(ur => ur.User)
                       .WithMany(u => u.UserRecommendations)
-                      .HasForeignKey(ur => ur.UserId);
+                      .HasForeignKey(ur => ur.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(ur => ur.Topic)
                       .WithMany()
-                      .HasForeignKey(ur => ur.RelatedTopicId);
+                      .HasForeignKey(ur => ur.RelatedTopicId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<UserPerformanceSummaries>(entity =>
@@ -153,11 +156,13 @@ namespace AkademikAi.Data.Context
 
                 entity.HasOne(ups => ups.User)
                       .WithMany(u => u.UserPerformanceSummaries)
-                      .HasForeignKey(ups => ups.UserId);
+                      .HasForeignKey(ups => ups.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(ups => ups.Topic)
                       .WithMany()
-                      .HasForeignKey(ups => ups.TopicId);
+                      .HasForeignKey(ups => ups.TopicId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
         }
 

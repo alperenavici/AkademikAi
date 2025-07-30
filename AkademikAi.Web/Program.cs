@@ -1,6 +1,7 @@
 using AkademikAi.Data.Context;
 using AkademikAi.Data.IRepositories;
 using AkademikAi.Data.Repositories;
+using AkademikAi.Data.Seed;
 using AkademikAi.Service.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddAkademikAiServices();
 
 var app = builder.Build();
+
+// Seed database
+DatabaseSeeder.SeedDatabase(app.Services);
+
+// Seed Identity data
+await IdentityDataSeeder.SeedIdentityDataAsync(app.Services);
 
 
 
