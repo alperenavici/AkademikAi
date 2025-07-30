@@ -114,7 +114,7 @@ namespace AkademikAi.Service.Services
             return await _userRepository.GetUsersByPhoneAsync(phone);
         }
 
-        public async Task<Users> RegisterUserAsync(RegisterDto registerDto)
+        public async Task<Users?> RegisterUserAsync(RegisterDto registerDto)
         {
             var existingUser = await _userRepository.GetByEmailAsync(registerDto.Email);
             if (existingUser != null) return null;

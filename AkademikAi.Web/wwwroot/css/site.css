@@ -20,3 +20,9 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.active {
+    text-decoration: underline;
+    text-underline-offset: 6px; /* biraz boþluk býrakýr */
+    font-weight: bold; /* istersen kalýn yazý */
+}
