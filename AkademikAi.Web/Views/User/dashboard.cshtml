@@ -10,6 +10,9 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/dashboard.css">
     <link rel="stylesheet" href="~/css/dashboard-new.css" />
+    <script src="~/js/heatmap.js"></script>
+    <link rel="stylesheet" href="~/css/heatmap.css" />
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -103,53 +106,47 @@
                 </div>
             </div>
 
-            <!-- Activity Heatmap -->
             <div class="card">
-                <div class="section-header">
-                    <h3 class="card-header">Aktivite Isı Haritası (Son 30 Gün)</h3>
+                <h3 class="card-header">Aktivite Isı Haritası (Son 1 Yıl)</h3>
+
+                <!-- YENİ ANA YAPI: Tüm bileşenler tek bir grid içinde -->
+                <div class="heatmap-layout">
+                    <!-- 1. Ay etiketleri -->
+                    <div class="month-labels" id="month-labels-container">
+                        <!-- JS ile doldurulacak -->
+                    </div>
+
+                    <!-- 2. Gün etiketleri -->
+                    <div class="heatmap-labels">
+                        <div class="day-label">Pzt</div>
+                        <div class="day-label"></div>
+                        <div class="day-label">Çar</div>
+                        <div class="day-label"></div>
+                        <div class="day-label">Cum</div>
+                        <div class="day-label"></div>
+                        <div class="day-label">Paz</div>
+                    </div>
+
+                    <!-- 3. Isı Haritası Izgarası -->
+                    <div class="heatmap-grid-wrapper">
+                        <div class="heatmap-grid" id="heatmap-grid">
+                            <!-- JS ile doldurulacak -->
+                        </div>
+                    </div>
                 </div>
+                <!-- / YENİ ANA YAPI SONU -->
+                <!-- Açıklama (Legend) -->
                 <div class="heatmap-legend">
                     <span>Az</span>
-                    <span class="heatmap-legend-color" style="background:#ebedf0"></span>
-                    <span class="heatmap-legend-color" style="background:#9be9a8"></span>
-                    <span class="heatmap-legend-color" style="background:#40c463"></span>
-                    <span class="heatmap-legend-color" style="background:#30a14e"></span>
-                    <span class="heatmap-legend-color" style="background:#216e39"></span>
+                    <span class="heatmap-legend-color" style="background-color:#EBEDF0"></span>
+                    <span class="heatmap-legend-color" style="background-color:#9BE9A8"></span>
+                    <span class="heatmap-legend-color" style="background-color:#40C463"></span>
+                    <span class="heatmap-legend-color" style="background-color:#30A14E"></span>
+                    <span class="heatmap-legend-color" style="background-color:#216E39"></span>
                     <span>Çok</span>
                 </div>
-                <div class="heatmap">
-                    <div class="heatmap-day level-0" title="0 Soru"></div>
-                    <div class="heatmap-day level-1" title="5 Soru"></div>
-                    <div class="heatmap-day level-2" title="15 Soru"></div>
-                    <div class="heatmap-day level-3" title="25 Soru"></div>
-                    <div class="heatmap-day level-4" title="35+ Soru"></div>
-                    <div class="heatmap-day level-1" title="8 Soru"></div>
-                    <div class="heatmap-day level-2" title="18 Soru"></div>
-                    <div class="heatmap-day level-0" title="2 Soru"></div>
-                    <div class="heatmap-day level-3" title="22 Soru"></div>
-                    <div class="heatmap-day level-1" title="11 Soru"></div>
-                    <div class="heatmap-day level-4" title="40 Soru"></div>
-                    <div class="heatmap-day level-0" title="0 Soru"></div>
-                    <div class="heatmap-day level-1" title="5 Soru"></div>
-                    <div class="heatmap-day level-2" title="15 Soru"></div>
-                    <div class="heatmap-day level-3" title="25 Soru"></div>
-                    <div class="heatmap-day level-4" title="35+ Soru"></div>
-                    <div class="heatmap-day level-1" title="8 Soru"></div>
-                    <div class="heatmap-day level-2" title="18 Soru"></div>
-                    <div class="heatmap-day level-0" title="2 Soru"></div>
-                    <div class="heatmap-day level-3" title="22 Soru"></div>
-                    <div class="heatmap-day level-1" title="11 Soru"></div>
-                    <div class="heatmap-day level-4" title="40 Soru"></div>
-                    <div class="heatmap-day level-0" title="0 Soru"></div>
-                    <div class="heatmap-day level-1" title="5 Soru"></div>
-                    <div class="heatmap-day level-2" title="15 Soru"></div>
-                    <div class="heatmap-day level-3" title="25 Soru"></div>
-                    <div class="heatmap-day level-4" title="35+ Soru"></div>
-                    <div class="heatmap-day level-1" title="8 Soru"></div>
-                    <div class="heatmap-day level-2" title="18 Soru"></div>
-                    <div class="heatmap-day level-0" title="2 Soru"></div>
-                </div>
             </div>
+
         </main>
     </div>
 </body>
