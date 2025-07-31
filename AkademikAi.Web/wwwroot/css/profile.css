@@ -159,3 +159,97 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Mesaj Stilleri */
+.message-container {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    position: relative;
+    animation: slideDown 0.3s ease-out;
+    border-left: 4px solid;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.message-success {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(34, 197, 94, 0.04) 100%);
+    border-left-color: #22c55e;
+    color: #166534;
+}
+
+.message-success::before {
+    content: "✓";
+    display: inline-block;
+    margin-right: 0.75rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #22c55e;
+}
+
+.message-error {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.04) 100%);
+    border-left-color: #ef4444;
+    color: #991b1b;
+}
+
+.message-error::before {
+    content: "⚠";
+    display: inline-block;
+    margin-right: 0.75rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #ef4444;
+}
+
+.message-error p {
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+.message-error p + p {
+    margin-top: 0.5rem;
+}
+
+/* Animasyonlar */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Form validasyon hataları için */
+.validation-error {
+    display: block;
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    margin-left: 0.125rem;
+    font-weight: 400;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.validation-error:empty {
+    display: none;
+}
+
+.input-group input.input-validation-error {
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+}

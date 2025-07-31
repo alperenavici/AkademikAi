@@ -98,19 +98,19 @@
                     <div class="card">
                         <h3 class="card-title">Kişisel Bilgileri Düzenle</h3>
                         <form asp-action="UpdateProfile" asp-controller="User" method="post" class="form-grid">
-                            @if (TempData["SuccessMessage"] != null)
+                            @if (TempData["ProfileSuccessMessage"] != null)
                             {
                                 <div class="message-container message-success">
-                                    @TempData["SuccessMessage"]
+                                    @TempData["ProfileSuccessMessage"]
                                 </div>
                             }
-                            @if(TempData["ErrorMwssage"] != null)
+                            @if(TempData["ProfileErrorMessage"] != null)
                             {
                                 <div class="message-container message-error">
-                                    @TempData["ErrorMwssage"]
+                                    @TempData["ProfileErrorMessage"]
                                 </div>
                             }
-)
+
                             <div class="input-group">
                                 <label for="name">Ad</label>
                                 <input type="text" id="name" name="FirstName" value="@Model.Name">
@@ -132,19 +132,19 @@
                     </div>
 
                     <!-- YENİ EKLENEN ŞİFRE DEĞİŞTİRME KARTI -->
-                    <div class="card">
+                    <div class="card" id="change-password">
                         <h3 class="card-title">Şifre Değiştirme</h3>
                         <form asp-action="ChangePassword" asp-controller="User" method="post" class="form-grid">
-                            @if(TempData["SuccessMessage"] != null)
+                            @if(TempData["PasswordSuccessMessage"] != null)
                             {
                                 <div class="message-container message-success">
-                                    @TempData["SuccessMessage"]
+                                    @TempData["PasswordSuccessMessage"]
                                 </div>
                             }
-                            @if(TempData["ErrorMessage"] != null)
+                            @if(TempData["PasswordErrorMessage"] != null)
                             {
                                 <div class="message-container message-error">
-                                    @TempData["ErrorMessage"]
+                                    @TempData["PasswordErrorMessage"]
                                 </div>
                             }
                             @if (!ViewData.ModelState.IsValid)

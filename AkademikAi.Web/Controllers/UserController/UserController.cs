@@ -113,7 +113,7 @@ namespace AkademikAi.Web.Controllers.UserController
         {
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Lütfen tüm alanları doldurun.";
+                TempData["ProfileErrorMessage"] = "Lütfen tüm alanları doldurun.";
                 return RedirectToAction("Profile");
             }
 
@@ -132,7 +132,7 @@ namespace AkademikAi.Web.Controllers.UserController
 
             if (result.Succeeded)
             {
-                TempData["SuccessMessage"] = "Bilgileriniz başarıyla güncellendi.";
+                TempData["ProfileSuccessMessage"] = "Bilgileriniz başarıyla güncellendi.";
                 return RedirectToAction("Profile"); // Profil sayfasına yönlendir
             }
             else
@@ -152,8 +152,8 @@ namespace AkademikAi.Web.Controllers.UserController
         {
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Lütfen tüm alanları doldurun.";
-                return RedirectToAction("Profile");
+                TempData["PasswordErrorMessage"] = "Lütfen tüm alanları doldurun.";
+                return Redirect("/User/Profile#change-password");
             }
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -164,16 +164,16 @@ namespace AkademikAi.Web.Controllers.UserController
             
             if(result.Succeeded)
             {
-                TempData["SuccessMessage"] = "Şifreniz başarıyla değiştirildi.";
-                return RedirectToAction("Profile");
+                TempData["PasswordSuccessMessage"] = "Şifreniz başarıyla değiştirildi.";
+                return Redirect("/User/Profile#change-password");
             }
             else
             {
                 foreach (var error in result.Errors)
                 {
-                    TempData["ErrorMessage"] += error.Description + " ";
+                    TempData["PasswordErrorMessage"] += error.Description + " ";
                 }
-                return RedirectToAction("Profile");
+                return Redirect("/User/Profile#change-password");
             }
         }
 
