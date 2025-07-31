@@ -29,7 +29,7 @@ namespace AkademikAi.Web.Controllers.UserController
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ModelState.AddModelError(string.Empty, "Geçersiz Kullanıcı Girişi.");
                 return View(dto);
             }
 
@@ -41,7 +41,7 @@ namespace AkademikAi.Web.Controllers.UserController
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ModelState.AddModelError(string.Empty, "Geçersiz Kullanıcı Girişi");
                 return View(dto);
             }
 
@@ -82,7 +82,7 @@ namespace AkademikAi.Web.Controllers.UserController
                 {
                     TempData["SuccessMessage"] = "Registration successful. You can now log in.";
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    return View();
                 }
                 else
                 {

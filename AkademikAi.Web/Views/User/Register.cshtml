@@ -1,12 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Register";
 }
-@if (ViewBag.SuccessMessage != null)
-{
-    <div class="alert alert-success">
-        @ViewBag.SuccessMessage
-    </div>
-}
+
 
 <!DOCTYPE html>
 <html lang="tr">
@@ -18,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/Register.css">
+    <link rel="stylesheet" href="/css/Error.css" />
 </head>
 <body>
 
@@ -27,6 +23,29 @@
                 <h2>KAYIT OL</h2>
 
                 <form asp-action="Register" asp-controller="User" method="post">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="message-container message-success">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="message-container message-error">
+                            @ViewBag.Error
+                        </div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="message-container message-error">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <p>@error.ErrorMessage</p>
+                            }
+                        </div>
+                    }
                     <div class="input-group">
                         <span class="icon"><!-- ID Kart ikonu --> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 2H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM8 6h8M8 10h8M8 14h4"></path></svg></span>
                         <input type="text" name="name" placeholder="Ad" required>

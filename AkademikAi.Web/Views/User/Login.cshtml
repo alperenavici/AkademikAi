@@ -3,6 +3,7 @@
 }
 
 
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -14,6 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/Login.css">
+    <link rel="stylesheet" href="~/css/Error.css">
 </head>
 <body>
 
@@ -24,6 +26,29 @@
                 <p class="subtitle">Hesabınıza erişmek için bilgilerinizi girin.</p>
 
                 <form asp-action="Login" asp-controller="User" method="post">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="message-container message-success">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="message-container message-error">
+                            @ViewBag.Error
+                        </div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="message-container message-error">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <p>@error.ErrorMessage</p>
+                            }
+                        </div>
+                    }
                     <div class="input-group">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                         <input type="email" name="email" placeholder="Email" required>
