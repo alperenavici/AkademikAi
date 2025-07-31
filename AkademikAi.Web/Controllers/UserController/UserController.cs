@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using AkademikAi.Core.DTOs;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
+﻿using AkademikAi.Core.DTOs;
 using AkademikAi.Entity.Entites;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace AkademikAi.Web.Controllers.UserController
 {
@@ -115,6 +116,7 @@ namespace AkademikAi.Web.Controllers.UserController
             {
                 return NotFound();
             }
+           
             return View("Dashboard", user);
         }
 
