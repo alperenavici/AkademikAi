@@ -7,7 +7,7 @@ using AkademikAi.Data.Seed;
 
 namespace AkademikAi.Data.Context
 {
-    public class AppDbContext : IdentityDbContext<IdentityUser>
+    public class AppDbContext : IdentityDbContext<AppUser,AppRole, Guid>
     {
        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
          {
@@ -17,7 +17,6 @@ namespace AkademikAi.Data.Context
        public DbSet<Topics> Topics { get; set; }
        public DbSet<QuestionsTopic> QuestionsTopics { get; set; }
        public DbSet<UserAnswers> UserAnswers { get; set; }
-               public new DbSet<Users> Users { get; set; }
        public DbSet<UserNotifications> UserNotifications { get; set; }
        public DbSet<UserRecommendation> UserRecommendations { get; set; }
        public DbSet<UserPerformanceSummaries> UserPerformanceSummaries { get; set; }
@@ -86,17 +85,12 @@ namespace AkademikAi.Data.Context
                       .HasForeignKey(qt => qt.TopicId);
             });
 
-            modelBuilder.Entity<Users>(entity =>
+            modelBuilder.Entity<AppUser>(entity =>
             {
-                entity.HasKey(u => u.Id);
                 entity.Property(u => u.Name).IsRequired().HasMaxLength(100);
                 entity.Property(u => u.Surname).HasMaxLength(100);
-                entity.Property(u => u.Phone).HasMaxLength(20);
-                entity.Property(u => u.Email).IsRequired();
-                entity.Property(u => u.PasswordHash).IsRequired();
                 entity.Property(u => u.CreatedAt).IsRequired();
-                entity.HasIndex(u => u.Email).IsUnique();
-                //entity.Property(q => q.UserRole).HasDefaultValue(0);
+                entity.Property(u => u.UserRole).IsRequired();
             });
 
             modelBuilder.Entity<UserAnswers>(entity =>

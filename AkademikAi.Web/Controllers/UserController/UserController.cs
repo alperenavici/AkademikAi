@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using AkademikAi.Core.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-
+using AkademikAi.Entity.Entites;
 
 namespace AkademikAi.Web.Controllers.UserController
 {
     
     public class UserController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -60,16 +59,21 @@ namespace AkademikAi.Web.Controllers.UserController
                 return View();
         }
 
+        
         [HttpPost]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser
+                var user = new AppUser
                 {
                     UserName=dto.Email,
                     PhoneNumber = dto.Phone,
-                    Email = dto.Email
+                    Email = dto.Email,
+                    Name = dto.Name,
+                    Surname = dto.Surname,
+                    CreatedAt = DateTime.UtcNow,
+                    UserRole = AkademikAi.Entity.Enums.UserRole.Student
                     //EmailConfirmed = true // E-posta onayını zorunlu kılmak için
                 };
                 var result = await _userManager.CreateAsync(user, dto.Password);
@@ -125,9 +129,9 @@ namespace AkademikAi.Web.Controllers.UserController
             }
             var userDto = new UserDto
             {
-                Name = user.UserName,
-                Surname = user.Email,
-                CreatedAt = DateTime.UtcNow 
+                Name = user.Name,
+                Surname = user.Surname,
+                CreatedAt = user.CreatedAt 
             };
             return Ok(userDto);
         }

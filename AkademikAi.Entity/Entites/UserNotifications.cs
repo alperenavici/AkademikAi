@@ -16,6 +16,6 @@ namespace AkademikAi.Entity.Entites
         public bool IsRead { get; set; }
         public DateTime? ReadAt { get; set; }
         public DateTime CreatedAt { get; set; }
-        public Users User { get; set; } 
+        public AppUser User { get; set; } 
     }
 }

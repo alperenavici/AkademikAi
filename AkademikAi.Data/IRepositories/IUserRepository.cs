@@ -3,14 +3,14 @@ using AkademikAi.Entity.Enums;
 
 namespace AkademikAi.Data.IRepositories
 {
-    public interface IUserRepository : IGenericRepository<Users>
+    public interface IUserRepository : IGenericRepository<AppUser>
     {
-        Task<Users> GetUserByIdAsync(Guid UserId);
-        Task<List<Users>> GetByUserRoleAsync(UserRole userRole);
-        Task<Users> GetByEmailAsync(string email);
-        Task<List<Users>> GetAllUsersAsync();
-        Task<Users> GetUserByEmailAsync(string email);
-        Task<List<Users>> GetUsersByPhoneAsync(string phone);
-        Task<List<Users>> GetUsersByNameAndSurnameAsync(string name,string surname);
+        Task<AppUser> GetUserByIdAsync(Guid UserId);
+        Task<List<AppUser>> GetByUserRoleAsync(UserRole userRole);
+        Task<AppUser> GetByEmailAsync(string email);
+        Task<List<AppUser>> GetAllAppUserAsync();
+        Task<AppUser> GetUserByEmailAsync(string email);
+        Task<List<AppUser>> GetAppUserByPhoneAsync(string phone);
+        Task<List<AppUser>> GetAppUserByNameAndSurnameAsync(string name,string surname);
     }
 }

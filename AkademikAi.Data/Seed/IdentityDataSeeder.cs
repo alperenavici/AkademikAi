@@ -1,4 +1,6 @@
+using AkademikAi.Entity.Entites;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
@@ -10,9 +12,9 @@ namespace AkademikAi.Data.Seed
         public static async Task SeedIdentityDataAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<IdentityUser>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<AppUser>>();
 
             try
             {
@@ -20,7 +22,7 @@ namespace AkademikAi.Data.Seed
                 await CreateRolesAsync(roleManager, logger);
 
                 // Kullanıcıları oluştur
-                await CreateUsersAsync(userManager, logger);
+                await CreateAppUserAsync(userManager, logger);
 
                 logger.LogInformation("Identity seed data başarıyla eklendi.");
             }
@@ -31,23 +33,23 @@ namespace AkademikAi.Data.Seed
             }
         }
 
-        private static async Task CreateRolesAsync(RoleManager<IdentityRole> roleManager, ILogger logger)
+        private static async Task CreateRolesAsync(RoleManager<AppRole> roleManager, ILogger logger)
         {
             var roles = new[] { "Admin", "Teacher", "Student" };
 
             foreach (var role in roles)
             {
-                if (!await roleManager.RoleExistsAsync(role))
+                if (!await roleManager.Roles.AnyAsync(r => r.Name == role))
                 {
-                    await roleManager.CreateAsync(new IdentityRole(role));
+                    await roleManager.CreateAsync(new AppRole { Name = role, NormalizedName = role.ToUpper() });
                     logger.LogInformation($"Rol oluşturuldu: {role}");
                 }
             }
         }
 
-        private static async Task CreateUsersAsync(UserManager<IdentityUser> userManager, ILogger logger)
+        private static async Task CreateAppUserAsync(UserManager<AppUser> userManager, ILogger logger)
         {
-            var users = new[]
+            var AppUser = new[]
             {
                 new { Email = "admin@akademikai.com", Password = "Admin123!", Role = "Admin", Name = "Admin" },
                 new { Email = "ogretmen@akademikai.com", Password = "Ogretmen123!", Role = "Teacher", Name = "Öğretmen" },
@@ -56,14 +58,18 @@ namespace AkademikAi.Data.Seed
                 new { Email = "mehmet@akademikai.com", Password = "Mehmet123!", Role = "Student", Name = "Mehmet" }
             };
 
-            foreach (var userInfo in users)
+            foreach (var userInfo in AppUser)
             {
                 var existingUser = await userManager.FindByEmailAsync(userInfo.Email);
                 if (existingUser == null)
                 {
-                    var user = new IdentityUser
+                    var user = new AppUser
                     {
                         UserName = userInfo.Email,
+                        Name = userInfo.Name,
+                        Surname = userInfo.Name,
+                        CreatedAt = DateTime.UtcNow,
+                        PhoneNumber = userInfo.Email,
                         Email = userInfo.Email,
                         EmailConfirmed = true,
                         PhoneNumberConfirmed = true

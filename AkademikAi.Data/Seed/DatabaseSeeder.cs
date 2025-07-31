@@ -26,11 +26,10 @@ namespace AkademikAi.Data.Seed
                 logger.LogInformation("Veritabanı oluşturuldu/doğrulandı.");
 
                 // Mevcut veri sayılarını kontrol et
-                var userCount = context.Set<Users>().Count();
                 var questionCount = context.Questions.Count();
                 var topicCount = context.Topics.Count();
                 
-                logger.LogInformation($"Mevcut veri sayıları - Users: {userCount}, Questions: {questionCount}, Topics: {topicCount}");
+                logger.LogInformation($"Mevcut veri sayıları - Questions: {questionCount}, Topics: {topicCount}");
 
                 // Eğer Questions ve Topics tablolarında veri yoksa seed data'yı ekle
                 if (questionCount == 0 && topicCount == 0)
@@ -59,21 +58,6 @@ namespace AkademikAi.Data.Seed
         {
             try
             {
-                // Mevcut Users'ları al (IdentityUser'lar değil, custom Users)
-                var existingUsers = context.Set<Users>().ToList();
-                List<Users> users;
-
-                if (existingUsers.Any())
-                {
-                    users = existingUsers;
-                }
-                else
-                {
-                    users = GetUsers();
-                    context.Set<Users>().AddRange(users);
-                    context.SaveChanges();
-                }
-
                 // Topics seed data (önce ana konular, sonra alt konular, tek tek ekle)
                 var allTopics = GetTopics();
                 var rootTopics = allTopics.Where(t => t.ParentTopicId == Guid.Empty).ToList();
@@ -90,7 +74,7 @@ namespace AkademikAi.Data.Seed
                 }
 
                 // Questions seed data
-                var questions = GetQuestions(users);
+                var questions = GetQuestions();
                 context.Questions.AddRange(questions);
                 context.SaveChanges();
 
@@ -105,22 +89,22 @@ namespace AkademikAi.Data.Seed
                 context.SaveChanges();
 
                 // UserAnswers seed data
-                var userAnswers = GetUserAnswers(users, questions, questionOptions);
+                var userAnswers = GetUserAnswers();
                 context.UserAnswers.AddRange(userAnswers);
                 context.SaveChanges();
 
                 // UserNotifications seed data
-                var userNotifications = GetUserNotifications(users);
+                var userNotifications = GetUserNotifications();
                 context.UserNotifications.AddRange(userNotifications);
                 context.SaveChanges();
 
                 // UserPerformanceSummaries seed data
-                var userPerformanceSummaries = GetUserPerformanceSummaries(users, allTopics);
+                var userPerformanceSummaries = GetUserPerformanceSummaries(allTopics);
                 context.UserPerformanceSummaries.AddRange(userPerformanceSummaries);
                 context.SaveChanges();
 
                 // UserRecommendation seed data
-                var userRecommendations = GetUserRecommendations(users, allTopics);
+                var userRecommendations = GetUserRecommendations(allTopics);
                 context.UserRecommendations.AddRange(userRecommendations);
                 context.SaveChanges();
             }
@@ -128,68 +112,6 @@ namespace AkademikAi.Data.Seed
             {
                 throw new Exception($"SeedDataManually'de hata oluştu: {ex.Message}", ex);
             }
-        }
-
-        private static List<Users> GetUsers()
-        {
-            return new List<Users>
-            {
-                new Users
-                {
-                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                    Name = "Admin",
-                    Surname = "User",
-                    Email = "admin@akademikai.com",
-                    PasswordHash = HashPassword("admin123"),
-                    Phone = "5551234567",
-                    UserRole = UserRole.Admin,
-                    CreatedAt = DateTime.Now.AddDays(-30)
-                },
-                new Users
-                {
-                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                    Name = "Öğretmen",
-                    Surname = "Demo",
-                    Email = "ogretmen@akademikai.com",
-                    PasswordHash = HashPassword("ogretmen123"),
-                    Phone = "5551234568",
-                    UserRole = UserRole.Teacher,
-                    CreatedAt = DateTime.Now.AddDays(-25)
-                },
-                new Users
-                {
-                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
-                    Name = "Ahmet",
-                    Surname = "Yılmaz",
-                    Email = "ahmet@akademikai.com",
-                    PasswordHash = HashPassword("ahmet123"),
-                    Phone = "5551234569",
-                    UserRole = UserRole.Student,
-                    CreatedAt = DateTime.Now.AddDays(-20)
-                },
-                new Users
-                {
-                    Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
-                    Name = "Ayşe",
-                    Surname = "Demir",
-                    Email = "ayse@akademikai.com",
-                    PasswordHash = HashPassword("ayse123"),
-                    Phone = "5551234570",
-                    UserRole = UserRole.Student,
-                    CreatedAt = DateTime.Now.AddDays(-15)
-                },
-                new Users
-                {
-                    Id = Guid.Parse("55555555-5555-5555-5555-555555555555"),
-                    Name = "Mehmet",
-                    Surname = "Kaya",
-                    Email = "mehmet@akademikai.com",
-                    PasswordHash = HashPassword("mehmet123"),
-                    Phone = "5551234571",
-                    UserRole = UserRole.Student,
-                    CreatedAt = DateTime.Now.AddDays(-10)
-                }
-            };
         }
 
         private static List<Topics> GetTopics()
@@ -282,117 +204,113 @@ namespace AkademikAi.Data.Seed
             };
         }
 
-        private static List<Questions> GetQuestions(List<Users> users)
+        private static List<Questions> GetQuestions()
         {
-            var adminUser = users.First(u => u.UserRole == UserRole.Admin);
-            var teacherUser = users.First(u => u.UserRole == UserRole.Teacher);
-
             return new List<Questions>
             {
-                // Matematik Soruları
                 new Questions
                 {
-                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "2x + 5 = 13 denkleminin çözümü nedir?",
                     DifficultyLevel = QuestionsDiff.easy,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "2x + 5 = 13\n2x = 13 - 5\n2x = 8\nx = 4",
-                    GeneratedForUserId = adminUser.Id
+                    GeneratedForUserId = Guid.Empty // FK hatasını önlemek için boş Guid
                 },
                 new Questions
                 {
-                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "Bir üçgenin iç açıları toplamı kaç derecedir?",
                     DifficultyLevel = QuestionsDiff.easy,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "Bir üçgenin iç açıları toplamı 180 derecedir.",
-                    GeneratedForUserId = adminUser.Id
+                    GeneratedForUserId = Guid.Empty
                 },
                 new Questions
                 {
-                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "x² - 4x + 4 = 0 denkleminin çözümü nedir?",
                     DifficultyLevel = QuestionsDiff.medium,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "x² - 4x + 4 = 0\n(x - 2)² = 0\nx = 2",
-                    GeneratedForUserId = teacherUser.Id
+                    GeneratedForUserId = Guid.Empty
                 },
                 new Questions
                 {
-                    Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "Bir dairenin alanı πr² formülü ile hesaplanır. Yarıçapı 5 cm olan dairenin alanı kaç cm²'dir?",
                     DifficultyLevel = QuestionsDiff.medium,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "A = πr²\nA = π × 5²\nA = 25π cm²",
-                    GeneratedForUserId = teacherUser.Id
+                    GeneratedForUserId = Guid.Empty
                 },
                 new Questions
                 {
-                    Id = Guid.Parse("55555555-5555-5555-5555-555555555555"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "sin(30°) değeri kaçtır?",
                     DifficultyLevel = QuestionsDiff.easy,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "sin(30°) = 1/2 = 0.5",
-                    GeneratedForUserId = adminUser.Id
+                    GeneratedForUserId = Guid.Empty
                 },
 
                 // Fizik Soruları
                 new Questions
                 {
-                    Id = Guid.Parse("66666666-6666-6666-6666-666666666666"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "Newton'un birinci yasası nedir?",
                     DifficultyLevel = QuestionsDiff.easy,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "Bir cisme etki eden net kuvvet sıfır ise, cisim durumunu korur (durgun kalır veya sabit hızla hareket eder).",
-                    GeneratedForUserId = teacherUser.Id
+                    GeneratedForUserId = Guid.Empty
                 },
                 new Questions
                 {
-                    Id = Guid.Parse("77777777-7777-7777-7777-777777777777"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "F = ma formülünde F, m ve a neyi temsil eder?",
                     DifficultyLevel = QuestionsDiff.medium,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "F: Kuvvet (Newton), m: Kütle (kg), a: İvme (m/s²)",
-                    GeneratedForUserId = teacherUser.Id
+                    GeneratedForUserId = Guid.Empty
                 },
                 new Questions
                 {
-                    Id = Guid.Parse("88888888-8888-8888-8888-888888888888"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "Bir cismin kinetik enerjisi hangi formülle hesaplanır?",
                     DifficultyLevel = QuestionsDiff.medium,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "Kinetik enerji = 1/2 × m × v²",
-                    GeneratedForUserId = adminUser.Id
+                    GeneratedForUserId = Guid.Empty
                 },
 
                 // Kimya Soruları
                 new Questions
                 {
-                    Id = Guid.Parse("99999999-9999-9999-9999-999999999999"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "Suyun kimyasal formülü nedir?",
                     DifficultyLevel = QuestionsDiff.easy,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "H₂O",
-                    GeneratedForUserId = adminUser.Id
+                    GeneratedForUserId = Guid.Empty
                 },
                 new Questions
                 {
-                    Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                    Id = Guid.NewGuid(),
                     QuestionText = "pH değeri 7'den küçük olan çözeltiler nasıl adlandırılır?",
                     DifficultyLevel = QuestionsDiff.easy,
                     Source = "meb",
                     IsActive = true,
                     SolutionText = "Asidik çözeltiler",
-                    GeneratedForUserId = teacherUser.Id
+                    GeneratedForUserId = Guid.Empty
                 }
             };
         }
@@ -559,26 +477,29 @@ namespace AkademikAi.Data.Seed
             return questionsTopics;
         }
 
-        private static List<UserAnswers> GetUserAnswers(List<Users> users, List<Questions> questions, List<QuestionsOptions> options)
+        private static List<UserAnswers> GetUserAnswers()
         {
-            var studentUsers = users.Where(u => u.UserRole == UserRole.Student).ToList();
             var userAnswers = new List<UserAnswers>();
+            var questions = GetQuestions(); // Re-fetch questions to get their IDs
+            var questionOptions = GetQuestionOptions(questions); // Re-fetch options to get their IDs
 
-            foreach (var student in studentUsers)
+            // Assuming 3 students for simplicity, each answering 5 questions
+            for (int i = 1; i <= 3; i++)
             {
-                var random = new Random(student.Id.GetHashCode());
+                var studentId = Guid.NewGuid(); // Simulate student IDs
+                var random = new Random(studentId.GetHashCode());
                 var studentQuestions = questions.OrderBy(x => random.Next()).Take(5).ToList();
 
                 foreach (var question in studentQuestions)
                 {
-                    var questionOptions = options.Where(o => o.QuestionId == question.Id).ToList();
-                    var selectedOption = questionOptions.OrderBy(x => random.Next()).First();
+                    var questionOptionsForQuestion = questionOptions.Where(o => o.QuestionId == question.Id).ToList();
+                    var selectedOption = questionOptionsForQuestion.OrderBy(x => random.Next()).First();
                     var isCorrect = selectedOption.IsCorrect;
 
                     userAnswers.Add(new UserAnswers
                     {
                         Id = Guid.NewGuid(),
-                        UserId = student.Id,
+                        UserId = studentId,
                         QuestionId = question.Id,
                         SelectedOptionId = selectedOption.Id,
                         IsCorrect = isCorrect,
@@ -591,19 +512,19 @@ namespace AkademikAi.Data.Seed
             return userAnswers;
         }
 
-        private static List<UserNotifications> GetUserNotifications(List<Users> users)
+        private static List<UserNotifications> GetUserNotifications()
         {
             var notifications = new List<UserNotifications>();
-            var studentUsers = users.Where(u => u.UserRole == UserRole.Student).ToList();
-
-            foreach (var student in studentUsers)
+            // Assuming 3 students for simplicity
+            for (int i = 1; i <= 3; i++)
             {
+                var studentId = Guid.NewGuid(); // Simulate student IDs
                 notifications.AddRange(new[]
                 {
                     new UserNotifications
                     {
                         Id = Guid.NewGuid(),
-                        UserId = student.Id,
+                        UserId = studentId,
                         Title = "Hoş Geldiniz!",
                         NotificationType = "welcome",
                         Message = "AkademikAI platformuna hoş geldiniz. İlk sınavınızı çözmeye başlayabilirsiniz.",
@@ -613,7 +534,7 @@ namespace AkademikAi.Data.Seed
                     new UserNotifications
                     {
                         Id = Guid.NewGuid(),
-                        UserId = student.Id,
+                        UserId = studentId,
                         Title = "Yeni Soru Seti",
                         NotificationType = "exam",
                         Message = "Matematik konusunda yeni soru seti eklendi. Hemen çözmeye başlayın!",
@@ -624,7 +545,7 @@ namespace AkademikAi.Data.Seed
                     new UserNotifications
                     {
                         Id = Guid.NewGuid(),
-                        UserId = student.Id,
+                        UserId = studentId,
                         Title = "Performans Raporu",
                         NotificationType = "performance",
                         Message = "Bu haftaki performans raporunuz hazır. Detayları görüntüleyebilirsiniz.",
@@ -637,17 +558,18 @@ namespace AkademikAi.Data.Seed
             return notifications;
         }
 
-        private static List<UserPerformanceSummaries> GetUserPerformanceSummaries(List<Users> users, List<Topics> topics)
+        private static List<UserPerformanceSummaries> GetUserPerformanceSummaries(List<Topics> topics)
         {
             var summaries = new List<UserPerformanceSummaries>();
-            var studentUsers = users.Where(u => u.UserRole == UserRole.Student).ToList();
-            var mainTopics = topics.Where(t => t.ParentTopicId == Guid.Empty).Take(3).ToList();
-
-            foreach (var student in studentUsers)
+            // Assuming 3 students for simplicity
+            for (int i = 1; i <= 3; i++)
             {
+                var studentId = Guid.NewGuid(); // Simulate student IDs
+                var mainTopics = topics.Where(t => t.ParentTopicId == Guid.Empty).Take(3).ToList();
+
                 foreach (var topic in mainTopics)
                 {
-                    var random = new Random(student.Id.GetHashCode() + topic.Id.GetHashCode());
+                    var random = new Random(studentId.GetHashCode() + topic.Id.GetHashCode());
                     var totalQuestions = random.Next(10, 50);
                     var correctAnswers = random.Next(5, totalQuestions);
                     var successRate = (double)correctAnswers / totalQuestions * 100;
@@ -655,7 +577,7 @@ namespace AkademikAi.Data.Seed
                     summaries.Add(new UserPerformanceSummaries
                     {
                         Id = Guid.NewGuid(),
-                        UserId = student.Id,
+                        UserId = studentId,
                         TopicId = topic.Id,
                         TotalAnsweredQuestions = totalQuestions,
                         TotalQuestionsAnswered = totalQuestions,
@@ -670,17 +592,18 @@ namespace AkademikAi.Data.Seed
             return summaries;
         }
 
-        private static List<UserRecommendation> GetUserRecommendations(List<Users> users, List<Topics> topics)
+        private static List<UserRecommendation> GetUserRecommendations(List<Topics> topics)
         {
             var recommendations = new List<UserRecommendation>();
-            var studentUsers = users.Where(u => u.UserRole == UserRole.Student).ToList();
-            var mainTopics = topics.Where(t => t.ParentTopicId == Guid.Empty).Take(3).ToList();
-
-            foreach (var student in studentUsers)
+            // Assuming 3 students for simplicity
+            for (int i = 1; i <= 3; i++)
             {
+                var studentId = Guid.NewGuid(); // Simulate student IDs
+                var mainTopics = topics.Where(t => t.ParentTopicId == Guid.Empty).Take(3).ToList();
+
                 foreach (var topic in mainTopics)
                 {
-                    var random = new Random(student.Id.GetHashCode() + topic.Id.GetHashCode());
+                    var random = new Random(studentId.GetHashCode() + topic.Id.GetHashCode());
                     var recommendationType = random.Next(0, 3);
 
                     string recommendationText = "";
@@ -705,7 +628,7 @@ namespace AkademikAi.Data.Seed
                     recommendations.Add(new UserRecommendation
                     {
                         Id = Guid.NewGuid(),
-                        UserId = student.Id,
+                        UserId = studentId,
                         RecommendationType = recommendationType,
                         RecommendationText = recommendationText,
                         Description = description,

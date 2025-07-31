@@ -31,7 +31,7 @@ namespace AkademikAi.Data.Repositories
 
       
 
-        public IUserRepository users => _userRepository ??= new UserRepository(_context);
+        public IUserRepository AppUser => _userRepository ??= new UserRepository(_context);
         public IQuestionRepository questions => _questionRepository ??= new QuestionRepository(_context);
         public ITopicRepository topics => _topicRepository ??= new TopicRepository(_context);
         public IQuestionOptionsRepository questionsOptions => _questionOptionRepository ??= new QuestionOptionsRepository(_context);

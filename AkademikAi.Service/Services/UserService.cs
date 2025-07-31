@@ -6,13 +6,11 @@ using AkademikAi.Service.IServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AkademikAi.Service.Services
 {
-    public class UserService : GenericService<Users>, IUserService
+    public class UserService : GenericService<AppUser>, IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -37,12 +35,7 @@ namespace AkademikAi.Service.Services
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null) return false;
 
-            var currentPasswordHash = HashPassword(currentPassword);
-            if (user.PasswordHash != currentPasswordHash) return false;
-
-            user.PasswordHash = HashPassword(newPassword);
-            _userRepository.Update(user);
-            await _unitOfWork.SaveChangesAsync();
+            // Password change will be handled by Identity
             return true;
         }
 
@@ -55,9 +48,9 @@ namespace AkademikAi.Service.Services
             return true;
         }
 
-        public async Task<List<Users>> GetAllUsersAsync()
+        public async Task<List<AppUser>> GetAllAppUserAsync()
         {
-            return await _userRepository.GetAllUsersAsync();
+            return await _userRepository.GetAllAppUserAsync();
         }
 
         public async Task<List<UserDto>> GetActiveStudentsAsync()
@@ -84,48 +77,48 @@ namespace AkademikAi.Service.Services
             }).ToList();
         }
 
-        public async Task<Users> GetByEmailAsync(string email)
+        public async Task<AppUser> GetByEmailAsync(string email)
         {
             return await _userRepository.GetByEmailAsync(email);
         }
 
-        public async Task<List<Users>> GetByUserRoleAsync(UserRole userRole)
+        public async Task<List<AppUser>> GetByUserRoleAsync(UserRole userRole)
         {
             return await _userRepository.GetByUserRoleAsync(userRole);
         }
 
-        public async Task<Users> GetUserByIdAsync(Guid userId)
+        public async Task<AppUser> GetUserByIdAsync(Guid userId)
         {
             return await _userRepository.GetUserByIdAsync(userId);
         }
 
-        public async Task<Users> GetUserByEmailAsync(string email)
+        public async Task<AppUser> GetUserByEmailAsync(string email)
         {
             return await _userRepository.GetUserByEmailAsync(email);
         }
 
-        public async Task<List<Users>> GetUsersByNameAndSurnameAsync(string name, string surname)
+        public async Task<List<AppUser>> GetAppUserByNameAndSurnameAsync(string name, string surname)
         {
-            return await _userRepository.GetUsersByNameAndSurnameAsync(name, surname);
+            return await _userRepository.GetAppUserByNameAndSurnameAsync(name, surname);
         }
 
-        public async Task<List<Users>> GetUsersByPhoneAsync(string phone)
+        public async Task<List<AppUser>> GetAppUserByPhoneAsync(string phone)
         {
-            return await _userRepository.GetUsersByPhoneAsync(phone);
+            return await _userRepository.GetAppUserByPhoneAsync(phone);
         }
 
-        public async Task<Users?> RegisterUserAsync(RegisterDto registerDto)
+        public async Task<AppUser?> RegisterUserAsync(RegisterDto registerDto)
         {
             var existingUser = await _userRepository.GetByEmailAsync(registerDto.Email);
             if (existingUser != null) return null;
 
-            var user = new Users
+            var user = new AppUser
             {
                 Id = Guid.NewGuid(),
                 Name = registerDto.Name,
                 Surname = registerDto.Surname,
                 Email = registerDto.Email,
-                PasswordHash = HashPassword(registerDto.Password),
+                UserName = registerDto.Email,
                 UserRole = UserRole.Student, // Default role
                 CreatedAt = DateTime.UtcNow
             };
@@ -154,17 +147,8 @@ namespace AkademikAi.Service.Services
             var user = await _userRepository.GetByEmailAsync(loginDto.Email);
             if (user == null) return false;
 
-            var passwordHash = HashPassword(loginDto.Password);
-            return user.PasswordHash == passwordHash;
-        }
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
-            }
+            // Password validation will be handled by Identity
+            return true;
         }
     }
 } 

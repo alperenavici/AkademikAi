@@ -17,7 +17,7 @@ namespace AkademikAi.Entity.Entites
         public double SuccessRate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
-        public Users User { get; set; }
+        public AppUser User { get; set; }
         public Topics Topic { get; set; }
     }
 }

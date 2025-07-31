@@ -14,9 +14,9 @@ namespace AkademikAi.Service.IServices
         
         Task<UserAnswers> SubmitAnswerAsync(Guid userId, Guid questionId, Guid selectedOptionId, bool isCorrect);
         Task<bool> UpdateAnswerAsync(Guid answerId, Guid selectedOptionId, bool isCorrect);
-        Task<double> GetUserSuccessRateAsync(Guid userId);
-        Task<double> GetUserSuccessRateByTopicAsync(Guid userId, Guid topicId);
-        Task<double> GetUserSuccessRateByDifficultyAsync(Guid userId, int difficultyLevel);
+        Task<double> GetAppUseruccessRateAsync(Guid userId);
+        Task<double> GetAppUseruccessRateByTopicAsync(Guid userId, Guid topicId);
+        Task<double> GetAppUseruccessRateByDifficultyAsync(Guid userId, int difficultyLevel);
         Task<List<UserAnswers>> GetUserRecentAnswersAsync(Guid userId, int count = 10);
         Task<Dictionary<string, double>> GetUserPerformanceByTopicAsync(Guid userId);
     }

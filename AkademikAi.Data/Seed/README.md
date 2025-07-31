@@ -7,7 +7,7 @@ Bu klasör, AkademikAI projesinin veritabanı seed data'larını içerir.
 ### DataSeeder.cs
 Ana seed data sınıfı. Tüm entity'ler için örnek veriler oluşturur:
 
-- **Users**: 5 kullanıcı (1 Admin, 1 Öğretmen, 3 Öğrenci)
+- **AppUser**: 5 kullanıcı (1 Admin, 1 Öğretmen, 3 Öğrenci)
 - **Topics**: 6 ana konu + alt konular (Matematik, Fizik, Kimya, Biyoloji, Türkçe, Tarih)
 - **Questions**: 10 örnek soru (Matematik, Fizik, Kimya konularından)
 - **QuestionsOptions**: Her soru için 4 seçenek (A, B, C, D)

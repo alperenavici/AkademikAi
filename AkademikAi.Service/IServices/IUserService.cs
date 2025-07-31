@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace AkademikAi.Service.IServices
 {
-    public interface IUserService : IGenericService<Users>
+    public interface IUserService : IGenericService<AppUser>
     {
-        Task<Users> GetUserByIdAsync(Guid userId);
-        Task<List<Users>> GetByUserRoleAsync(UserRole userRole);
-        Task<Users> GetByEmailAsync(string email);
-        Task<List<Users>> GetAllUsersAsync();
-        Task<Users> GetUserByEmailAsync(string email);
-        Task<List<Users>> GetUsersByPhoneAsync(string phone);
-        Task<List<Users>> GetUsersByNameAndSurnameAsync(string name, string surname);
+        Task<AppUser> GetUserByIdAsync(Guid userId);
+        Task<List<AppUser>> GetByUserRoleAsync(UserRole userRole);
+        Task<AppUser> GetByEmailAsync(string email);
+        Task<List<AppUser>> GetAllAppUserAsync();
+        Task<AppUser> GetUserByEmailAsync(string email);
+        Task<List<AppUser>> GetAppUserByPhoneAsync(string phone);
+        Task<List<AppUser>> GetAppUserByNameAndSurnameAsync(string name, string surname);
         
         Task<bool> ValidateUserAsync(LoginDto loginDto);
-        Task<Users> RegisterUserAsync(RegisterDto registerDto);
+        Task<AppUser> RegisterUserAsync(RegisterDto registerDto);
         Task<bool> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword);
         Task<bool> UpdateUserProfileAsync(Guid userId, UserDto userDto);
         

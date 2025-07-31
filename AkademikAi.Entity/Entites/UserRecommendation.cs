@@ -20,7 +20,7 @@ namespace AkademikAi.Entity.Entites
         public DateTime CreatedAt { get; set; }
         public Guid RelatedTopicId { get; set; }
 
-        public virtual Users User { get; set; }
+        public virtual AppUser User { get; set; }
         public virtual Topics Topic { get; set; }
     }
 }

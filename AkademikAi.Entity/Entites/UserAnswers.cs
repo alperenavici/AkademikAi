@@ -15,7 +15,7 @@ namespace AkademikAi.Entity.Entites
         public bool IsCorrect { get; set; }
         public DateTime AnsweredAt { get; set; }
         public char UserAnswer { get; set; } // e.g., 'A', 'B', 'C', 'D'
-        public Users User { get; set; }
+        public AppUser User { get; set; }
         public Questions Question { get; set; }
     }
 }

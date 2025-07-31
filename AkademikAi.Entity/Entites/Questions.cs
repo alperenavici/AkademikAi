@@ -17,7 +17,7 @@ namespace AkademikAi.Entity.Entites
         public bool IsActive { get; set; }
         public string SolutionText { get; set; }
         public Guid GeneratedForUserId { get; set; }
-        public Users GeneratedForUser { get; set; }
+        public AppUser GeneratedForUser { get; set; }
         public ICollection<QuestionsTopic> QuestionsTopics { get; set; }
         public ICollection<QuestionsOptions> QuestionsOptions { get; set; }
         public ICollection<UserAnswers> UserAnswers { get; set; } // Eksikse ekle

@@ -8,7 +8,7 @@ namespace AkademikAi.Data.IRepositories
 {
     public interface IUnitOfWork:IDisposable
     {  
-        public IUserRepository users { get; }
+        public IUserRepository AppUser { get; }
         public IQuestionRepository questions { get; }
         public ITopicRepository topics { get; }
         public IQuestionOptionsRepository questionsOptions { get; }

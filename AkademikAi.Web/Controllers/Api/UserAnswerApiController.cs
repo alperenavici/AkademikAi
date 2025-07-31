@@ -125,11 +125,11 @@ namespace AkademikAi.Web.Controllers.Api
         }
 
         [HttpGet("user/{userId}/success-rate")]
-        public async Task<ActionResult<double>> GetUserSuccessRate(Guid userId)
+        public async Task<ActionResult<double>> GetAppUseruccessRate(Guid userId)
         {
             try
             {
-                var successRate = await _userAnswerService.GetUserSuccessRateAsync(userId);
+                var successRate = await _userAnswerService.GetAppUseruccessRateAsync(userId);
                 return Ok(successRate);
             }
             catch (Exception ex)
@@ -139,11 +139,11 @@ namespace AkademikAi.Web.Controllers.Api
         }
 
         [HttpGet("user/{userId}/success-rate/topic/{topicId}")]
-        public async Task<ActionResult<double>> GetUserSuccessRateByTopic(Guid userId, Guid topicId)
+        public async Task<ActionResult<double>> GetAppUseruccessRateByTopic(Guid userId, Guid topicId)
         {
             try
             {
-                var successRate = await _userAnswerService.GetUserSuccessRateByTopicAsync(userId, topicId);
+                var successRate = await _userAnswerService.GetAppUseruccessRateByTopicAsync(userId, topicId);
                 return Ok(successRate);
             }
             catch (Exception ex)
@@ -153,11 +153,11 @@ namespace AkademikAi.Web.Controllers.Api
         }
 
         [HttpGet("user/{userId}/success-rate/difficulty/{difficultyLevel}")]
-        public async Task<ActionResult<double>> GetUserSuccessRateByDifficulty(Guid userId, int difficultyLevel)
+        public async Task<ActionResult<double>> GetAppUseruccessRateByDifficulty(Guid userId, int difficultyLevel)
         {
             try
             {
-                var successRate = await _userAnswerService.GetUserSuccessRateByDifficultyAsync(userId, difficultyLevel);
+                var successRate = await _userAnswerService.GetAppUseruccessRateByDifficultyAsync(userId, difficultyLevel);
                 return Ok(successRate);
             }
             catch (Exception ex)

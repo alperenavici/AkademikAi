@@ -55,7 +55,7 @@ namespace AkademikAi.Service.Services
             return answers.OrderByDescending(ua => ua.AnsweredAt).Take(count).ToList();
         }
 
-        public async Task<double> GetUserSuccessRateAsync(Guid userId)
+        public async Task<double> GetAppUseruccessRateAsync(Guid userId)
         {
             var answers = await _userAnswersRepository.GetUserAnswersByUserIdAsync(userId);
             if (!answers.Any()) return 0;
@@ -64,7 +64,7 @@ namespace AkademikAi.Service.Services
             return (double)correctAnswers / answers.Count * 100;
         }
 
-        public async Task<double> GetUserSuccessRateByDifficultyAsync(Guid userId, int difficultyLevel)
+        public async Task<double> GetAppUseruccessRateByDifficultyAsync(Guid userId, int difficultyLevel)
         {
             var answers = await _userAnswersRepository.GetUserAnswersByUserIdAsync(userId);
             var filteredAnswers = answers.Where(ua => (int)ua.Question.DifficultyLevel == difficultyLevel).ToList();
@@ -75,7 +75,7 @@ namespace AkademikAi.Service.Services
             return (double)correctAnswers / filteredAnswers.Count * 100;
         }
 
-        public async Task<double> GetUserSuccessRateByTopicAsync(Guid userId, Guid topicId)
+        public async Task<double> GetAppUseruccessRateByTopicAsync(Guid userId, Guid topicId)
         {
             var answers = await _userAnswersRepository.GetUserAnswersByUserIdAsync(userId);
             var filteredAnswers = answers.Where(ua => ua.Question?.QuestionsTopics?.Any(qt => qt.TopicId == topicId) == true).ToList();

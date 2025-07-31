@@ -3,18 +3,18 @@ using AkademikAi.Data.IRepositories;
 using AkademikAi.Entity.Entites;
 using Microsoft.EntityFrameworkCore;
 using AkademikAi.Entity.Enums;
-using AkademikAi.Data.IRepositories;
 
 namespace AkademikAi.Data.Repositories
 {
-    public class UserRepository : GenericRepository<Users>, IUserRepository
+    public class UserRepository : GenericRepository<AppUser>, IUserRepository
     {
         private readonly AppDbContext _context;
         public UserRepository(AppDbContext context) : base(context)
         {
+            _context = context;
         }
 
-        public Task<Users> GetUserByIdAsync(Guid UserId)
+        public Task<AppUser> GetUserByIdAsync(Guid UserId)
         {
             return _context.Users
                 .Include(u => u.UserAnswers)
@@ -24,19 +24,19 @@ namespace AkademikAi.Data.Repositories
                 .FirstOrDefaultAsync(u => u.Id == UserId);
         }
 
-        public Task<List<Users>> GetByUserRoleAsync(UserRole userRole)
+        public Task<List<AppUser>> GetByUserRoleAsync(UserRole userRole)
         {
             return _context.Users
                 .Where(u => u.UserRole == userRole)
                 .ToListAsync();
         }
 
-        public Task<Users> GetByEmailAsync(string email)
+        public Task<AppUser> GetByEmailAsync(string email)
         {
             return _context.Users
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
-        public Task<List<Users>> GetAllUsersAsync()
+        public Task<List<AppUser>> GetAllAppUserAsync()
         {
             return _context.Users
                 .Include(u => u.UserAnswers)
@@ -46,7 +46,7 @@ namespace AkademikAi.Data.Repositories
                 .ToListAsync();
         }
 
-        public Task<Users> GetUserByEmailAsync(string email)
+        public Task<AppUser> GetUserByEmailAsync(string email)
         {
             return _context.Users
                 .Include(u => u.UserAnswers)
@@ -57,14 +57,14 @@ namespace AkademikAi.Data.Repositories
         }
 
      
-        public Task<List<Users>> GetUsersByPhoneAsync(string phone)
+        public Task<List<AppUser>> GetAppUserByPhoneAsync(string phone)
         {
             return _context.Users
-                .Where(u => u.Phone.Contains(phone))
+                .Where(u => u.PhoneNumber.Contains(phone))
                 .ToListAsync();
         }
 
-        public Task<List<Users>> GetUsersByNameAndSurnameAsync(string name, string surname)
+        public Task<List<AppUser>> GetAppUserByNameAndSurnameAsync(string name, string surname)
         {
             return _context.Users
                 .Where(u => u.Name.Contains(name) && u.Surname.Contains(surname))

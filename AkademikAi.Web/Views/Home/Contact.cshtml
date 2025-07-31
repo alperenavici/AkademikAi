@@ -11,9 +11,9 @@
     <title>AkademikAi - Hızlı Öğren, Motive Kal, Akıllı Çalış</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="~/css/active.css" rel="stylesheet" />
 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* --- TEMEL STİLLER VE RESETLEME --- */
         * {
@@ -78,7 +78,7 @@
                 font-weight: 500;
             }
 
-                
+
 
         /* --- HERO / ANA BÖLÜM --- */
         .hero-section {
@@ -104,12 +104,12 @@
         /* --- YENİ VE KARARLI YAPI --- */
         .device-stack {
             /* Bu bizim ana konumlandırma konteynerimiz.
-                   Tüm görseller ve metinler buna göre hizalanacak. */
+                                   Tüm görseller ve metinler buna göre hizalanacak. */
             position: relative;
             width: 100%;
             max-width: 800px; /* Laptop görselinin maksimum genişliği */
             /* Görselin en-boy oranını koruyarak küçülmesini sağlar.
-                   Bu, kaymayı önleyen en önemli kısımdır. */
+                                   Bu, kaymayı önleyen en önemli kısımdır. */
             aspect-ratio: 700 / 460;
         }
 
@@ -131,12 +131,12 @@
             width: 19%; /* Genişliği ana konteynere göre oranlı */
             bottom: 45%;
             right: 10%;
-            z-index: 1; 
+            z-index: 1;
         }
 
         .screen-content {
             position: absolute;
-            z-index: 2; 
+            z-index: 2;
             top: 68%;
             left: 25%;
             transform: translate(-50%, -50%);
@@ -162,7 +162,7 @@
 
             .screen-content .cta-button {
                 margin-top: 0.2rem;
-                margin-left:0;
+                margin-left: 0;
                 padding: clamp(0.1rem, 0.5vw, 0.3rem) clamp(0.4rem, 1vw, 1rem);
                 background-color: #1d4ed8;
                 color: #ffffff;
@@ -172,7 +172,7 @@
                 font-weight: 500;
                 cursor: pointer;
                 transition: background-color 0.2s;
-                transform:scale(0.9);
+                transform: scale(0.9);
             }
 
                 .screen-content .cta-button:hover {
@@ -255,49 +255,24 @@
         <header class="header">
             <div class="logo">AkademikAi.com</div>
             <nav class="nav-links">
-                <a asp-controller="Home" asp-action="Index" class="active">Ana Sayfa</a>
-                <a asp-controller="Home" asp-action="About" >Hakkımızda</a>
-                <a asp-controller="Home" asp-action="Contact">İletişim</a>
+                <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                <a asp-controller="Home" asp-action="About">Hakkımızda</a>
+                <a asp-controller="Home" asp-action="Contact" class="active">İletişim</a>
                 <a asp-controller="Home" asp-action="Payment">Ödeme</a>
-
             </nav>
             <div class="user-actions">
                 <a asp-controller="User" asp-action="Login">Log In</a>
                 <a asp-controller="User" asp-action="Register">Sign Up</a>
-              
+
             </div>
         </header>
 
         <!-- HERO SECTION -->
         <main class="hero-section">
-            <div class="hero-left">
-                <div class="device-stack">
-                   
-                    <img src="~/images/PHONE.png" alt="Telefon çerçevesi" class="phone-frame">
-                    <img src="~/images/Device.png" alt="Laptop çerçevesi" class="laptop-frame">
+            
 
-                    <div class="screen-content">
-                        <h1>
-                                Hızlı Öğren.<br>
-                                Motive Kal<br>
-                                Akıllı Çalış
-                        </h1>
-                        <p>
-                        Binlerce sorunun içinde kaybolmak yerine, en çok ihtiyacın olan konulara odaklan.
-                        Akademik.ai, performansını analiz ederek sana özel bir çalışma planı sunar ve yapay zeka ile hedeflerine en akıllı yoldan ulaşmanı sağlar. 
-                            
-                        </p>
-                        <button class="cta-button">Detayları Gör</button>
-                        
-                    </div>
-                </div>
-            </div>
+            
 
-            <!-- Sağ Taraf: Kadın Görseli -->
-            <div class="hero-right">
-                <!-- Bu görseli kendi projenizdeki dosyayla değiştirin -->
-                <img src="~/images/girl.png" alt="Laptop kullanan gülümseyen kadın" class="woman-image">
-            </div>
         </main>
     </div>
 
