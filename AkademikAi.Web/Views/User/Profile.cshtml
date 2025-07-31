@@ -98,6 +98,19 @@
                     <div class="card">
                         <h3 class="card-title">Kişisel Bilgileri Düzenle</h3>
                         <form asp-action="UpdateProfile" asp-controller="User" method="post" class="form-grid">
+                            @if (TempData["SuccessMessage"] != null)
+                            {
+                                <div class="message-container message-success">
+                                    @TempData["SuccessMessage"]
+                                </div>
+                            }
+                            @if(TempData["ErrorMwssage"] != null)
+                            {
+                                <div class="message-container message-error">
+                                    @TempData["ErrorMwssage"]
+                                </div>
+                            }
+)
                             <div class="input-group">
                                 <label for="name">Ad</label>
                                 <input type="text" id="name" name="FirstName" value="@Model.Name">
@@ -122,17 +135,39 @@
                     <div class="card">
                         <h3 class="card-title">Şifre Değiştirme</h3>
                         <form asp-action="ChangePassword" asp-controller="User" method="post" class="form-grid">
+                            @if(TempData["SuccessMessage"] != null)
+                            {
+                                <div class="message-container message-success">
+                                    @TempData["SuccessMessage"]
+                                </div>
+                            }
+                            @if(TempData["ErrorMessage"] != null)
+                            {
+                                <div class="message-container message-error">
+                                    @TempData["ErrorMessage"]
+                                </div>
+                            }
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                <div class="message-container message-error">
+                                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                    {
+                                        <p>@error.ErrorMessage</p>
+                                    }
+                                </div>
+                            }
+
                             <div class="input-group">
                                 <label for="current-password">Mevcut Şifre</label>
-                                <input type="password" id="current-password" name="CurrentPassword" placeholder="Mevcut şifrenizi girin">
+                                <input type="password" id="currentpassword" name="CurrentPassword" placeholder="Mevcut şifrenizi girin">
                             </div>
                             <div class="input-group">
                                 <label for="new-password">Yeni Şifre</label>
-                                <input type="password" id="new-password" name="NewPassword" placeholder="En az 6 karakter">
+                                <input type="password" id="newpassword" name="NewPassword" placeholder="En az 6 karakter">
                             </div>
                             <div class="input-group">
                                 <label for="confirm-password">Yeni Şifre (Tekrar)</label>
-                                <input type="password" id="confirm-password" name="ConfirmPassword" placeholder="Yeni şifreyi doğrulayın">
+                                <input type="password" id="confirmpassword" name="ConfirmPassword" placeholder="Yeni şifreyi doğrulayın">
                             </div>
                             <button type="submit" class="btn btn-primary">Şifreyi Güncelle</button>
                         </form>

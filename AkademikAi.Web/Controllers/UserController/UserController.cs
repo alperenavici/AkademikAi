@@ -113,10 +113,11 @@ namespace AkademikAi.Web.Controllers.UserController
         {
             if (!ModelState.IsValid)
             {
-                return View(model); // Hatalıysa aynı sayfayı göster
+                TempData["ErrorMessage"] = "Lütfen tüm alanları doldurun.";
+                return RedirectToAction("Profile");
             }
 
-            var user = await _userManager.GetUserAsync(User); // Giriş yapan kullanıcıyı al
+            var user = await _userManager.GetUserAsync(User); 
 
             if (user == null)
             {
@@ -126,7 +127,6 @@ namespace AkademikAi.Web.Controllers.UserController
             user.Name = model.FirstName;
             user.Surname = model.LastName;
             user.PhoneNumber = model.PhoneNumber;
-            // Email readonly olduğu için güncellenmiyor
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -146,7 +146,36 @@ namespace AkademikAi.Web.Controllers.UserController
             }
         }
 
-
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto changePassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = "Lütfen tüm alanları doldurun.";
+                return RedirectToAction("Profile");
+            }
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+            var result =await _userManager.ChangePasswordAsync(user, changePassword.CurrentPassword, changePassword.NewPassword);
+            
+            if(result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Şifreniz başarıyla değiştirildi.";
+                return RedirectToAction("Profile");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    TempData["ErrorMessage"] += error.Description + " ";
+                }
+                return RedirectToAction("Profile");
+            }
+        }
 
         [HttpGet]
         [Authorize]
