@@ -3,6 +3,7 @@ using AkademikAi.Entity.Entites;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using AkademikAi.Web.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -106,6 +107,46 @@ namespace AkademikAi.Web.Controllers.UserController
             }
             return View("Profile",user);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model); // Hatalıysa aynı sayfayı göster
+            }
+
+            var user = await _userManager.GetUserAsync(User); // Giriş yapan kullanıcıyı al
+
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            user.Name = model.FirstName;
+            user.Surname = model.LastName;
+            user.PhoneNumber = model.PhoneNumber;
+            // Email readonly olduğu için güncellenmiyor
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Bilgileriniz başarıyla güncellendi.";
+                return RedirectToAction("Profile"); // Profil sayfasına yönlendir
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return View(model); // Hataları tekrar göster
+            }
+        }
+
+
 
         [HttpGet]
         [Authorize]
