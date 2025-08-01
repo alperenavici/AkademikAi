@@ -11,7 +11,7 @@ namespace AkademikAi.Data.IRepositories
     {
         Task<List<UserAnswers>> GetUserAnswersByQuestionIdAsync(Guid questionId);
         Task<List<UserAnswers>> GetUserAnswersByUserIdAsync(Guid userId);
-        Task<UserAnswers> GetUserAnswerByIdAsync(Guid userAnswerId);
+        Task<UserAnswers?> GetUserAnswerByIdAsync(Guid userAnswerId);
         Task<List<UserAnswers>> GetUserAnswerByUserAndQuestionAsync(Guid userId, Guid questionId);
         Task<List<UserAnswers>> GetUserAnswersByDateRangeAsync(Guid userId, DateTime startDate, DateTime endDate);
         Task<List<UserAnswers>> GetUserAnswersByQuestionTextAsync(string questionText);

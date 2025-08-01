@@ -27,7 +27,7 @@ namespace AkademikAi.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<UserAnswers> GetUserAnswerByIdAsync(Guid userAnswerId)
+        public async Task<UserAnswers?> GetUserAnswerByIdAsync(Guid userAnswerId)
         {
             return await _context.UserAnswers
                 .FirstOrDefaultAsync(ua => ua.Id == userAnswerId);

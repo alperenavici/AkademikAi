@@ -12,18 +12,19 @@ namespace AkademikAi.Data.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
-        private IDbContextTransaction _transaction;
+        private IDbContextTransaction? _transaction;
 
         
-        private IUserRepository _userRepository;
-        private IQuestionRepository _questionRepository;
-        private ITopicRepository _topicRepository;
-        private IQuestionOptionsRepository _questionOptionRepository;
-        private IQuestionTopicRepository _questionTopicRepository;
-        private IUserRecommendationRepository _userRecommendationRepository;
-        private IUserPerformanceSummariesRepository _performanceSummaryRepository; 
-        private IUserNotificationsRepository _notificationRepository;         
-        private IUserAnswersRepository _userAnswerRepository;            
+        private IAppUserRepository? _appUserRepository;
+        private IAppRoleRepository? _appRoleRepository;
+        private IQuestionRepository? _questionRepository;
+        private ITopicRepository? _topicRepository;
+        private IQuestionOptionsRepository? _questionOptionRepository;
+        private IQuestionTopicRepository? _questionTopicRepository;
+        private IUserRecommendationRepository? _userRecommendationRepository;
+        private IUserPerformanceSummariesRepository? _performanceSummaryRepository; 
+        private IUserNotificationsRepository? _notificationRepository;         
+        private IUserAnswersRepository? _userAnswerRepository;            
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
@@ -31,7 +32,8 @@ namespace AkademikAi.Data.Repositories
 
       
 
-        public IUserRepository AppUser => _userRepository ??= new UserRepository(_context);
+        public IAppUserRepository AppUser => _appUserRepository ??= new AppUserRepository(_context);
+        public IAppRoleRepository AppRole => _appRoleRepository ??= new AppRoleRepository(_context);
         public IQuestionRepository questions => _questionRepository ??= new QuestionRepository(_context);
         public ITopicRepository topics => _topicRepository ??= new TopicRepository(_context);
         public IQuestionOptionsRepository questionsOptions => _questionOptionRepository ??= new QuestionOptionsRepository(_context);

@@ -19,7 +19,7 @@ namespace AkademikAi.Data.Repositories
             _context = context;
         }
 
-        public async Task<UserPerformanceSummaries> GetByUserIdAndTopicIdAsync(Guid userId, Guid topicId)
+        public async Task<UserPerformanceSummaries?> GetByUserIdAndTopicIdAsync(Guid userId, Guid topicId)
         {
             return await _context.UserPerformanceSummaries
                 .FirstOrDefaultAsync(p => p.UserId == userId && p.TopicId == topicId);
@@ -46,7 +46,7 @@ namespace AkademikAi.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<UserPerformanceSummaries> GetUserPerformanceSummaryByUserIdAsync(Guid userId)
+        public async Task<UserPerformanceSummaries?> GetUserPerformanceSummaryByUserIdAsync(Guid userId)
         {
             return await _context.UserPerformanceSummaries
                 .FirstOrDefaultAsync(p => p.UserId == userId);

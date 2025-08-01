@@ -14,7 +14,7 @@ namespace AkademikAi.Data.Repositories
     public class GenericRepository <T>:IGenericRepository<T> where T : class
     {
         private readonly DbContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly DbSet<T> _dbSet;
 
         public GenericRepository(AppDbContext context)
         {
@@ -72,7 +72,7 @@ namespace AkademikAi.Data.Repositories
             return _dbSet.Any(expression);
         }
 
-        public virtual int Count(Expression<Func<T, bool>> expression = null)
+        public virtual int Count(Expression<Func<T, bool>>? expression = null)
         {
             return expression == null ? _dbSet.Count() : _dbSet.Count(expression);
         }
@@ -93,7 +93,7 @@ namespace AkademikAi.Data.Repositories
             return await _dbSet.AnyAsync(expression);
         }
 
-        public virtual async Task<int> CountAsync(Expression<Func<T, bool>> expression = null)
+        public virtual async Task<int> CountAsync(Expression<Func<T, bool>>? expression = null)
         {
             return expression == null ? await _dbSet.CountAsync() : await _dbSet.CountAsync(expression);
         }

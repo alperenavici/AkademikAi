@@ -10,7 +10,7 @@ namespace AkademikAi.Data.IRepositories
     public interface IQuestionOptionsRepository : IGenericRepository<QuestionsOptions>
     {
         Task<List<QuestionsOptions>> GetQuestionsOptionsbyQuestionIdAsync(Guid questionId);
-        Task<QuestionsOptions> GetQuestionOptionByIdAsync(Guid optionId);
+        Task<QuestionsOptions?> GetQuestionOptionByIdAsync(Guid optionId);
         Task<List<QuestionsOptions>> GetQuestionsOptionsByLabelAsync(char label);
     }
 }

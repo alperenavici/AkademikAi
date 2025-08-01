@@ -10,7 +10,8 @@ namespace AkademikAi.Service.Extensions
         {
             services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
 
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAppUserService, AppUserService>();
+            services.AddScoped<IAppRoleService, AppRoleService>();
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IUserAnswerService, UserAnswerService>();

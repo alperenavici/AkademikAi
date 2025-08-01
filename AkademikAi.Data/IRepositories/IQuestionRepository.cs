@@ -15,7 +15,7 @@ namespace AkademikAi.Data.IRepositories
         Task<List<Questions>> GetQuestionsByUserIdAsync(Guid userId);
         Task<List<Questions>> GetActiveQuestionsAsync();
 
-        Task<Questions> GetQuestionByIdAsync(Guid questionId);
+        Task<Questions?> GetQuestionByIdAsync(Guid questionId);
 
 
         Task<List<Questions>> GetQuestionsByDifficultyAsync(QuestionsDiff DiffucultyDifficultyLevel);
@@ -24,6 +24,7 @@ namespace AkademikAi.Data.IRepositories
         Task<List<Questions>> GetQuestionsByUserIdAndSourceAsync(Guid userId,string source);
         Task<List<Questions>> GetQuestionsByQuestionTextAsync(string questionText);
         Task<List<Questions>> GetQuestionsBySolutionTextAsync(string solutionText);
-
+        Task<List<Questions>> GetQuestionsForUserAsync(Guid userId, int count, QuestionsDiff? difficultyLevel = null);
+        Task<List<Questions>> GetRandomQuestionsAsync(int count, QuestionsDiff? difficultyLevel = null, Guid? topicId = null);
     }
     }

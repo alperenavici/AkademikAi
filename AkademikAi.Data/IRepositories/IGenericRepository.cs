@@ -20,13 +20,13 @@ namespace AkademikAi.Data.IRepositories
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);
         bool Any(Expression<Func<T, bool>> expression);
-        int Count(Expression<Func<T, bool>> expression = null);
+        int Count(Expression<Func<T, bool>>? expression = null);
 
         // Async methods
         Task<T> GetByIdAsync(object id);
         Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> expression);
         Task<bool> AnyAsync(Expression<Func<T, bool>> expression);
-        Task<int> CountAsync(Expression<Func<T, bool>> expression = null);
+        Task<int> CountAsync(Expression<Func<T, bool>>? expression = null);
         Task<List<T>> GetAllAsync();
         Task<List<T>> GetWhereAsync(Expression<Func<T, bool>> expression);
         Task AddAsync(T entity);

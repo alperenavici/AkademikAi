@@ -14,11 +14,10 @@ namespace AkademikAi.Data.Repositories
     public class QuestionRepository: GenericRepository<Questions>,IQuestionRepository
     {
         private readonly AppDbContext _context;
-        private readonly DbSet<Questions> _dbSet;
-
 
         public QuestionRepository(AppDbContext context) : base(context)
         {
+            _context = context;
         }
 
         public Task<List<Questions>> GetQuestionsByTopicIdAsync(Guid topicId)
@@ -42,7 +41,7 @@ namespace AkademikAi.Data.Repositories
                 .ToListAsync();
         }
 
-        public Task<Questions> GetQuestionByIdAsync(Guid questionId)
+        public Task<Questions?> GetQuestionByIdAsync(Guid questionId)
         {
             return _context.Questions
                 .Include(q => q.QuestionsOptions)
@@ -92,6 +91,33 @@ namespace AkademikAi.Data.Repositories
                 .ToListAsync();
         }
 
+        public Task<List<Questions>> GetQuestionsForUserAsync(Guid userId, int count, QuestionsDiff? difficultyLevel = null)
+        {
+            var query = _context.Questions.Where(q => q.GeneratedForUserId == userId && q.IsActive);
+            
+            if (difficultyLevel.HasValue)
+            {
+                query = query.Where(q => q.DifficultyLevel == difficultyLevel.Value);
+            }
 
+            return query.Take(count).ToListAsync();
+        }
+
+        public Task<List<Questions>> GetRandomQuestionsAsync(int count, QuestionsDiff? difficultyLevel = null, Guid? topicId = null)
+        {
+            var query = _context.Questions.Where(q => q.IsActive);
+            
+            if (difficultyLevel.HasValue)
+            {
+                query = query.Where(q => q.DifficultyLevel == difficultyLevel.Value);
+            }
+
+            if (topicId.HasValue)
+            {
+                query = query.Where(q => q.QuestionsTopics.Any(qt => qt.TopicId == topicId.Value));
+            }
+
+            return query.OrderBy(r => Guid.NewGuid()).Take(count).ToListAsync();
+        }
     }
 }

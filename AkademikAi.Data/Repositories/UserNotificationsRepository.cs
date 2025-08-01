@@ -13,7 +13,7 @@ namespace AkademikAi.Data.Repositories
         private readonly AppDbContext _context;
         public UserNotificationsRepository(AppDbContext context) : base(context)
         {
-
+            _context = context;
         }
 
         public Task<List<UserNotifications>> GetUserNotificationsByUserIdAsync(Guid userId)
@@ -22,7 +22,7 @@ namespace AkademikAi.Data.Repositories
                 .Where(un => un.UserId == userId)
                 .ToListAsync();
         }
-        public Task<UserNotifications> GetUserNotificationByIdAsync(Guid notificationId)
+        public Task<UserNotifications?> GetUserNotificationByIdAsync(Guid notificationId)
         {
             return _context.UserNotifications
                 .FirstOrDefaultAsync(un => un.Id == notificationId);
@@ -41,7 +41,7 @@ namespace AkademikAi.Data.Repositories
                 .ToListAsync();
         }
 
-        public Task<UserNotifications> GetUserNotificationsByNotificationTypeAndUserIdAsync(string notificationType, Guid userId)
+        public Task<UserNotifications?> GetUserNotificationsByNotificationTypeAndUserIdAsync(string notificationType, Guid userId)
         {
             return _context.UserNotifications
                 .FirstOrDefaultAsync(un => un.NotificationType == notificationType && un.UserId == userId);

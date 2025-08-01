@@ -10,6 +10,6 @@ namespace AkademikAi.Data.IRepositories
     public interface ITopicRepository : IGenericRepository<Topics>
     {
         Task<List<Topics>> GetAllTopicsAsync();
-        Task<Topics> GetTopicByIdAsync(Guid topicId);
+        Task<Topics?> GetTopicByIdAsync(Guid topicId);
     }
 }

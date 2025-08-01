@@ -10,6 +10,7 @@ namespace AkademikAi.Data.Repositories
         private readonly AppDbContext _context;
         public QuestionOptionsRepository(AppDbContext context) : base(context)
         {
+            _context = context;
         }
 
         public Task<List<QuestionsOptions>>GetQuestionsOptionsbyQuestionIdAsync(Guid questionId)
@@ -19,7 +20,7 @@ namespace AkademikAi.Data.Repositories
                 .ToListAsync();
         }
 
-        public Task<QuestionsOptions> GetQuestionOptionByIdAsync(Guid optionId)
+        public Task<QuestionsOptions?> GetQuestionOptionByIdAsync(Guid optionId)
         {
             return _context.QuestionsOptions
                 .FirstOrDefaultAsync(qo => qo.Id == optionId);

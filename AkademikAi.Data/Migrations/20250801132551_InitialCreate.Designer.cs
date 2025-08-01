@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AkademikAi.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250731075526_appuser")]
-    partial class appuser
+    [Migration("20250801132551_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
