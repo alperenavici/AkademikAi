@@ -25,6 +25,9 @@ namespace AkademikAi.Data.Context
         {
             base.OnModelCreating(modelBuilder);
            
+            // Seed data'yı ekle
+            DataSeeder.SeedData(modelBuilder);
+           
             modelBuilder.Entity<Questions>(entity =>
             {
                 entity.HasKey(q => q.Id);

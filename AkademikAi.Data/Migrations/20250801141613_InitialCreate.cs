@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace AkademikAi.Data.Migrations
 {
     /// <inheritdoc />
@@ -190,7 +192,7 @@ namespace AkademikAi.Data.Migrations
                     Source = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     SolutionText = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GeneratedForUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    GeneratedForUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -365,6 +367,100 @@ namespace AkademikAi.Data.Migrations
                         principalTable: "Questions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Questions",
+                columns: new[] { "Id", "DifficultyLevel", "GeneratedForUserId", "IsActive", "QuestionText", "SolutionText", "Source" },
+                values: new object[,]
+                {
+                    { new Guid("11111111-1111-1111-1111-111111111111"), 0, null, true, "2x + 5 = 13 denklemini çözünüz.", "2x + 5 = 13\n2x = 13 - 5\n2x = 8\nx = 4", "Matematik Kitabı" },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), 0, null, true, "Bir üçgenin iç açıları toplamı kaç derecedir?", "Bir üçgenin iç açıları toplamı 180 derecedir.", "Geometri Kitabı" },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), 1, null, true, "x² - 4x + 4 = 0 denkleminin çözümü nedir?", "x² - 4x + 4 = 0\n(x - 2)² = 0\nx = 2", "Matematik Kitabı" },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), 1, null, true, "Bir dairenin alanı πr² formülü ile hesaplanır. Yarıçapı 5 cm olan dairenin alanı kaç cm²'dir?", "A = πr²\nA = π × 5²\nA = 25π cm²", "Geometri Kitabı" },
+                    { new Guid("55555555-5555-5555-5555-555555555555"), 0, null, true, "sin(30°) değeri kaçtır?", "sin(30°) = 1/2 = 0.5", "Trigonometri Kitabı" },
+                    { new Guid("66666666-6666-6666-6666-666666666666"), 0, null, true, "Newton'un birinci yasası nedir?", "Bir cisme etki eden net kuvvet sıfır ise, cisim durumunu korur (durgun kalır veya sabit hızla hareket eder).", "Fizik Kitabı" },
+                    { new Guid("77777777-7777-7777-7777-777777777777"), 1, null, true, "F = ma formülünde F, m ve a neyi temsil eder?", "F: Kuvvet (Newton), m: Kütle (kg), a: İvme (m/s²)", "Fizik Kitabı" },
+                    { new Guid("88888888-8888-8888-8888-888888888888"), 1, null, true, "Bir cismin kinetik enerjisi hangi formülle hesaplanır?", "Kinetik enerji = 1/2 × m × v²", "Fizik Kitabı" },
+                    { new Guid("99999999-9999-9999-9999-999999999999"), 0, null, true, "Suyun kimyasal formülü nedir?", "H₂O", "Kimya Kitabı" },
+                    { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), 0, null, true, "pH değeri 7'den küçük olan çözeltiler nasıl adlandırılır?", "Asidik çözeltiler", "Kimya Kitabı" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Topics",
+                columns: new[] { "Id", "ParentTopicId", "TopicName" },
+                values: new object[,]
+                {
+                    { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), null, "Matematik" },
+                    { new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), null, "Fizik" },
+                    { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), null, "Kimya" },
+                    { new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"), null, "Biyoloji" },
+                    { new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), null, "Türkçe" },
+                    { new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), null, "Tarih" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "QuestionsOptions",
+                columns: new[] { "Id", "IsCorrect", "Label", "OptionOrder", "OptionText", "QuestionId" },
+                values: new object[,]
+                {
+                    { new Guid("11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), false, "A", 1, "3", new Guid("11111111-1111-1111-1111-111111111111") },
+                    { new Guid("11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), true, "B", 2, "4", new Guid("11111111-1111-1111-1111-111111111111") },
+                    { new Guid("11111111-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "5", new Guid("11111111-1111-1111-1111-111111111111") },
+                    { new Guid("11111111-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "6", new Guid("11111111-1111-1111-1111-111111111111") },
+                    { new Guid("22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), false, "A", 1, "90", new Guid("22222222-2222-2222-2222-222222222222") },
+                    { new Guid("22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), true, "B", 2, "180", new Guid("22222222-2222-2222-2222-222222222222") },
+                    { new Guid("22222222-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "270", new Guid("22222222-2222-2222-2222-222222222222") },
+                    { new Guid("22222222-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "360", new Guid("22222222-2222-2222-2222-222222222222") },
+                    { new Guid("33333333-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), false, "A", 1, "1", new Guid("33333333-3333-3333-3333-333333333333") },
+                    { new Guid("33333333-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), true, "B", 2, "2", new Guid("33333333-3333-3333-3333-333333333333") },
+                    { new Guid("33333333-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "3", new Guid("33333333-3333-3333-3333-333333333333") },
+                    { new Guid("33333333-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "4", new Guid("33333333-3333-3333-3333-333333333333") },
+                    { new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), false, "A", 1, "20π", new Guid("44444444-4444-4444-4444-444444444444") },
+                    { new Guid("44444444-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), true, "B", 2, "25π", new Guid("44444444-4444-4444-4444-444444444444") },
+                    { new Guid("44444444-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "30π", new Guid("44444444-4444-4444-4444-444444444444") },
+                    { new Guid("44444444-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "35π", new Guid("44444444-4444-4444-4444-444444444444") },
+                    { new Guid("55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), false, "A", 1, "0.25", new Guid("55555555-5555-5555-5555-555555555555") },
+                    { new Guid("55555555-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), true, "B", 2, "0.5", new Guid("55555555-5555-5555-5555-555555555555") },
+                    { new Guid("55555555-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "0.75", new Guid("55555555-5555-5555-5555-555555555555") },
+                    { new Guid("55555555-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "1", new Guid("55555555-5555-5555-5555-555555555555") },
+                    { new Guid("66666666-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), true, "A", 1, "Eylemsizlik yasası", new Guid("66666666-6666-6666-6666-666666666666") },
+                    { new Guid("66666666-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), false, "B", 2, "Dinamik yasası", new Guid("66666666-6666-6666-6666-666666666666") },
+                    { new Guid("66666666-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "Statik yasası", new Guid("66666666-6666-6666-6666-666666666666") },
+                    { new Guid("66666666-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "Kinetik yasası", new Guid("66666666-6666-6666-6666-666666666666") },
+                    { new Guid("77777777-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), false, "A", 1, "Kuvvet = Kütle × Hız", new Guid("77777777-7777-7777-7777-777777777777") },
+                    { new Guid("77777777-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), true, "B", 2, "Kuvvet = Kütle × İvme", new Guid("77777777-7777-7777-7777-777777777777") },
+                    { new Guid("77777777-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "Kuvvet = Kütle × Zaman", new Guid("77777777-7777-7777-7777-777777777777") },
+                    { new Guid("77777777-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "Kuvvet = Kütle × Mesafe", new Guid("77777777-7777-7777-7777-777777777777") },
+                    { new Guid("88888888-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), false, "A", 1, "m × v", new Guid("88888888-8888-8888-8888-888888888888") },
+                    { new Guid("88888888-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), true, "B", 2, "1/2 × m × v²", new Guid("88888888-8888-8888-8888-888888888888") },
+                    { new Guid("88888888-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "m × v²", new Guid("88888888-8888-8888-8888-888888888888") },
+                    { new Guid("88888888-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "2 × m × v", new Guid("88888888-8888-8888-8888-888888888888") },
+                    { new Guid("99999999-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), false, "A", 1, "CO₂", new Guid("99999999-9999-9999-9999-999999999999") },
+                    { new Guid("99999999-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), true, "B", 2, "H₂O", new Guid("99999999-9999-9999-9999-999999999999") },
+                    { new Guid("99999999-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "O₂", new Guid("99999999-9999-9999-9999-999999999999") },
+                    { new Guid("99999999-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "N₂", new Guid("99999999-9999-9999-9999-999999999999") },
+                    { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), false, "A", 1, "Bazik", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa") },
+                    { new Guid("aaaaaaaa-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), true, "B", 2, "Asidik", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa") },
+                    { new Guid("aaaaaaaa-cccc-cccc-cccc-cccccccccccc"), false, "C", 3, "Nötr", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa") },
+                    { new Guid("aaaaaaaa-dddd-dddd-dddd-dddddddddddd"), false, "D", 4, "Amfoter", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa") }
+                });
+
+            migrationBuilder.InsertData(
+                table: "QuestionsTopics",
+                columns: new[] { "QuestionId", "TopicId", "Id" },
+                values: new object[,]
+                {
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("11111111-1111-1111-1111-111111111111") },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("22222222-2222-2222-2222-222222222222") },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("33333333-3333-3333-3333-333333333333") },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("44444444-4444-4444-4444-444444444444") },
+                    { new Guid("55555555-5555-5555-5555-555555555555"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("55555555-5555-5555-5555-555555555555") },
+                    { new Guid("66666666-6666-6666-6666-666666666666"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new Guid("66666666-6666-6666-6666-666666666666") },
+                    { new Guid("77777777-7777-7777-7777-777777777777"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new Guid("77777777-7777-7777-7777-777777777777") },
+                    { new Guid("88888888-8888-8888-8888-888888888888"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new Guid("88888888-8888-8888-8888-888888888888") },
+                    { new Guid("99999999-9999-9999-9999-999999999999"), new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new Guid("99999999-9999-9999-9999-999999999999") },
+                    { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd") }
                 });
 
             migrationBuilder.CreateIndex(
