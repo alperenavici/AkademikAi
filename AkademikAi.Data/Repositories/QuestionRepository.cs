@@ -23,6 +23,8 @@ namespace AkademikAi.Data.Repositories
         public Task<List<Questions>> GetQuestionsByTopicIdAsync(Guid topicId)
         {
             return _context.Questions
+                .Include(q => q.QuestionsOptions)
+                .Include(q => q.QuestionsTopics)
                 .Where(q => q.QuestionsTopics.Any(qt => qt.TopicId == topicId))
                 .ToListAsync();
         }
@@ -37,6 +39,8 @@ namespace AkademikAi.Data.Repositories
         public Task<List<Questions>> GetActiveQuestionsAsync()
         {
             return _context.Questions
+                .Include(q => q.QuestionsOptions)
+                .Include(q => q.QuestionsTopics)
                 .Where(q => q.IsActive)
                 .ToListAsync();
         }

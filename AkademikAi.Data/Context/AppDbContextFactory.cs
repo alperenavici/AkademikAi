@@ -8,7 +8,7 @@ namespace AkademikAi.Data.Context
         public AppDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=AkademikAiDb;Trusted_Connection=true;MultipleActiveResultSets=true");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=akademikai;Username=postgres;Password=");
 
             return new AppDbContext(optionsBuilder.Options);
         }

@@ -30,7 +30,7 @@ namespace AkademikAi.Service.Services
             {
                 Id = Guid.NewGuid(),
                 TopicName = topicName,
-                ParentTopicId = parentTopicId ?? Guid.Empty
+                ParentTopicId = parentTopicId
             };
 
             await _topicRepository.AddAsync(topic);
@@ -65,7 +65,7 @@ namespace AkademikAi.Service.Services
 
         public async Task<List<Topics>> GetMainTopicsAsync()
         {
-            return await _topicRepository.GetWhereAsync(t => t.ParentTopicId == Guid.Empty);
+            return await _topicRepository.GetWhereAsync(t => t.ParentTopicId == null);
         }
 
         public async Task<List<Topics>> GetPerformanceSummariesBySuccessRateRangeAsync(double minRate, double maxRate)

@@ -1,11 +1,15 @@
 ﻿using AkademikAi.Core.DTOs;
 using AkademikAi.Entity.Entites;
+using AkademikAi.Entity.Enums;
+using AkademikAi.Service.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using AkademikAi.Web.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AkademikAi.Web.Controllers.UserController
 {
@@ -14,10 +18,16 @@ namespace AkademikAi.Web.Controllers.UserController
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        private readonly IQuestionService _questionService;
+        private readonly ITopicService _topicService;
+        
+        public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, 
+                            IQuestionService questionService, ITopicService topicService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _questionService = questionService;
+            _topicService = topicService;
         }
         [HttpGet]
         public IActionResult Login()
@@ -219,10 +229,86 @@ namespace AkademikAi.Web.Controllers.UserController
             return View();
         }
         [HttpGet]
-        public IActionResult solve()
+        [Authorize]
+        public async Task<IActionResult> solve()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            // Ana konuları getir
+            var mainTopics = await _topicService.GetMainTopicsAsync();
+            
+            // Kullanıcı için rastgele sorular getir
+            var randomQuestions = await _questionService.GetRandomQuestionsAsync(20);
+            
+            ViewBag.MainTopics = mainTopics;
+            ViewBag.Questions = randomQuestions;
+            ViewBag.CurrentUser = user;
+            
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFilteredQuestions(string topicId)
+        {
+            if (string.IsNullOrEmpty(topicId) || !Guid.TryParse(topicId, out Guid topicGuid))
+            {
+                return Json(new { success = false, message = "Geçersiz konu seçimi" });
+            }
+
+            try
+            {
+                var questions = await _questionService.GetQuestionsByTopicIdAsync(topicGuid);
+                var randomQuestions = questions.OrderBy(x => Guid.NewGuid()).Take(20).ToList();
+                
+                return Json(new { 
+                    success = true, 
+                    questions = randomQuestions.Select(q => new {
+                        id = q.Id,
+                        questionText = q.QuestionText,
+                        difficultyLevel = q.DifficultyLevel.ToString(),
+                        options = q.QuestionsOptions?.Select(o => new {
+                            label = o.Label,
+                            text = o.OptionText,
+                            isCorrect = o.IsCorrect
+                        }).OrderBy(o => o.label).ToList(),
+                        solutionText = q.SolutionText
+                    }).ToList()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Sorular yüklenirken hata oluştu" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSubTopics(string parentTopicId)
+        {
+            if (string.IsNullOrEmpty(parentTopicId) || !Guid.TryParse(parentTopicId, out Guid parentGuid))
+            {
+                return Json(new { success = false, message = "Geçersiz ana konu" });
+            }
+
+            try
+            {
+                var subTopics = await _topicService.GetSubTopicsAsync(parentGuid);
+                return Json(new { 
+                    success = true, 
+                    subTopics = subTopics.Select(t => new {
+                        id = t.Id,
+                        name = t.TopicName
+                    }).ToList()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Alt konular yüklenirken hata oluştu" });
+            }
+        } 
        
 
     }

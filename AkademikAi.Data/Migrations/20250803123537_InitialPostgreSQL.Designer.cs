@@ -3,6 +3,7 @@ using System;
 using AkademikAi.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AkademikAi.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250803123537_InitialPostgreSQL")]
+    partial class InitialPostgreSQL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,7 +175,7 @@ namespace AkademikAi.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("aaaaaaaa-1111-1111-1111-111111111111"),
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "2x + 5 = 13 denklemini çözünüz.",
@@ -181,7 +184,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("bbbbbbbb-2222-2222-2222-222222222222"),
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "Bir üçgenin iç açıları toplamı kaç derecedir?",
@@ -190,7 +193,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("cccccccc-3333-3333-3333-333333333333"),
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             DifficultyLevel = 1,
                             IsActive = true,
                             QuestionText = "x² - 4x + 4 = 0 denkleminin çözümü nedir?",
@@ -199,7 +202,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("dddddddd-4444-4444-4444-444444444444"),
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
                             DifficultyLevel = 1,
                             IsActive = true,
                             QuestionText = "Bir dairenin alanı πr² formülü ile hesaplanır. Yarıçapı 5 cm olan dairenin alanı kaç cm²'dir?",
@@ -208,7 +211,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("eeeeeeee-5555-5555-5555-555555555555"),
+                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "sin(30°) değeri kaçtır?",
@@ -217,7 +220,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("ffffffff-6666-6666-6666-666666666666"),
+                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "Newton'un birinci yasası nedir?",
@@ -226,7 +229,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("11111111-7777-7777-7777-777777777777"),
+                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
                             DifficultyLevel = 1,
                             IsActive = true,
                             QuestionText = "F = ma formülünde F, m ve a neyi temsil eder?",
@@ -235,7 +238,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("22222222-8888-8888-8888-888888888888"),
+                            Id = new Guid("88888888-8888-8888-8888-888888888888"),
                             DifficultyLevel = 1,
                             IsActive = true,
                             QuestionText = "Bir cismin kinetik enerjisi hangi formülle hesaplanır?",
@@ -244,7 +247,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("33333333-9999-9999-9999-999999999999"),
+                            Id = new Guid("99999999-9999-9999-9999-999999999999"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "Suyun kimyasal formülü nedir?",
@@ -253,7 +256,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "pH değeri 7'den küçük olan çözeltiler nasıl adlandırılır?",
@@ -294,228 +297,12 @@ namespace AkademikAi.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = 'A',
-                            OptionOrder = 1,
-                            OptionText = "3",
-                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            Id = new Guid("aaaaaaaa-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = 'B',
-                            OptionOrder = 2,
-                            OptionText = "4",
-                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            Id = new Guid("aaaaaaaa-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = 'C',
-                            OptionOrder = 3,
-                            OptionText = "5",
-                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            Id = new Guid("aaaaaaaa-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = 'D',
-                            OptionOrder = 4,
-                            OptionText = "6",
-                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            Id = new Guid("bbbbbbbb-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = 'A',
-                            OptionOrder = 1,
-                            OptionText = "90",
-                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = 'B',
-                            OptionOrder = 2,
-                            OptionText = "180",
-                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("bbbbbbbb-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = 'C',
-                            OptionOrder = 3,
-                            OptionText = "270",
-                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("bbbbbbbb-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = 'D',
-                            OptionOrder = 4,
-                            OptionText = "360",
-                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("cccccccc-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = 'A',
-                            OptionOrder = 1,
-                            OptionText = "1",
-                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            Id = new Guid("cccccccc-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = 'B',
-                            OptionOrder = 2,
-                            OptionText = "2",
-                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = 'C',
-                            OptionOrder = 3,
-                            OptionText = "3",
-                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            Id = new Guid("cccccccc-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = 'D',
-                            OptionOrder = 4,
-                            OptionText = "4",
-                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            Id = new Guid("dddddddd-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = 'A',
-                            OptionOrder = 1,
-                            OptionText = "20π",
-                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444")
-                        },
-                        new
-                        {
-                            Id = new Guid("dddddddd-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = 'B',
-                            OptionOrder = 2,
-                            OptionText = "25π",
-                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444")
-                        },
-                        new
-                        {
-                            Id = new Guid("dddddddd-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = 'C',
-                            OptionOrder = 3,
-                            OptionText = "30π",
-                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444")
-                        },
-                        new
-                        {
-                            Id = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = 'D',
-                            OptionOrder = 4,
-                            OptionText = "35π",
-                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444")
-                        },
-                        new
-                        {
-                            Id = new Guid("eeeeeeee-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = 'A',
-                            OptionOrder = 1,
-                            OptionText = "0.25",
-                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("eeeeeeee-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = 'B',
-                            OptionOrder = 2,
-                            OptionText = "0.5",
-                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("eeeeeeee-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = 'C',
-                            OptionOrder = 3,
-                            OptionText = "0.75",
-                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("eeeeeeee-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = 'D',
-                            OptionOrder = 4,
-                            OptionText = "1",
-                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("ffffffff-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = true,
-                            Label = 'A',
-                            OptionOrder = 1,
-                            OptionText = "Eylemsizlik yasası",
-                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666")
-                        },
-                        new
-                        {
-                            Id = new Guid("ffffffff-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = false,
-                            Label = 'B',
-                            OptionOrder = 2,
-                            OptionText = "Dinamik yasası",
-                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666")
-                        },
-                        new
-                        {
-                            Id = new Guid("ffffffff-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = 'C',
-                            OptionOrder = 3,
-                            OptionText = "Statik yasası",
-                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666")
-                        },
-                        new
-                        {
-                            Id = new Guid("ffffffff-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = 'D',
-                            OptionOrder = 4,
-                            OptionText = "Kinetik yasası",
-                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666")
-                        },
-                        new
-                        {
                             Id = new Guid("11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             IsCorrect = false,
                             Label = 'A',
                             OptionOrder = 1,
-                            OptionText = "Kuvvet = Kütle × Hız",
-                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777")
+                            OptionText = "3",
+                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
@@ -523,8 +310,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = true,
                             Label = 'B',
                             OptionOrder = 2,
-                            OptionText = "Kuvvet = Kütle × İvme",
-                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777")
+                            OptionText = "4",
+                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
@@ -532,8 +319,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'C',
                             OptionOrder = 3,
-                            OptionText = "Kuvvet = Kütle × Zaman",
-                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777")
+                            OptionText = "5",
+                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
@@ -541,8 +328,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'D',
                             OptionOrder = 4,
-                            OptionText = "Kuvvet = Kütle × Mesafe",
-                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777")
+                            OptionText = "6",
+                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
@@ -550,8 +337,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'A',
                             OptionOrder = 1,
-                            OptionText = "m × v",
-                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888")
+                            OptionText = "90",
+                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
@@ -559,8 +346,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = true,
                             Label = 'B',
                             OptionOrder = 2,
-                            OptionText = "1/2 × m × v²",
-                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888")
+                            OptionText = "180",
+                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
@@ -568,8 +355,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'C',
                             OptionOrder = 3,
-                            OptionText = "m × v²",
-                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888")
+                            OptionText = "270",
+                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
@@ -577,8 +364,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'D',
                             OptionOrder = 4,
-                            OptionText = "2 × m × v",
-                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888")
+                            OptionText = "360",
+                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
@@ -586,8 +373,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'A',
                             OptionOrder = 1,
-                            OptionText = "CO₂",
-                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999")
+                            OptionText = "1",
+                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
                         {
@@ -595,8 +382,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = true,
                             Label = 'B',
                             OptionOrder = 2,
-                            OptionText = "H₂O",
-                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999")
+                            OptionText = "2",
+                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
                         {
@@ -604,8 +391,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'C',
                             OptionOrder = 3,
-                            OptionText = "O₂",
-                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999")
+                            OptionText = "3",
+                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
                         {
@@ -613,8 +400,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'D',
                             OptionOrder = 4,
-                            OptionText = "N₂",
-                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999")
+                            OptionText = "4",
+                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
                         {
@@ -622,8 +409,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'A',
                             OptionOrder = 1,
-                            OptionText = "Bazik",
-                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                            OptionText = "20π",
+                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444")
                         },
                         new
                         {
@@ -631,8 +418,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = true,
                             Label = 'B',
                             OptionOrder = 2,
-                            OptionText = "Asidik",
-                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                            OptionText = "25π",
+                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444")
                         },
                         new
                         {
@@ -640,8 +427,8 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'C',
                             OptionOrder = 3,
-                            OptionText = "Nötr",
-                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                            OptionText = "30π",
+                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444")
                         },
                         new
                         {
@@ -649,8 +436,224 @@ namespace AkademikAi.Data.Migrations
                             IsCorrect = false,
                             Label = 'D',
                             OptionOrder = 4,
+                            OptionText = "35π",
+                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444")
+                        },
+                        new
+                        {
+                            Id = new Guid("55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "0.25",
+                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            Id = new Guid("55555555-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "0.5",
+                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            Id = new Guid("55555555-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "0.75",
+                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            Id = new Guid("55555555-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "1",
+                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            Id = new Guid("66666666-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = true,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "Eylemsizlik yasası",
+                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666")
+                        },
+                        new
+                        {
+                            Id = new Guid("66666666-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = false,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "Dinamik yasası",
+                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666")
+                        },
+                        new
+                        {
+                            Id = new Guid("66666666-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "Statik yasası",
+                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666")
+                        },
+                        new
+                        {
+                            Id = new Guid("66666666-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "Kinetik yasası",
+                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666")
+                        },
+                        new
+                        {
+                            Id = new Guid("77777777-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "Kuvvet = Kütle × Hız",
+                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777")
+                        },
+                        new
+                        {
+                            Id = new Guid("77777777-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "Kuvvet = Kütle × İvme",
+                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777")
+                        },
+                        new
+                        {
+                            Id = new Guid("77777777-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "Kuvvet = Kütle × Zaman",
+                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777")
+                        },
+                        new
+                        {
+                            Id = new Guid("77777777-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "Kuvvet = Kütle × Mesafe",
+                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777")
+                        },
+                        new
+                        {
+                            Id = new Guid("88888888-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "m × v",
+                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888")
+                        },
+                        new
+                        {
+                            Id = new Guid("88888888-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "1/2 × m × v²",
+                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888")
+                        },
+                        new
+                        {
+                            Id = new Guid("88888888-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "m × v²",
+                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888")
+                        },
+                        new
+                        {
+                            Id = new Guid("88888888-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "2 × m × v",
+                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888")
+                        },
+                        new
+                        {
+                            Id = new Guid("99999999-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "CO₂",
+                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999")
+                        },
+                        new
+                        {
+                            Id = new Guid("99999999-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "H₂O",
+                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999")
+                        },
+                        new
+                        {
+                            Id = new Guid("99999999-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "O₂",
+                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999")
+                        },
+                        new
+                        {
+                            Id = new Guid("99999999-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "N₂",
+                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999")
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "Bazik",
+                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "Asidik",
+                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "Nötr",
+                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
                             OptionText = "Amfoter",
-                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
                         });
                 });
 
@@ -674,123 +677,63 @@ namespace AkademikAi.Data.Migrations
                     b.HasData(
                         new
                         {
-                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111"),
+                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
+                            Id = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
-                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222"),
+                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("aaaaaaaa-2222-2222-2222-222222222222")
+                            Id = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333"),
+                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("aaaaaaaa-3333-3333-3333-333333333333")
+                            Id = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
                         {
-                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444"),
+                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("aaaaaaaa-4444-4444-4444-444444444444")
+                            Id = new Guid("44444444-4444-4444-4444-444444444444")
                         },
                         new
                         {
-                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555"),
+                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("aaaaaaaa-5555-5555-5555-555555555555")
+                            Id = new Guid("55555555-5555-5555-5555-555555555555")
                         },
                         new
                         {
-                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111"),
-                            TopicId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Id = new Guid("bbbbbbbb-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333"),
-                            TopicId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Id = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222"),
-                            TopicId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            Id = new Guid("bbbbbbbb-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444"),
-                            TopicId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            Id = new Guid("bbbbbbbb-4444-4444-4444-444444444444")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555"),
-                            TopicId = new Guid("33333333-3333-3333-3333-333333333333"),
-                            Id = new Guid("bbbbbbbb-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666"),
+                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666"),
                             TopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            Id = new Guid("cccccccc-1111-1111-1111-111111111111")
+                            Id = new Guid("66666666-6666-6666-6666-666666666666")
                         },
                         new
                         {
-                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777"),
+                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777"),
                             TopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            Id = new Guid("cccccccc-2222-2222-2222-222222222222")
+                            Id = new Guid("77777777-7777-7777-7777-777777777777")
                         },
                         new
                         {
-                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888"),
+                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888"),
                             TopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            Id = new Guid("cccccccc-3333-3333-3333-333333333333")
+                            Id = new Guid("88888888-8888-8888-8888-888888888888")
                         },
                         new
                         {
-                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666"),
-                            TopicId = new Guid("44444444-4444-4444-4444-444444444444"),
-                            Id = new Guid("dddddddd-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777"),
-                            TopicId = new Guid("44444444-4444-4444-4444-444444444444"),
-                            Id = new Guid("dddddddd-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888"),
-                            TopicId = new Guid("55555555-5555-5555-5555-555555555555"),
-                            Id = new Guid("dddddddd-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999"),
+                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999"),
                             TopicId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            Id = new Guid("eeeeeeee-1111-1111-1111-111111111111")
+                            Id = new Guid("99999999-9999-9999-9999-999999999999")
                         },
                         new
                         {
-                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             TopicId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            Id = new Guid("eeeeeeee-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999"),
-                            TopicId = new Guid("66666666-6666-6666-6666-666666666666"),
-                            Id = new Guid("eeeeeeee-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            TopicId = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Id = new Guid("eeeeeeee-4444-4444-4444-444444444444")
+                            Id = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
                         });
                 });
 
@@ -844,48 +787,6 @@ namespace AkademikAi.Data.Migrations
                         {
                             Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             TopicName = "Tarih"
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            ParentTopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            TopicName = "Cebir"
-                        },
-                        new
-                        {
-                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            ParentTopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            TopicName = "Geometri"
-                        },
-                        new
-                        {
-                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            ParentTopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            TopicName = "Trigonometri"
-                        },
-                        new
-                        {
-                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            ParentTopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            TopicName = "Mekanik"
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
-                            ParentTopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            TopicName = "Elektrik"
-                        },
-                        new
-                        {
-                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
-                            ParentTopicId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            TopicName = "Organik Kimya"
-                        },
-                        new
-                        {
-                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
-                            ParentTopicId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            TopicName = "İnorganik Kimya"
                         });
                 });
 

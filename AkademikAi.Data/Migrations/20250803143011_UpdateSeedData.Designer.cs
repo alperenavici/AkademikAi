@@ -3,17 +3,17 @@ using System;
 using AkademikAi.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace AkademikAi.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250801145544_initialcreate2")]
-    partial class initialcreate2
+    [Migration("20250803143011_UpdateSeedData")]
+    partial class UpdateSeedData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,37 +21,36 @@ namespace AkademikAi.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("AkademikAi.Entity.Entites.AppRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<int>("UserRole")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
                 });
@@ -60,70 +59,70 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<int>("UserRole")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -132,8 +131,7 @@ namespace AkademikAi.Data.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -142,31 +140,31 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("DifficultyLevel")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("GeneratedForUserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true);
 
                     b.Property<string>("QuestionText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("SolutionText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Source")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -177,7 +175,7 @@ namespace AkademikAi.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Id = new Guid("aaaaaaaa-1111-1111-1111-111111111111"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "2x + 5 = 13 denklemini çözünüz.",
@@ -186,7 +184,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Id = new Guid("bbbbbbbb-2222-2222-2222-222222222222"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "Bir üçgenin iç açıları toplamı kaç derecedir?",
@@ -195,7 +193,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Id = new Guid("cccccccc-3333-3333-3333-333333333333"),
                             DifficultyLevel = 1,
                             IsActive = true,
                             QuestionText = "x² - 4x + 4 = 0 denkleminin çözümü nedir?",
@@ -204,7 +202,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Id = new Guid("dddddddd-4444-4444-4444-444444444444"),
                             DifficultyLevel = 1,
                             IsActive = true,
                             QuestionText = "Bir dairenin alanı πr² formülü ile hesaplanır. Yarıçapı 5 cm olan dairenin alanı kaç cm²'dir?",
@@ -213,7 +211,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
+                            Id = new Guid("eeeeeeee-5555-5555-5555-555555555555"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "sin(30°) değeri kaçtır?",
@@ -222,7 +220,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
+                            Id = new Guid("ffffffff-6666-6666-6666-666666666666"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "Newton'un birinci yasası nedir?",
@@ -231,7 +229,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
+                            Id = new Guid("11111111-7777-7777-7777-777777777777"),
                             DifficultyLevel = 1,
                             IsActive = true,
                             QuestionText = "F = ma formülünde F, m ve a neyi temsil eder?",
@@ -240,7 +238,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("88888888-8888-8888-8888-888888888888"),
+                            Id = new Guid("22222222-8888-8888-8888-888888888888"),
                             DifficultyLevel = 1,
                             IsActive = true,
                             QuestionText = "Bir cismin kinetik enerjisi hangi formülle hesaplanır?",
@@ -249,7 +247,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("99999999-9999-9999-9999-999999999999"),
+                            Id = new Guid("33333333-9999-9999-9999-999999999999"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "Suyun kimyasal formülü nedir?",
@@ -258,7 +256,7 @@ namespace AkademikAi.Data.Migrations
                         },
                         new
                         {
-                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            Id = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             DifficultyLevel = 0,
                             IsActive = true,
                             QuestionText = "pH değeri 7'den küçük olan çözeltiler nasıl adlandırılır?",
@@ -271,25 +269,24 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsCorrect")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("Label")
-                        .IsRequired()
+                    b.Property<char>("Label")
                         .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)");
+                        .HasColumnType("character(1)");
 
                     b.Property<int>("OptionOrder")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("OptionText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -300,376 +297,376 @@ namespace AkademikAi.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = "A",
-                            OptionOrder = 1,
-                            OptionText = "3",
-                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = "B",
-                            OptionOrder = 2,
-                            OptionText = "4",
-                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = "C",
-                            OptionOrder = 3,
-                            OptionText = "5",
-                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = "D",
-                            OptionOrder = 4,
-                            OptionText = "6",
-                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111")
-                        },
-                        new
-                        {
-                            Id = new Guid("22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = "A",
-                            OptionOrder = 1,
-                            OptionText = "90",
-                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = "B",
-                            OptionOrder = 2,
-                            OptionText = "180",
-                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("22222222-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = "C",
-                            OptionOrder = 3,
-                            OptionText = "270",
-                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("22222222-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = "D",
-                            OptionOrder = 4,
-                            OptionText = "360",
-                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("33333333-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = "A",
-                            OptionOrder = 1,
-                            OptionText = "1",
-                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            Id = new Guid("33333333-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = "B",
-                            OptionOrder = 2,
-                            OptionText = "2",
-                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            Id = new Guid("33333333-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = "C",
-                            OptionOrder = 3,
-                            OptionText = "3",
-                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            Id = new Guid("33333333-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = "D",
-                            OptionOrder = 4,
-                            OptionText = "4",
-                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333")
-                        },
-                        new
-                        {
-                            Id = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = "A",
-                            OptionOrder = 1,
-                            OptionText = "20π",
-                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444")
-                        },
-                        new
-                        {
-                            Id = new Guid("44444444-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = "B",
-                            OptionOrder = 2,
-                            OptionText = "25π",
-                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444")
-                        },
-                        new
-                        {
-                            Id = new Guid("44444444-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = "C",
-                            OptionOrder = 3,
-                            OptionText = "30π",
-                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444")
-                        },
-                        new
-                        {
-                            Id = new Guid("44444444-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = "D",
-                            OptionOrder = 4,
-                            OptionText = "35π",
-                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = "A",
-                            OptionOrder = 1,
-                            OptionText = "0.25",
-                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = "B",
-                            OptionOrder = 2,
-                            OptionText = "0.5",
-                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = "C",
-                            OptionOrder = 3,
-                            OptionText = "0.75",
-                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = "D",
-                            OptionOrder = 4,
-                            OptionText = "1",
-                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("66666666-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = true,
-                            Label = "A",
-                            OptionOrder = 1,
-                            OptionText = "Eylemsizlik yasası",
-                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666")
-                        },
-                        new
-                        {
-                            Id = new Guid("66666666-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = false,
-                            Label = "B",
-                            OptionOrder = 2,
-                            OptionText = "Dinamik yasası",
-                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666")
-                        },
-                        new
-                        {
-                            Id = new Guid("66666666-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = "C",
-                            OptionOrder = 3,
-                            OptionText = "Statik yasası",
-                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666")
-                        },
-                        new
-                        {
-                            Id = new Guid("66666666-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = "D",
-                            OptionOrder = 4,
-                            OptionText = "Kinetik yasası",
-                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666")
-                        },
-                        new
-                        {
-                            Id = new Guid("77777777-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = "A",
-                            OptionOrder = 1,
-                            OptionText = "Kuvvet = Kütle × Hız",
-                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777")
-                        },
-                        new
-                        {
-                            Id = new Guid("77777777-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = "B",
-                            OptionOrder = 2,
-                            OptionText = "Kuvvet = Kütle × İvme",
-                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777")
-                        },
-                        new
-                        {
-                            Id = new Guid("77777777-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = "C",
-                            OptionOrder = 3,
-                            OptionText = "Kuvvet = Kütle × Zaman",
-                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777")
-                        },
-                        new
-                        {
-                            Id = new Guid("77777777-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = "D",
-                            OptionOrder = 4,
-                            OptionText = "Kuvvet = Kütle × Mesafe",
-                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777")
-                        },
-                        new
-                        {
-                            Id = new Guid("88888888-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = "A",
-                            OptionOrder = 1,
-                            OptionText = "m × v",
-                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888")
-                        },
-                        new
-                        {
-                            Id = new Guid("88888888-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = "B",
-                            OptionOrder = 2,
-                            OptionText = "1/2 × m × v²",
-                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888")
-                        },
-                        new
-                        {
-                            Id = new Guid("88888888-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = "C",
-                            OptionOrder = 3,
-                            OptionText = "m × v²",
-                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888")
-                        },
-                        new
-                        {
-                            Id = new Guid("88888888-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = "D",
-                            OptionOrder = 4,
-                            OptionText = "2 × m × v",
-                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888")
-                        },
-                        new
-                        {
-                            Id = new Guid("99999999-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            IsCorrect = false,
-                            Label = "A",
-                            OptionOrder = 1,
-                            OptionText = "CO₂",
-                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999")
-                        },
-                        new
-                        {
-                            Id = new Guid("99999999-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            IsCorrect = true,
-                            Label = "B",
-                            OptionOrder = 2,
-                            OptionText = "H₂O",
-                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999")
-                        },
-                        new
-                        {
-                            Id = new Guid("99999999-cccc-cccc-cccc-cccccccccccc"),
-                            IsCorrect = false,
-                            Label = "C",
-                            OptionOrder = 3,
-                            OptionText = "O₂",
-                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999")
-                        },
-                        new
-                        {
-                            Id = new Guid("99999999-dddd-dddd-dddd-dddddddddddd"),
-                            IsCorrect = false,
-                            Label = "D",
-                            OptionOrder = 4,
-                            OptionText = "N₂",
-                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999")
-                        },
-                        new
-                        {
                             Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             IsCorrect = false,
-                            Label = "A",
+                            Label = 'A',
                             OptionOrder = 1,
-                            OptionText = "Bazik",
-                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                            OptionText = "3",
+                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
                         },
                         new
                         {
                             Id = new Guid("aaaaaaaa-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                             IsCorrect = true,
-                            Label = "B",
+                            Label = 'B',
                             OptionOrder = 2,
-                            OptionText = "Asidik",
-                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                            OptionText = "4",
+                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
                         },
                         new
                         {
                             Id = new Guid("aaaaaaaa-cccc-cccc-cccc-cccccccccccc"),
                             IsCorrect = false,
-                            Label = "C",
+                            Label = 'C',
                             OptionOrder = 3,
-                            OptionText = "Nötr",
-                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                            OptionText = "5",
+                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
                         },
                         new
                         {
                             Id = new Guid("aaaaaaaa-dddd-dddd-dddd-dddddddddddd"),
                             IsCorrect = false,
-                            Label = "D",
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "6",
+                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "90",
+                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "180",
+                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "270",
+                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "360",
+                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("cccccccc-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "1",
+                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("cccccccc-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "2",
+                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "3",
+                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("cccccccc-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "4",
+                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            Id = new Guid("dddddddd-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "20π",
+                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444")
+                        },
+                        new
+                        {
+                            Id = new Guid("dddddddd-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "25π",
+                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444")
+                        },
+                        new
+                        {
+                            Id = new Guid("dddddddd-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "30π",
+                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444")
+                        },
+                        new
+                        {
+                            Id = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "35π",
+                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444")
+                        },
+                        new
+                        {
+                            Id = new Guid("eeeeeeee-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "0.25",
+                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            Id = new Guid("eeeeeeee-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "0.5",
+                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            Id = new Guid("eeeeeeee-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "0.75",
+                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            Id = new Guid("eeeeeeee-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "1",
+                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            Id = new Guid("ffffffff-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = true,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "Eylemsizlik yasası",
+                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666")
+                        },
+                        new
+                        {
+                            Id = new Guid("ffffffff-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = false,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "Dinamik yasası",
+                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666")
+                        },
+                        new
+                        {
+                            Id = new Guid("ffffffff-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "Statik yasası",
+                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666")
+                        },
+                        new
+                        {
+                            Id = new Guid("ffffffff-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "Kinetik yasası",
+                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666")
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "Kuvvet = Kütle × Hız",
+                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777")
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "Kuvvet = Kütle × İvme",
+                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777")
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "Kuvvet = Kütle × Zaman",
+                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777")
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "Kuvvet = Kütle × Mesafe",
+                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777")
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "m × v",
+                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888")
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "1/2 × m × v²",
+                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888")
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "m × v²",
+                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888")
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "2 × m × v",
+                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888")
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "CO₂",
+                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999")
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "H₂O",
+                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999")
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "O₂",
+                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999")
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
+                            OptionOrder = 4,
+                            OptionText = "N₂",
+                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999")
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            IsCorrect = false,
+                            Label = 'A',
+                            OptionOrder = 1,
+                            OptionText = "Bazik",
+                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            IsCorrect = true,
+                            Label = 'B',
+                            OptionOrder = 2,
+                            OptionText = "Asidik",
+                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-cccc-cccc-cccc-cccccccccccc"),
+                            IsCorrect = false,
+                            Label = 'C',
+                            OptionOrder = 3,
+                            OptionText = "Nötr",
+                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-dddd-dddd-dddd-dddddddddddd"),
+                            IsCorrect = false,
+                            Label = 'D',
                             OptionOrder = 4,
                             OptionText = "Amfoter",
-                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
                         });
                 });
 
             modelBuilder.Entity("AkademikAi.Entity.Entites.QuestionsTopic", b =>
                 {
                     b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TopicId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("QuestionId", "TopicId");
 
@@ -680,63 +677,123 @@ namespace AkademikAi.Data.Migrations
                     b.HasData(
                         new
                         {
-                            QuestionId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("11111111-1111-1111-1111-111111111111")
+                            Id = new Guid("aaaaaaaa-1111-1111-1111-111111111111")
                         },
                         new
                         {
-                            QuestionId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("22222222-2222-2222-2222-222222222222")
+                            Id = new Guid("aaaaaaaa-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            QuestionId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("33333333-3333-3333-3333-333333333333")
+                            Id = new Guid("aaaaaaaa-3333-3333-3333-333333333333")
                         },
                         new
                         {
-                            QuestionId = new Guid("44444444-4444-4444-4444-444444444444"),
+                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("44444444-4444-4444-4444-444444444444")
+                            Id = new Guid("aaaaaaaa-4444-4444-4444-444444444444")
                         },
                         new
                         {
-                            QuestionId = new Guid("55555555-5555-5555-5555-555555555555"),
+                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555"),
                             TopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            Id = new Guid("55555555-5555-5555-5555-555555555555")
+                            Id = new Guid("aaaaaaaa-5555-5555-5555-555555555555")
                         },
                         new
                         {
-                            QuestionId = new Guid("66666666-6666-6666-6666-666666666666"),
+                            QuestionId = new Guid("aaaaaaaa-1111-1111-1111-111111111111"),
+                            TopicId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Id = new Guid("bbbbbbbb-1111-1111-1111-111111111111")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("cccccccc-3333-3333-3333-333333333333"),
+                            TopicId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Id = new Guid("bbbbbbbb-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("bbbbbbbb-2222-2222-2222-222222222222"),
+                            TopicId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Id = new Guid("bbbbbbbb-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("dddddddd-4444-4444-4444-444444444444"),
+                            TopicId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Id = new Guid("bbbbbbbb-4444-4444-4444-444444444444")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("eeeeeeee-5555-5555-5555-555555555555"),
+                            TopicId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Id = new Guid("bbbbbbbb-5555-5555-5555-555555555555")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666"),
                             TopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            Id = new Guid("66666666-6666-6666-6666-666666666666")
+                            Id = new Guid("cccccccc-1111-1111-1111-111111111111")
                         },
                         new
                         {
-                            QuestionId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777"),
                             TopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            Id = new Guid("77777777-7777-7777-7777-777777777777")
+                            Id = new Guid("cccccccc-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            QuestionId = new Guid("88888888-8888-8888-8888-888888888888"),
+                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888"),
                             TopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                            Id = new Guid("88888888-8888-8888-8888-888888888888")
+                            Id = new Guid("cccccccc-3333-3333-3333-333333333333")
                         },
                         new
                         {
-                            QuestionId = new Guid("99999999-9999-9999-9999-999999999999"),
+                            QuestionId = new Guid("ffffffff-6666-6666-6666-666666666666"),
+                            TopicId = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Id = new Guid("dddddddd-1111-1111-1111-111111111111")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("11111111-7777-7777-7777-777777777777"),
+                            TopicId = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Id = new Guid("dddddddd-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("22222222-8888-8888-8888-888888888888"),
+                            TopicId = new Guid("55555555-5555-5555-5555-555555555555"),
+                            Id = new Guid("dddddddd-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999"),
                             TopicId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            Id = new Guid("99999999-9999-9999-9999-999999999999")
+                            Id = new Guid("eeeeeeee-1111-1111-1111-111111111111")
                         },
                         new
                         {
-                            QuestionId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             TopicId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                            Id = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd")
+                            Id = new Guid("eeeeeeee-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("33333333-9999-9999-9999-999999999999"),
+                            TopicId = new Guid("66666666-6666-6666-6666-666666666666"),
+                            Id = new Guid("eeeeeeee-3333-3333-3333-333333333333")
+                        },
+                        new
+                        {
+                            QuestionId = new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            TopicId = new Guid("77777777-7777-7777-7777-777777777777"),
+                            Id = new Guid("eeeeeeee-4444-4444-4444-444444444444")
                         });
                 });
 
@@ -744,15 +801,15 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("ParentTopicId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("TopicName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -790,6 +847,48 @@ namespace AkademikAi.Data.Migrations
                         {
                             Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             TopicName = "Tarih"
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            ParentTopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            TopicName = "Cebir"
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            ParentTopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            TopicName = "Geometri"
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            ParentTopicId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            TopicName = "Trigonometri"
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            ParentTopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            TopicName = "Mekanik"
+                        },
+                        new
+                        {
+                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
+                            ParentTopicId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            TopicName = "Elektrik"
+                        },
+                        new
+                        {
+                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
+                            ParentTopicId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            TopicName = "Organik Kimya"
+                        },
+                        new
+                        {
+                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
+                            ParentTopicId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            TopicName = "İnorganik Kimya"
                         });
                 });
 
@@ -797,26 +896,25 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("AnsweredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsCorrect")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("SelectedOptionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("UserAnswer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
+                    b.Property<char>("UserAnswer")
+                        .HasColumnType("character(1)");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -831,32 +929,32 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("character varying(250)");
 
                     b.Property<string>("NotificationType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("ReadAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -869,31 +967,31 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("CorrectAnswers")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("LastUpdatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<double>("SuccessRate")
-                        .HasColumnType("float");
+                        .HasColumnType("double precision");
 
                     b.Property<Guid>("TopicId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("TotalAnsweredQuestions")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TotalQuestionsAnswered")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -909,40 +1007,40 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("AppliedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("IsApplied")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("ReadAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("RecommendationText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("RecommendationType")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("RelatedTopicId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -957,18 +1055,18 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -981,18 +1079,18 @@ namespace AkademikAi.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -1004,16 +1102,16 @@ namespace AkademikAi.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -1025,10 +1123,10 @@ namespace AkademikAi.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -1040,16 +1138,16 @@ namespace AkademikAi.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
