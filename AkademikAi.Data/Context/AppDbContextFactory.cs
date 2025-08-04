@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AkademikAi.Data.Context
 {
@@ -8,9 +9,10 @@ namespace AkademikAi.Data.Context
         public AppDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=akademikai;Username=postgres;Password=");
+            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=AkademikAi;Trusted_Connection=True;");
 
             return new AppDbContext(optionsBuilder.Options);
         }
+
     }
 } 

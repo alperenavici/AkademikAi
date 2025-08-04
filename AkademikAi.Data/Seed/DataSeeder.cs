@@ -10,500 +10,255 @@ namespace AkademikAi.Data.Seed
     {
         public static void SeedData(ModelBuilder modelBuilder)
         {
-            // Topics seed data - önce ana konular, sonra alt konular
+            // 1. Tüm ana ve alt konuları oluştur ve veritabanına ekle
             var allTopics = GetTopics();
-            var rootTopics = allTopics.Where(t => t.ParentTopicId == null).ToList();
+            modelBuilder.Entity<Topics>().HasData(allTopics);
+
+            // Sadece alt konuları (derslerin içindeki konuları) seç, çünkü sorular alt konulara aittir.
             var subTopics = allTopics.Where(t => t.ParentTopicId != null).ToList();
-            
-            modelBuilder.Entity<Topics>().HasData(rootTopics);
-            modelBuilder.Entity<Topics>().HasData(subTopics);
 
-            // Questions seed data
-            var questions = GetQuestions();
-            modelBuilder.Entity<Questions>().HasData(questions);
+            var allQuestions = new List<Questions>();
+            var allQuestionOptions = new List<QuestionsOptions>();
+            var allQuestionsTopics = new List<QuestionsTopic>();
 
-            // QuestionsOptions seed data
-            var questionOptions = GetQuestionOptions(questions);
-            modelBuilder.Entity<QuestionsOptions>().HasData(questionOptions);
+            // 2. Her bir alt konu için 20 soru oluştur
+            foreach (var topic in subTopics)
+            {
+                for (int i = 1; i <= 20; i++)
+                {
+                    // Yeni bir soru oluştur
+                    var newQuestion = new Questions
+                    {
+                        Id = Guid.NewGuid(),
+                        QuestionText = $"{topic.TopicName} konusuyla ilgili Soru {i}: Bu sorunun detayı ve metni burada yer alacak.",
+                        DifficultyLevel = i % 5 == 0 ? QuestionsDiff.hard : i % 2 == 0 ? QuestionsDiff.medium : QuestionsDiff.easy,
+                        Source = "AkademikAI Seed Data",
+                        IsActive = true,
+                        SolutionText = $"{topic.TopicName} konusundaki Soru {i} için detaylı çözüm metni.",
+                        GeneratedForUserId = null
+                    };
+                    allQuestions.Add(newQuestion);
 
-            // QuestionsTopic seed data
-            var questionsTopics = GetQuestionsTopics(questions, allTopics);
-            modelBuilder.Entity<QuestionsTopic>().HasData(questionsTopics);
+                    // Bu soru için 4 seçenek oluştur
+                    char[] labels = { 'A', 'B', 'C', 'D' };
+                    // Rastgele bir doğru cevap belirle (0-3 arası)
+                    var random = new Random();
+                    int correctOptionIndex = random.Next(0, 4);
+
+                    for (int j = 0; j < 4; j++)
+                    {
+                        allQuestionOptions.Add(new QuestionsOptions
+                        {
+                            Id = Guid.NewGuid(),
+                            QuestionId = newQuestion.Id,
+                            OptionText = $"{topic.TopicName} - Soru {i} için Seçenek {labels[j]}",
+                            Label = labels[j],
+                            IsCorrect = (j == correctOptionIndex), // Sadece belirlenen index'teki seçenek doğru
+                            OptionOrder = j + 1
+                        });
+                    }
+
+                    // Soru ve konu arasındaki ilişkiyi kur
+                    allQuestionsTopics.Add(new QuestionsTopic
+                    {
+                        Id = Guid.NewGuid(),
+                        QuestionId = newQuestion.Id,
+                        TopicId = topic.Id
+                    });
+                }
+            }
+
+            // 3. Oluşturulan tüm verileri veritabanına ekle
+            modelBuilder.Entity<Questions>().HasData(allQuestions);
+            modelBuilder.Entity<QuestionsOptions>().HasData(allQuestionOptions);
+            modelBuilder.Entity<QuestionsTopic>().HasData(allQuestionsTopics);
         }
 
         private static List<Topics> GetTopics()
         {
-            return new List<Topics>
+            var topics = new List<Topics>
             {
-                // Ana konular
-                new Topics
-                {
-                    Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                    TopicName = "Matematik",
-                    ParentTopicId = null
-                },
-                new Topics
-                {
-                    Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                    TopicName = "Fizik",
-                    ParentTopicId = null
-                },
-                new Topics
-                {
-                    Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                    TopicName = "Kimya",
-                    ParentTopicId = null
-                },
-                new Topics
-                {
-                    Id = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
-                    TopicName = "Biyoloji",
-                    ParentTopicId = null
-                },
-                new Topics
-                {
-                    Id = Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
-                    TopicName = "Türkçe",
-                    ParentTopicId = null
-                },
-                new Topics
-                {
-                    Id = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"),
-                    TopicName = "Tarih",
-                    ParentTopicId = null
-                },
-                
-                // Alt konular - Matematik
-                new Topics
-                {
-                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                    TopicName = "Cebir",
-                    ParentTopicId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
-                },
-                new Topics
-                {
-                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                    TopicName = "Geometri",
-                    ParentTopicId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
-                },
-                new Topics
-                {
-                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
-                    TopicName = "Trigonometri",
-                    ParentTopicId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
-                },
-                
-                // Alt konular - Fizik
-                new Topics
-                {
-                    Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
-                    TopicName = "Mekanik",
-                    ParentTopicId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
-                },
-                new Topics
-                {
-                    Id = Guid.Parse("55555555-5555-5555-5555-555555555555"),
-                    TopicName = "Elektrik",
-                    ParentTopicId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
-                },
-                
-                // Alt konular - Kimya
-                new Topics
-                {
-                    Id = Guid.Parse("66666666-6666-6666-6666-666666666666"),
-                    TopicName = "Organik Kimya",
-                    ParentTopicId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
-                },
-                new Topics
-                {
-                    Id = Guid.Parse("77777777-7777-7777-7777-777777777777"),
-                    TopicName = "İnorganik Kimya",
-                    ParentTopicId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
-                }
+                // Ana Dersler (Kök Konular)
+                new Topics { Id = Guid.NewGuid(), TopicName = "Matematik", ParentTopicId = null },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Fizik", ParentTopicId = null },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimya", ParentTopicId = null },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Biyoloji", ParentTopicId = null },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Türkçe", ParentTopicId = null },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Tarih", ParentTopicId = null },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Coğrafya", ParentTopicId = null },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Felsefe Grubu", ParentTopicId = null }
             };
-        }
 
-        private static List<Questions> GetQuestions()
-        {
-            return new List<Questions>
-            {
-                new Questions
-                {
-                    Id = Guid.Parse("aaaaaaaa-1111-1111-1111-111111111111"),
-                    QuestionText = "2x + 5 = 13 denklemini çözünüz.",
-                    DifficultyLevel = QuestionsDiff.easy,
-                    Source = "Matematik Kitabı",
-                    IsActive = true,
-                    SolutionText = "2x + 5 = 13\n2x = 13 - 5\n2x = 8\nx = 4",
-                    GeneratedForUserId = null
-                },
-                new Questions
-                {
-                    Id = Guid.Parse("bbbbbbbb-2222-2222-2222-222222222222"),
-                    QuestionText = "Bir üçgenin iç açıları toplamı kaç derecedir?",
-                    DifficultyLevel = QuestionsDiff.easy,
-                    Source = "Geometri Kitabı",
-                    IsActive = true,
-                    SolutionText = "Bir üçgenin iç açıları toplamı 180 derecedir.",
-                    GeneratedForUserId = null
-                },
-                new Questions
-                {
-                    Id = Guid.Parse("cccccccc-3333-3333-3333-333333333333"),
-                    QuestionText = "x² - 4x + 4 = 0 denkleminin çözümü nedir?",
-                    DifficultyLevel = QuestionsDiff.medium,
-                    Source = "Matematik Kitabı",
-                    IsActive = true,
-                    SolutionText = "x² - 4x + 4 = 0\n(x - 2)² = 0\nx = 2",
-                    GeneratedForUserId = null
-                },
-                new Questions
-                {
-                    Id = Guid.Parse("dddddddd-4444-4444-4444-444444444444"),
-                    QuestionText = "Bir dairenin alanı πr² formülü ile hesaplanır. Yarıçapı 5 cm olan dairenin alanı kaç cm²'dir?",
-                    DifficultyLevel = QuestionsDiff.medium,
-                    Source = "Geometri Kitabı",
-                    IsActive = true,
-                    SolutionText = "A = πr²\nA = π × 5²\nA = 25π cm²",
-                    GeneratedForUserId = null
-                },
-                new Questions
-                {
-                    Id = Guid.Parse("eeeeeeee-5555-5555-5555-555555555555"),
-                    QuestionText = "sin(30°) değeri kaçtır?",
-                    DifficultyLevel = QuestionsDiff.easy,
-                    Source = "Trigonometri Kitabı",
-                    IsActive = true,
-                    SolutionText = "sin(30°) = 1/2 = 0.5",
-                    GeneratedForUserId = null
-                },
-                new Questions
-                {
-                    Id = Guid.Parse("ffffffff-6666-6666-6666-666666666666"),
-                    QuestionText = "Newton'un birinci yasası nedir?",
-                    DifficultyLevel = QuestionsDiff.easy,
-                    Source = "Fizik Kitabı",
-                    IsActive = true,
-                    SolutionText = "Bir cisme etki eden net kuvvet sıfır ise, cisim durumunu korur (durgun kalır veya sabit hızla hareket eder).",
-                    GeneratedForUserId = null
-                },
-                new Questions
-                {
-                    Id = Guid.Parse("11111111-7777-7777-7777-777777777777"),
-                    QuestionText = "F = ma formülünde F, m ve a neyi temsil eder?",
-                    DifficultyLevel = QuestionsDiff.medium,
-                    Source = "Fizik Kitabı",
-                    IsActive = true,
-                    SolutionText = "F: Kuvvet (Newton), m: Kütle (kg), a: İvme (m/s²)",
-                    GeneratedForUserId = null
-                },
-                new Questions
-                {
-                    Id = Guid.Parse("22222222-8888-8888-8888-888888888888"),
-                    QuestionText = "Bir cismin kinetik enerjisi hangi formülle hesaplanır?",
-                    DifficultyLevel = QuestionsDiff.medium,
-                    Source = "Fizik Kitabı",
-                    IsActive = true,
-                    SolutionText = "Kinetik enerji = 1/2 × m × v²",
-                    GeneratedForUserId = null
-                },
-                new Questions
-                {
-                    Id = Guid.Parse("33333333-9999-9999-9999-999999999999"),
-                    QuestionText = "Suyun kimyasal formülü nedir?",
-                    DifficultyLevel = QuestionsDiff.easy,
-                    Source = "Kimya Kitabı",
-                    IsActive = true,
-                    SolutionText = "H₂O",
-                    GeneratedForUserId = null
-                },
-                new Questions
-                {
-                    Id = Guid.Parse("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                    QuestionText = "pH değeri 7'den küçük olan çözeltiler nasıl adlandırılır?",
-                    DifficultyLevel = QuestionsDiff.easy,
-                    Source = "Kimya Kitabı",
-                    IsActive = true,
-                    SolutionText = "Asidik çözeltiler",
-                    GeneratedForUserId = null
-                }
-            };
-        }
-
-        private static List<QuestionsOptions> GetQuestionOptions(List<Questions> questions)
-        {
-            var options = new List<QuestionsOptions>();
-
-            foreach (var question in questions)
-            {
-                switch (question.Id.ToString())
-                {
-                    case "aaaaaaaa-1111-1111-1111-111111111111": // 2x + 5 = 13
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "3", Label = 'A', IsCorrect = false, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("aaaaaaaa-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "4", Label = 'B', IsCorrect = true, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("aaaaaaaa-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "5", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("aaaaaaaa-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "6", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-
-                    case "bbbbbbbb-2222-2222-2222-222222222222": // Üçgen iç açıları
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("bbbbbbbb-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "90", Label = 'A', IsCorrect = false, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "180", Label = 'B', IsCorrect = true, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("bbbbbbbb-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "270", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("bbbbbbbb-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "360", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-
-                    case "cccccccc-3333-3333-3333-333333333333": // x² - 4x + 4 = 0
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("cccccccc-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "1", Label = 'A', IsCorrect = false, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("cccccccc-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "2", Label = 'B', IsCorrect = true, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "3", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("cccccccc-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "4", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-
-                    case "dddddddd-4444-4444-4444-444444444444": // Daire alanı
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("dddddddd-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "20π", Label = 'A', IsCorrect = false, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("dddddddd-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "25π", Label = 'B', IsCorrect = true, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("dddddddd-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "30π", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "35π", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-
-                    case "eeeeeeee-5555-5555-5555-555555555555": // sin(30°)
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("eeeeeeee-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "0.25", Label = 'A', IsCorrect = false, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("eeeeeeee-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "0.5", Label = 'B', IsCorrect = true, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("eeeeeeee-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "0.75", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("eeeeeeee-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "1", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-
-                    case "ffffffff-6666-6666-6666-666666666666": // Newton'un birinci yasası
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("ffffffff-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "Eylemsizlik yasası", Label = 'A', IsCorrect = true, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("ffffffff-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "Dinamik yasası", Label = 'B', IsCorrect = false, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("ffffffff-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "Statik yasası", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("ffffffff-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "Kinetik yasası", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-
-                    case "11111111-7777-7777-7777-777777777777": // F = ma
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "Kuvvet = Kütle × Hız", Label = 'A', IsCorrect = false, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "Kuvvet = Kütle × İvme", Label = 'B', IsCorrect = true, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("11111111-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "Kuvvet = Kütle × Zaman", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("11111111-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "Kuvvet = Kütle × Mesafe", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-
-                    case "22222222-8888-8888-8888-888888888888": // Kinetik enerji
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "m × v", Label = 'A', IsCorrect = false, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "1/2 × m × v²", Label = 'B', IsCorrect = true, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("22222222-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "m × v²", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("22222222-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "2 × m × v", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-
-                    case "33333333-9999-9999-9999-999999999999": // Su formülü
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("33333333-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "CO₂", Label = 'A', IsCorrect = false, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("33333333-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "H₂O", Label = 'B', IsCorrect = true, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("33333333-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "O₂", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("33333333-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "N₂", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-
-                    case "44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa": // pH değeri
-                        options.AddRange(new[]
-                        {
-                            new QuestionsOptions { Id = Guid.Parse("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), QuestionId = question.Id, OptionText = "Bazik", Label = 'A', IsCorrect = false, OptionOrder = 1 },
-                            new QuestionsOptions { Id = Guid.Parse("44444444-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), QuestionId = question.Id, OptionText = "Asidik", Label = 'B', IsCorrect = true, OptionOrder = 2 },
-                            new QuestionsOptions { Id = Guid.Parse("44444444-cccc-cccc-cccc-cccccccccccc"), QuestionId = question.Id, OptionText = "Nötr", Label = 'C', IsCorrect = false, OptionOrder = 3 },
-                            new QuestionsOptions { Id = Guid.Parse("44444444-dddd-dddd-dddd-dddddddddddd"), QuestionId = question.Id, OptionText = "Amfoter", Label = 'D', IsCorrect = false, OptionOrder = 4 }
-                        });
-                        break;
-                }
-            }
-
-            return options;
-        }
-
-        private static List<QuestionsTopic> GetQuestionsTopics(List<Questions> questions, List<Topics> topics)
-        {
-            var questionsTopics = new List<QuestionsTopic>();
-
-            // Matematik ana konu soruları
-            var mathTopic = topics.First(t => t.TopicName == "Matematik");
-            var mathQuestions = questions.Take(5).ToList();
-
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("aaaaaaaa-1111-1111-1111-111111111111"),
-                QuestionId = mathQuestions[0].Id,
-                TopicId = mathTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("aaaaaaaa-2222-2222-2222-222222222222"),
-                QuestionId = mathQuestions[1].Id,
-                TopicId = mathTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("aaaaaaaa-3333-3333-3333-333333333333"),
-                QuestionId = mathQuestions[2].Id,
-                TopicId = mathTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("aaaaaaaa-4444-4444-4444-444444444444"),
-                QuestionId = mathQuestions[3].Id,
-                TopicId = mathTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("aaaaaaaa-5555-5555-5555-555555555555"),
-                QuestionId = mathQuestions[4].Id,
-                TopicId = mathTopic.Id
+            // --- Matematik Konuları ---
+            var mathId = topics.First(t => t.TopicName == "Matematik").Id;
+            topics.AddRange(new[] {
+                new Topics { Id = Guid.NewGuid(), TopicName = "Temel Kavramlar", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sayı Basamakları", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Bölme ve Bölünebilme", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "EBOB-EKOK", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Rasyonel Sayılar", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Basit Eşitsizlikler", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Mutlak Değer", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Üslü Sayılar", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Köklü Sayılar", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Çarpanlara Ayırma", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Oran Orantı", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Problemler", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kümeler", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Fonksiyonlar", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Permütasyon-Kombinasyon-Binom", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Olasılık", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Polinomlar", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "İkinci Dereceden Denklemler", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Parabol", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Trigonometri", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Logaritma", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Diziler", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Limit ve Süreklilik", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Türev", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "İntegral", ParentTopicId = mathId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Geometri", ParentTopicId = mathId }
             });
 
-            // Cebir alt konu soruları
-            var algebraTopic = topics.First(t => t.TopicName == "Cebir");
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("bbbbbbbb-1111-1111-1111-111111111111"),
-                QuestionId = mathQuestions[0].Id, // 2x + 5 = 13
-                TopicId = algebraTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("bbbbbbbb-2222-2222-2222-222222222222"),
-                QuestionId = mathQuestions[2].Id, // x² - 4x + 4 = 0
-                TopicId = algebraTopic.Id
-            });
-
-            // Geometri alt konu soruları
-            var geometryTopic = topics.First(t => t.TopicName == "Geometri");
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("bbbbbbbb-3333-3333-3333-333333333333"),
-                QuestionId = mathQuestions[1].Id, // Üçgen iç açıları
-                TopicId = geometryTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("bbbbbbbb-4444-4444-4444-444444444444"),
-                QuestionId = mathQuestions[3].Id, // Daire alanı
-                TopicId = geometryTopic.Id
+            // --- Fizik Konuları ---
+            var physicsId = topics.First(t => t.TopicName == "Fizik").Id;
+            topics.AddRange(new[] {
+                new Topics { Id = Guid.NewGuid(), TopicName = "Fizik Bilimine Giriş", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Madde ve Özellikleri", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kuvvet ve Hareket", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "İş, Güç ve Enerji", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Isı, Sıcaklık ve Genleşme", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Elektrostatik", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Elektrik Akımı ve Devreleri", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Manyetizma", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Basınç ve Kaldırma Kuvveti", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Dalgalar", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Optik", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Çembersel Hareket", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Basit Harmonik Hareket", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Atom Fiziği ve Radyoaktivite", ParentTopicId = physicsId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Modern Fizik", ParentTopicId = physicsId }
             });
 
-            // Trigonometri alt konu soruları
-            var trigTopic = topics.First(t => t.TopicName == "Trigonometri");
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("bbbbbbbb-5555-5555-5555-555555555555"),
-                QuestionId = mathQuestions[4].Id, // sin(30°)
-                TopicId = trigTopic.Id
+            // --- Kimya Konuları ---
+            var chemistryId = topics.First(t => t.TopicName == "Kimya").Id;
+            topics.AddRange(new[] {
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimya Bilimi", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Atom ve Periyodik Sistem", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimyasal Türler Arası Etkileşimler", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Maddenin Halleri", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimyanın Temel Kanunları ve Hesaplamalar", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Asitler, Bazlar ve Tuzlar", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Karışımlar", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimya Her Yerde", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Modern Atom Teorisi", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Gazlar", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sıvı Çözeltiler ve Çözünürlük", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimyasal Tepkimelerde Enerji", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimyasal Tepkimelerde Hız", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimyasal Denge", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimya ve Elektrik", ParentTopicId = chemistryId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Organik Kimya", ParentTopicId = chemistryId }
             });
 
-            // Fizik ana konu soruları
-            var physicsTopic = topics.First(t => t.TopicName == "Fizik");
-            var physicsQuestions = questions.Skip(5).Take(3).ToList();
-
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("cccccccc-1111-1111-1111-111111111111"),
-                QuestionId = physicsQuestions[0].Id,
-                TopicId = physicsTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("cccccccc-2222-2222-2222-222222222222"),
-                QuestionId = physicsQuestions[1].Id,
-                TopicId = physicsTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("cccccccc-3333-3333-3333-333333333333"),
-                QuestionId = physicsQuestions[2].Id,
-                TopicId = physicsTopic.Id
-            });
-
-            // Mekanik alt konu soruları
-            var mechanicsTopic = topics.First(t => t.TopicName == "Mekanik");
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("dddddddd-1111-1111-1111-111111111111"),
-                QuestionId = physicsQuestions[0].Id, // Newton'un birinci yasası
-                TopicId = mechanicsTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("dddddddd-2222-2222-2222-222222222222"),
-                QuestionId = physicsQuestions[1].Id, // F = ma
-                TopicId = mechanicsTopic.Id
+            // --- Biyoloji Konuları ---
+            var biologyId = topics.First(t => t.TopicName == "Biyoloji").Id;
+            topics.AddRange(new[] {
+                new Topics { Id = Guid.NewGuid(), TopicName = "Yaşam Bilimi Biyoloji", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Hücre", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Canlıların Sınıflandırılması", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Hücre Bölünmeleri", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kalıtım", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Ekosistem Ekolojisi", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sinir Sistemi", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Endokrin Sistem", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Duyu Organları", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Destek ve Hareket Sistemi", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sindirim Sistemi", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Dolaşım ve Bağışıklık Sistemi", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Solunum Sistemi", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Boşaltım Sistemi", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Üreme Sistemi ve Embriyonik Gelişim", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Genden Proteine", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Canlılarda Enerji Dönüşümleri", ParentTopicId = biologyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Bitki Biyolojisi", ParentTopicId = biologyId }
             });
 
-            // Elektrik alt konu soruları
-            var electricityTopic = topics.First(t => t.TopicName == "Elektrik");
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("dddddddd-3333-3333-3333-333333333333"),
-                QuestionId = physicsQuestions[2].Id, // Kinetik enerji
-                TopicId = electricityTopic.Id
+            // --- Türkçe Konuları ---
+            var turkishId = topics.First(t => t.TopicName == "Türkçe").Id;
+            topics.AddRange(new[] {
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sözcükte Anlam", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Cümlede Anlam", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Paragrafta Anlam", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Ses Bilgisi", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Yazım Kuralları", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Noktalama İşaretleri", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sözcükte Yapı", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sözcük Türleri", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Fiiller", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Cümlenin Öğeleri", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Cümle Türleri", ParentTopicId = turkishId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Anlatım Bozuklukları", ParentTopicId = turkishId }
             });
 
-            // Kimya ana konu soruları
-            var chemistryQuestions = questions.Skip(8).Take(2).ToList();
-            var chemistryTopic = topics.First(t => t.TopicName == "Kimya");
-
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("eeeeeeee-1111-1111-1111-111111111111"),
-                QuestionId = chemistryQuestions[0].Id,
-                TopicId = chemistryTopic.Id
-            });
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("eeeeeeee-2222-2222-2222-222222222222"),
-                QuestionId = chemistryQuestions[1].Id,
-                TopicId = chemistryTopic.Id
-            });
-
-            // Organik Kimya alt konu soruları
-            var organicTopic = topics.First(t => t.TopicName == "Organik Kimya");
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("eeeeeeee-3333-3333-3333-333333333333"),
-                QuestionId = chemistryQuestions[0].Id, // Su formülü
-                TopicId = organicTopic.Id
+            // --- Tarih Konuları ---
+            var historyId = topics.First(t => t.TopicName == "Tarih").Id;
+            topics.AddRange(new[] {
+                new Topics { Id = Guid.NewGuid(), TopicName = "Tarih ve Zaman", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "İnsanlığın İlk Dönemleri", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Orta Çağ'da Dünya", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "İlk ve Orta Çağlarda Türk Dünyası", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "İslam Medeniyetinin Doğuşu", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Türklerin İslamiyet'i Kabulü ve İlk Türk İslam Devletleri", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Yerleşme ve Devletleşme Sürecinde Selçuklu Türkiyesi", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Beylikten Devlete Osmanlı Siyaseti", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Devletleşme Sürecinde Savaşçılar ve Askerler", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Dünya Gücü Osmanlı", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sultan ve Osmanlı Merkez Teşkilatı", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Değişen Dünya Dengeleri Karşısında Osmanlı Siyaseti", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Uluslararası İlişkilerde Denge Stratejisi (1774-1914)", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "20. Yüzyıl Başlarında Osmanlı Devleti ve Dünya", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Milli Mücadele", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Atatürkçülük ve Türk İnkılabı", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "İki Savaş Arasındaki Dönemde Türkiye ve Dünya", ParentTopicId = historyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "II. Dünya Savaşı Sonrasında Türkiye ve Dünya", ParentTopicId = historyId }
             });
 
-            // İnorganik Kimya alt konu soruları
-            var inorganicTopic = topics.First(t => t.TopicName == "İnorganik Kimya");
-            questionsTopics.Add(new QuestionsTopic
-            {
-                Id = Guid.Parse("eeeeeeee-4444-4444-4444-444444444444"),
-                QuestionId = chemistryQuestions[1].Id, // pH değeri
-                TopicId = inorganicTopic.Id
+            // --- Coğrafya Konuları ---
+            var geographyId = topics.First(t => t.TopicName == "Coğrafya").Id;
+            topics.AddRange(new[] {
+                new Topics { Id = Guid.NewGuid(), TopicName = "Doğa, İnsan ve Coğrafya", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Dünya'nın Şekli ve Hareketleri", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Coğrafi Konum", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Harita Bilgisi", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "İklim Bilgisi", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Yerin Şekillenmesi (İç ve Dış Kuvvetler)", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Doğadaki Üç Unsur: Su, Toprak, Bitki", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Nüfus ve Yerleşme", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Ekonomik Faaliyetler", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Bölgeler ve Ülkeler", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Ulaşım Yolları", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Çevre ve Toplum", ParentTopicId = geographyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Doğal Afetler", ParentTopicId = geographyId }
             });
 
-            return questionsTopics;
+            // --- Felsefe Grubu Konuları ---
+            var philosophyId = topics.First(t => t.TopicName == "Felsefe Grubu").Id;
+            topics.AddRange(new[] {
+                new Topics { Id = Guid.NewGuid(), TopicName = "Felsefe ile Tanışma", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Bilgi Felsefesi (Epistemoloji)", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Varlık Felsefesi (Ontoloji)", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Ahlak Felsefesi (Etik)", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sanat Felsefesi (Estetik)", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Din Felsefesi", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Siyaset Felsefesi", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Bilim Felsefesi", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Psikoloji Bilimini Tanıyalım", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sosyolojiye Giriş", ParentTopicId = philosophyId },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Mantığa Giriş", ParentTopicId = philosophyId }
+            });
+
+            return topics;
         }
     }
-} 
+}

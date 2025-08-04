@@ -15,6 +15,66 @@
     <link rel="stylesheet" href="~/css/dashboard.css" />
     <link rel="stylesheet" href="~/css/dashboard-new.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Sonuç Ekranı Stilleri */
+        .results-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+            .results-container h2 {
+                color: #2c3e50;
+                margin-bottom: 20px;
+                font-size: 2rem;
+            }
+
+        .results-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            font-size: 1.2rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+            .stat-item .stat-value {
+                font-size: 2.5rem;
+                font-weight: 700;
+            }
+
+            .stat-item .stat-label {
+                color: #7f8c8d;
+                font-size: 1rem;
+            }
+
+        #resultsCorrect .stat-value {
+            color: #2ecc71;
+        }
+
+        #resultsIncorrect .stat-value {
+            color: #e74c3c;
+        }
+
+        #resultsPercentage .stat-value {
+            color: #3498db;
+        }
+
+        .results-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -58,15 +118,15 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header Bar -->
-            <div class="solve-header">
+            <div class="solve-header" id="solveHeader">
                 <div class="header-left">
                     <h2 id="currentTopic">Tüm Konular</h2>
-                    <span class="question-progress">Soru <span id="currentQuestionNumber">1</span> / <span id="totalQuestions">20</span></span>
+                    <span class="question-progress">Soru <span id="currentQuestionNumber">1</span> / <span id="totalQuestions">0</span></span>
                 </div>
                 <div class="header-right">
                     <div class="timer">
                         <i class="fas fa-clock"></i>
-                        <span id="timer">15:00</span>
+                        <span id="timer">00:00</span>
                     </div>
                     <button class="btn-exit">
                         <i class="fas fa-times"></i>
@@ -76,7 +136,7 @@
             </div>
 
             <!-- Question Area -->
-            <section class="filters-section">
+            <section class="filters-section" id="filtersSection">
                 <div class="filter-container">
                     <div class="filter-group">
                         <label for="course-filter">Ana Konu:</label>
@@ -106,7 +166,7 @@
                 </div>
             </section>
 
-            <div class="question-container">
+            <div class="question-container" id="questionContainer" style="display: none;">
                 <div class="question-content">
                     <div class="question-text">
                         <h3 id="questionTitle">Soru 1</h3>
@@ -150,20 +210,45 @@
                     <div class="solution-content">
                         <p id="correctAnswer"></p>
                         <p id="solutionText"></p>
-                        <div class="solution-steps" id="solutionSteps">
-                            <!-- Çözüm adımları buraya gelecek -->
-                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Progress Bar -->
-            <div class="progress-container">
+            <div class="progress-container" id="progressContainer" style="display: none;">
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 0%;"></div>
                 </div>
                 <div class="progress-text">0 / 0 soru tamamlandı</div>
             </div>
+
+            <!-- Results Screen -->
+            <div class="results-container" id="resultsContainer" style="display: none;">
+                <h2>Odaklanma Alanı Sonucu</h2>
+                <div class="results-stats">
+                    <div class="stat-item" id="resultsCorrect">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Doğru</span>
+                    </div>
+                    <div class="stat-item" id="resultsIncorrect">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Yanlış</span>
+                    </div>
+                    <div class="stat-item" id="resultsPercentage">
+                        <span class="stat-value">0%</span>
+                        <span class="stat-label">Başarı</span>
+                    </div>
+                </div>
+                <div class="results-actions">
+                    <button id="restartTest" class="btn-action btn-secondary">
+                        <i class="fas fa-redo"></i> Yeniden Başla
+                    </button>
+                    <a href="@Url.Action("Dashboard", "User")" class="btn-action btn-primary">
+                        <i class="fas fa-compass"></i> Pusulaya Dön
+                    </a>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -172,33 +257,39 @@
         let currentQuestionIndex = 0;
         let questions = [];
         let totalQuestions = 0;
+        let userAnswers = []; // Kullanıcı cevaplarını tutmak için dizi
         let timeLeft = 15 * 60; // 15 dakika
         let timerInterval;
+
+        const filtersSection = document.getElementById('filtersSection');
+        const questionContainer = document.getElementById('questionContainer');
+        const progressContainer = document.getElementById('progressContainer');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const solveHeader = document.getElementById('solveHeader');
 
         // Timer functionality
         function updateTimer() {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = 
+            document.getElementById('timer').textContent =
                 `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
+
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                alert('Süre doldu! Sınav otomatik olarak sonlandırılıyor.');
-                window.location.href = '/User/Dashboard';
+                alert('Süre doldu!');
+                showResults();
                 return;
             }
-            
+
             timeLeft--;
         }
 
-        // Ana konu değiştiğinde alt konuları yükle
-        document.getElementById('course-filter').addEventListener('change', function() {
+        // Alt konuları yükle
+        document.getElementById('course-filter').addEventListener('change', function () {
             const mainTopicId = this.value;
             const subTopicSelect = document.getElementById('topic-filter');
-            
+
             if (mainTopicId) {
-                // Alt konuları yükle
                 fetch(`/User/GetSubTopics?parentTopicId=${mainTopicId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -224,24 +315,20 @@
             }
         });
 
-        // Soruları yükle butonu
-        document.getElementById('loadQuestions').addEventListener('click', function() {
+        // Soruları yükle
+        document.getElementById('loadQuestions').addEventListener('click', function () {
             const mainTopicId = document.getElementById('course-filter').value;
             const subTopicId = document.getElementById('topic-filter').value;
-            
-            // Hangi topic ID'sini kullanacağımızı belirle
             const topicId = subTopicId || mainTopicId;
-            
+
             if (!topicId) {
                 alert('Lütfen bir konu seçin!');
                 return;
             }
 
-            // Loading göster
             this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yükleniyor...';
             this.disabled = true;
 
-            // Soruları getir
             fetch(`/User/GetFilteredQuestions?topicId=${topicId}`)
                 .then(response => response.json())
                 .then(data => {
@@ -249,24 +336,28 @@
                         questions = data.questions;
                         totalQuestions = questions.length;
                         currentQuestionIndex = 0;
-                        
-                        // UI'ı güncelle
+                        userAnswers = new Array(totalQuestions).fill(null); // Cevap dizisini sıfırla
+
+                        // UI'ı hazırla
+                        filtersSection.style.display = 'none';
+                        questionContainer.style.display = 'block';
+                        progressContainer.style.display = 'block';
+
                         updateQuestionDisplay();
                         updateProgress();
-                        
+
                         // Timer'ı başlat
                         if (timerInterval) clearInterval(timerInterval);
-                        timeLeft = 15 * 60;
+                        timeLeft = (totalQuestions * 1.5) * 60; // Soru başına 1.5 dakika
                         timerInterval = setInterval(updateTimer, 1000);
-                        
-                        // Konu adını güncelle
-                        const selectedOption = document.getElementById('course-filter').options[document.getElementById('course-filter').selectedIndex];
-                        document.getElementById('currentTopic').textContent = selectedOption.text;
-                        
-                        // Navigation butonlarını aktif et
-                        document.getElementById('prevQuestion').disabled = false;
+                        updateTimer(); // İlk saniyeyi göstermek için
+
+                        const selectedOption = document.getElementById('topic-filter').options[document.getElementById('topic-filter').selectedIndex];
+                        document.getElementById('currentTopic').textContent = selectedOption.value ? selectedOption.text : document.getElementById('course-filter').options[document.getElementById('course-filter').selectedIndex].text;
+
+                        document.getElementById('prevQuestion').disabled = true;
                         document.getElementById('nextQuestion').disabled = false;
-                        
+
                     } else {
                         alert('Seçilen konuda soru bulunamadı!');
                     }
@@ -276,7 +367,6 @@
                     alert('Sorular yüklenirken hata oluştu!');
                 })
                 .finally(() => {
-                    // Loading'i kaldır
                     this.innerHTML = '<i class="fas fa-search"></i> Soruları Yükle';
                     this.disabled = false;
                 });
@@ -284,144 +374,151 @@
 
         function updateQuestionDisplay() {
             if (questions.length === 0) return;
-            
+
             const question = questions[currentQuestionIndex];
-            
-            // Soru başlığını güncelle
             document.getElementById('questionTitle').textContent = `Soru ${currentQuestionIndex + 1}`;
             document.getElementById('questionText').textContent = question.questionText;
-            
-            // Seçenekleri oluştur
+
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
-            
+
             if (question.options && question.options.length > 0) {
                 question.options.forEach(option => {
                     const optionBtn = document.createElement('button');
                     optionBtn.className = 'option-btn';
-                    optionBtn.setAttribute('data-option', option.label);
-                    optionBtn.setAttribute('data-correct', option.isCorrect);
-                    
-                    optionBtn.innerHTML = `
-                        <span class="option-label">${option.label}</span>
-                        <span class="option-text">${option.text}</span>
-                    `;
-                    
-                    optionBtn.addEventListener('click', function() {
-                        handleOptionSelection(this);
-                    });
-                    
+                    optionBtn.setAttribute('data-option-id', option.id);
+                    optionBtn.innerHTML = `<span class="option-label">${option.label}</span><span class="option-text">${option.text}</span>`;
+                    optionBtn.addEventListener('click', () => handleOptionSelection(optionBtn, option.isCorrect));
                     optionsContainer.appendChild(optionBtn);
                 });
             }
-            
-            // Çözüm alanını güncelle
-            if (question.solutionText) {
-                document.getElementById('solutionText').textContent = question.solutionText;
-            }
-            
-            // Doğru cevabı bul
+
+            document.getElementById('solutionText').textContent = question.solutionText;
             const correctOption = question.options?.find(o => o.isCorrect);
             if (correctOption) {
-                document.getElementById('correctAnswer').innerHTML = `<strong>Doğru Cevap: ${correctOption.label}) ${correctOption.text}</strong>`;
+                document.getElementById('correctAnswer').innerHTML = `<strong>Doğru Cevap: ${correctOption.label}</strong>`;
             }
-            
-            // Progress'i güncelle
+
             document.getElementById('currentQuestionNumber').textContent = currentQuestionIndex + 1;
             document.getElementById('totalQuestions').textContent = totalQuestions;
+
+            document.getElementById('prevQuestion').disabled = (currentQuestionIndex === 0);
+            document.getElementById('nextQuestion').textContent = (currentQuestionIndex === totalQuestions - 1) ? 'Testi Bitir' : 'Sonraki Soru';
+             if (currentQuestionIndex === totalQuestions - 1) {
+                document.getElementById('nextQuestion').innerHTML = 'Testi Bitir <i class="fas fa-flag-checkered"></i>';
+            } else {
+                document.getElementById('nextQuestion').innerHTML = 'Sonraki Soru <i class="fas fa-chevron-right"></i>';
+            }
         }
 
-        function handleOptionSelection(selectedButton) {
-            // Önceki seçimleri temizle
+        function handleOptionSelection(selectedButton, isCorrect) {
+            if (userAnswers[currentQuestionIndex] !== null) return; // Zaten cevaplanmışsa tekrar işlem yapma
+
+            userAnswers[currentQuestionIndex] = isCorrect;
+
+            // Tüm butonları kilitle
             document.querySelectorAll('.option-btn').forEach(btn => {
-                btn.classList.remove('selected', 'correct', 'incorrect');
+                btn.disabled = true;
             });
-            
-            // Yeni seçimi işaretle
+
             selectedButton.classList.add('selected');
-            selectedOption = selectedButton.getAttribute('data-option');
-            
-            // Doğru/yanlış göster
+
             setTimeout(() => {
-                const isCorrect = selectedButton.getAttribute('data-correct') === 'true';
                 if (isCorrect) {
                     selectedButton.classList.add('correct');
                 } else {
                     selectedButton.classList.add('incorrect');
-                    // Doğru cevabı da göster
-                    document.querySelectorAll('.option-btn').forEach(btn => {
-                        if (btn.getAttribute('data-correct') === 'true') {
-                            btn.classList.add('correct');
+                    // Doğru olanı göster
+                    questions[currentQuestionIndex].options.forEach((opt, index) => {
+                        if (opt.isCorrect) {
+                            document.querySelectorAll('.option-btn')[index].classList.add('correct');
                         }
                     });
                 }
+                document.getElementById('showSolution').style.display = 'inline-flex';
             }, 500);
         }
 
         function updateProgress() {
-            const progressPercentage = totalQuestions > 0 ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            const progressPercentage = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
             document.querySelector('.progress-fill').style.width = `${progressPercentage}%`;
-            document.querySelector('.progress-text').textContent = `${currentQuestionIndex + 1} / ${totalQuestions} soru tamamlandı`;
+            document.querySelector('.progress-text').textContent = `${answeredCount} / ${totalQuestions} soru tamamlandı`;
         }
 
-        // Show solution
-        document.getElementById('showSolution').addEventListener('click', function() {
+        document.getElementById('showSolution').addEventListener('click', function () {
             document.getElementById('solutionArea').style.display = 'block';
-            this.style.display = 'none';
         });
 
-        // Close solution
-        document.getElementById('closeSolution').addEventListener('click', function() {
+        document.getElementById('closeSolution').addEventListener('click', function () {
             document.getElementById('solutionArea').style.display = 'none';
-            document.getElementById('showSolution').style.display = 'inline-flex';
         });
 
-        // Navigation buttons
-        document.getElementById('prevQuestion').addEventListener('click', function() {
+        document.getElementById('prevQuestion').addEventListener('click', function () {
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 updateQuestionDisplay();
-                updateProgress();
-                resetQuestion();
+                resetQuestionUI();
             }
         });
 
-        document.getElementById('nextQuestion').addEventListener('click', function() {
+        document.getElementById('nextQuestion').addEventListener('click', function () {
+            // Cevap verilmemişse yanlış say
+            if (userAnswers[currentQuestionIndex] === null) {
+                userAnswers[currentQuestionIndex] = false;
+            }
+            updateProgress();
+
             if (currentQuestionIndex < totalQuestions - 1) {
                 currentQuestionIndex++;
                 updateQuestionDisplay();
-                updateProgress();
-                resetQuestion();
+                resetQuestionUI();
             } else {
-                alert('Son soruya ulaştınız! Sınavı tamamlamak istiyor musunuz?');
+                showResults();
             }
         });
 
-        function resetQuestion() {
-            // Reset option selections
+        function resetQuestionUI() {
             document.querySelectorAll('.option-btn').forEach(btn => {
                 btn.classList.remove('selected', 'correct', 'incorrect');
+                btn.disabled = false;
             });
-            
-            // Hide solution
             document.getElementById('solutionArea').style.display = 'none';
-            document.getElementById('showSolution').style.display = 'inline-flex';
-            
+            document.getElementById('showSolution').style.display = 'none';
             selectedOption = null;
         }
 
-        // Exit button
-        document.querySelector('.btn-exit').addEventListener('click', function() {
-            if (confirm('Sınavdan çıkmak istediğinizden emin misiniz? İlerlemeniz kaydedilecek.')) {
-                if (timerInterval) clearInterval(timerInterval);
-                window.location.href = '/User/Dashboard';
-            }
+        function showResults() {
+            clearInterval(timerInterval); // Zamanlayıcıyı durdur
+
+            // UI elemanlarını gizle/göster
+            questionContainer.style.display = 'none';
+            progressContainer.style.display = 'none';
+            solveHeader.style.display = 'none';
+            filtersSection.style.display = 'none';
+            resultsContainer.style.display = 'block';
+
+            // İstatistikleri hesapla
+            const correctCount = userAnswers.filter(answer => answer === true).length;
+            const incorrectCount = totalQuestions - correctCount;
+            const percentage = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+
+            // Sonuçları ekrana yazdır
+            document.querySelector('#resultsCorrect .stat-value').textContent = correctCount;
+            document.querySelector('#resultsIncorrect .stat-value').textContent = incorrectCount;
+            document.querySelector('#resultsPercentage .stat-value').textContent = `${percentage}%`;
+        }
+
+        document.getElementById('restartTest').addEventListener('click', function() {
+            window.location.reload(); // Sayfayı yenileyerek testi baştan başlat
         });
 
-        // Sayfa yüklendiğinde timer'ı başlat
-        document.addEventListener('DOMContentLoaded', function() {
-            updateTimer();
+        document.querySelector('.btn-exit').addEventListener('click', function () {
+            if (confirm('Sınavdan çıkmak istediğinizden emin misiniz? İlerlemeniz kaydedilmeyecek.')) {
+                if (timerInterval) clearInterval(timerInterval);
+                window.location.href = '@Url.Action("Dashboard", "User")';
+            }
         });
     </script>
 </body>
-</html> 
+</html>
