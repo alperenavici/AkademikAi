@@ -234,6 +234,10 @@
                         <span class="stat-value">0</span>
                         <span class="stat-label">Yanlış</span>
                     </div>
+                    <div class="stat-item" id="resultsNullCorrect">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Boş</span>
+                    </div>
                     <div class="stat-item" id="resultsPercentage">
                         <span class="stat-value">0%</span>
                         <span class="stat-label">Başarı</span>
@@ -260,6 +264,7 @@
         let userAnswers = []; // Kullanıcı cevaplarını tutmak için dizi
         let timeLeft = 15 * 60; // 15 dakika
         let timerInterval;
+        let nullOption=0;
 
         const filtersSection = document.getElementById('filtersSection');
         const questionContainer = document.getElementById('questionContainer');
@@ -465,7 +470,8 @@
         document.getElementById('nextQuestion').addEventListener('click', function () {
             // Cevap verilmemişse yanlış say
             if (userAnswers[currentQuestionIndex] === null) {
-                userAnswers[currentQuestionIndex] = false;
+                userAnswers[currentQuestionIndex] = nullOption;
+                nullOption+=1;
             }
             updateProgress();
 
@@ -500,12 +506,14 @@
 
             // İstatistikleri hesapla
             const correctCount = userAnswers.filter(answer => answer === true).length;
-            const incorrectCount = totalQuestions - correctCount;
+            const incorrectCount = totalQuestions - (correctCount+nullOption);
+            const nullcorrectCount=nullOption;
             const percentage = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
             // Sonuçları ekrana yazdır
             document.querySelector('#resultsCorrect .stat-value').textContent = correctCount;
             document.querySelector('#resultsIncorrect .stat-value').textContent = incorrectCount;
+            document.querySelector('#resultsNullCorrect .stat-value').textContent = nullcorrectCount;
             document.querySelector('#resultsPercentage .stat-value').textContent = `${percentage}%`;
         }
 
