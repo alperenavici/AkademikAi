@@ -14,67 +14,9 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/dashboard.css" />
     <link rel="stylesheet" href="~/css/dashboard-new.css" />
+    <link rel="stylesheet" href="~/css/solve.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Sonuç Ekranı Stilleri */
-        .results-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            max-width: 600px;
-            margin: 40px auto;
-        }
 
-            .results-container h2 {
-                color: #2c3e50;
-                margin-bottom: 20px;
-                font-size: 2rem;
-            }
-
-        .results-stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 30px 0;
-            font-size: 1.2rem;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-            .stat-item .stat-value {
-                font-size: 2.5rem;
-                font-weight: 700;
-            }
-
-            .stat-item .stat-label {
-                color: #7f8c8d;
-                font-size: 1rem;
-            }
-
-        #resultsCorrect .stat-value {
-            color: #2ecc71;
-        }
-
-        #resultsIncorrect .stat-value {
-            color: #e74c3c;
-        }
-
-        #resultsPercentage .stat-value {
-            color: #3498db;
-        }
-
-        .results-actions {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-    </style>
 </head>
 <body>
     <div class="dashboard-container">
