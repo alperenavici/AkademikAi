@@ -47,12 +47,12 @@ namespace AkademikAi.Service.Services
             return await _repository.AnyAsync(expression);
         }
 
-        public int Count(Expression<Func<T, bool>> expression = null)
+        public int Count(Expression<Func<T, bool>>? expression = null)
         {
             return _repository.Count(expression);
         }
 
-        public async Task<int> CountAsync(Expression<Func<T, bool>> expression = null)
+        public async Task<int> CountAsync(Expression<Func<T, bool>>? expression = null)
         {
             return await _repository.CountAsync(expression);
         }
@@ -67,22 +67,22 @@ namespace AkademikAi.Service.Services
             return await _repository.GetAllAsync();
         }
 
-        public T GetById(object id)
+        public T? GetById(object id)
         {
             return _repository.GetById(id);
         }
 
-        public async Task<T> GetByIdAsync(object id)
+        public async Task<T?> GetByIdAsync(object id)
         {
             return await _repository.GetByIdAsync(id);
         }
 
-        public T GetFirstOrDefault(Expression<Func<T, bool>> expression)
+        public T? GetFirstOrDefault(Expression<Func<T, bool>> expression)
         {
             return _repository.GetFirstOrDefault(expression);
         }
 
-        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> expression)
+        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> expression)
         {
             return await _repository.GetFirstOrDefaultAsync(expression);
         }

@@ -1,6 +1,7 @@
 ﻿using AkademikAi.Data.Context;
 using AkademikAi.Data.IRepositories;
 using AkademikAi.Entity.Entites;
+using AkademikAi.Core.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,12 @@ namespace AkademikAi.Data.Repositories
         public UserPerformanceSummariesRepository(AppDbContext context) : base(context)
         {
             _context = context;
+        }
+        public async Task<List<UserPerformanceSummaries>> GetByUserIdAsync(Guid userId)
+        {
+            return await _context.UserPerformanceSummaries
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
         }
 
         public async Task<UserPerformanceSummaries?> GetByUserIdAndTopicIdAsync(Guid userId, Guid topicId)
@@ -63,6 +70,27 @@ namespace AkademikAi.Data.Repositories
         {
             return await _context.UserPerformanceSummaries
                 .FirstOrDefaultAsync(p => p.UserId == userId && p.TopicId == topicId);
+        }
+
+        public async Task<List<DailyActivityDto>> GetDailyActivitiesByUserIdAsync(string userId)
+        {
+            if (!Guid.TryParse(userId, out Guid userGuid))
+            {
+                return new List<DailyActivityDto>();
+            }
+
+            var activities = await _context.UserPerformanceSummaries
+                .Where(p => p.UserId == userGuid)
+                .GroupBy(p => p.CreatedAt.Date)
+                .Select(g => new DailyActivityDto
+                {
+                    Date = g.Key,
+                    TotalScore = g.Sum(p => p.CorrectAnswers),
+                    QuestionCount = g.Sum(p => p.TotalQuestionsAnswered)
+                })
+                .ToListAsync();
+
+            return activities;
         }
     }
 }

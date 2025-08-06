@@ -16,12 +16,12 @@ namespace AkademikAi.Data.Repositories
         {
         }
 
-        public async Task<AppRole> GetByRoleNameAsync(string roleName)
+        public async Task<AppRole?> GetByRoleNameAsync(string roleName)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Name == roleName);
         }
 
-        public async Task<AppRole> GetByUserRoleAsync(UserRole userRole)
+        public async Task<AppRole?> GetByUserRoleAsync(UserRole userRole)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.UserRole == userRole);
         }

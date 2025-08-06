@@ -99,7 +99,7 @@ namespace AkademikAi.Web.Controllers.Api
         {
             try
             {
-                var hierarchy = await _topicService.GetTopicHierarchyAsync();
+                var hierarchy = _topicService.GetTopicHierarchyAsync();
                 return Ok(hierarchy);
             }
             catch (Exception ex)

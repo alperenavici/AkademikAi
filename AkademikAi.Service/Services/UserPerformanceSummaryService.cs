@@ -1,6 +1,8 @@
+using AkademikAi.Core.DTOs;
 using AkademikAi.Data.IRepositories;
 using AkademikAi.Entity.Entites;
 using AkademikAi.Service.IServices;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +35,10 @@ namespace AkademikAi.Service.Services
             // For now, returning empty dictionary as placeholder
             return averageByTopic;
         }
+        public async Task<List<UserPerformanceSummaries>> GetByUserIdAsync(Guid userId)
+        {
+            return await _performanceRepository.GetByUserIdAsync(userId);
+        }
 
         public async Task<List<UserPerformanceSummaries>> GetPerformanceSummariesBySuccessRateRangeAsync(double minRate, double maxRate)
         {
@@ -46,13 +52,13 @@ namespace AkademikAi.Service.Services
             return summaries.OrderByDescending(s => s.SuccessRate).Take(count).ToList();
         }
 
-        public async Task<UserPerformanceSummaries> GetLatestUserPerformanceSummaryAsync(Guid userId)
+        public async Task<UserPerformanceSummaries?> GetLatestUserPerformanceSummaryAsync(Guid userId)
         {
             var summaries = await _performanceRepository.GetUserPerformanceSummariesByUserIdAsync(userId);
             return summaries.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
         }
 
-        public async Task<UserPerformanceSummaries> GetUserPerformanceSummaryAsync(Guid userId)
+        public async Task<UserPerformanceSummaries?> GetUserPerformanceSummaryAsync(Guid userId)
         {
             return await _performanceRepository.GetUserPerformanceSummaryByUserIdAsync(userId);
         }
@@ -62,7 +68,7 @@ namespace AkademikAi.Service.Services
             return await _performanceRepository.GetUserPerformanceSummariesByUserIdAsync(userId);
         }
 
-        public async Task<UserPerformanceSummaries> GetUserPerformanceSummaryByUserAndTopicAsync(Guid userId, Guid topicId)
+        public async Task<UserPerformanceSummaries?> GetUserPerformanceSummaryByUserAndTopicAsync(Guid userId, Guid topicId)
         {
             return await _performanceRepository.GetUserPerformanceSummaryByUserAndTopicAsync(userId, topicId);
         }
@@ -73,7 +79,7 @@ namespace AkademikAi.Service.Services
             return summaries.Where(s => s.CreatedAt >= startDate && s.CreatedAt <= endDate).ToList();
         }
 
-        public async Task<UserPerformanceSummaries> CreateOrUpdatePerformanceSummaryAsync(Guid userId)
+        public async Task<UserPerformanceSummaries?> CreateOrUpdatePerformanceSummaryAsync(Guid userId)
         {
             var userAnswers = await _userAnswersRepository.GetUserAnswersByUserIdAsync(userId);
             
@@ -131,6 +137,22 @@ namespace AkademikAi.Service.Services
             _performanceRepository.Update(existingSummary);
             await _unitOfWork.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<DailyActivityDto>> GetDailyActivitiesAsync(string userId)
+        {
+            // Repository'den veri çekme işlemini burada yaparsın
+            var activities = await _performanceRepository.GetDailyActivitiesByUserIdAsync(userId);
+
+            // DTO dönüşümü gerekiyorsa yap:
+            var activityDtos = activities.Select(a => new DailyActivityDto
+            {
+                Date = a.Date,
+                TotalScore = a.TotalScore,
+                QuestionCount = a.QuestionCount
+            }).ToList();
+
+            return activityDtos;
         }
     }
 } 

@@ -202,8 +202,24 @@ namespace AkademikAi.Web.Controllers.UserController
             {
                 return NotFound();
             }
-           
-            return View("Dashboard", user);
+            var userPerformanceSummaries = await _performanceService.GetUserPerformanceSummariesByUserIdAsync(user.Id);
+
+            var allTopics = await _topicService.GetAllAsync();
+            var dailyActivities = await _performanceService.GetDailyActivitiesAsync(user.Id.ToString());
+
+            var performanceData = new PerformanceViewModel
+            {
+                User = user,
+                PerformanceSummaries = userPerformanceSummaries,
+                ActivitiesLastYear = dailyActivities,
+                AllTopics = allTopics,
+                TotalQuestions = userPerformanceSummaries.Sum(p => p.TotalQuestionsAnswered),
+                TotalCorrectAnswers = userPerformanceSummaries.Sum(p => p.CorrectAnswers),
+                AverageSuccessRate = userPerformanceSummaries.Any() ? userPerformanceSummaries.Average(p => p.SuccessRate) : 0,
+                WeakestTopics = userPerformanceSummaries.OrderBy(p => p.SuccessRate).Take(3).ToList()
+            };
+
+            return View(performanceData);
         }
 
 
@@ -219,6 +235,8 @@ namespace AkademikAi.Web.Controllers.UserController
             {
                 Name = user.Name,
                 Surname = user.Surname,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
                 CreatedAt = user.CreatedAt 
             };
             return Ok(userDto);
@@ -266,10 +284,8 @@ namespace AkademikAi.Web.Controllers.UserController
                 return RedirectToAction("Login", "User");
             }
 
-            // Ana konuları getir
             var mainTopics = await _topicService.GetMainTopicsAsync();
             
-            // Kullanıcı için rastgele sorular getir
             var randomQuestions = await _questionService.GetRandomQuestionsAsync(20);
             
             ViewBag.MainTopics = mainTopics;
@@ -297,7 +313,7 @@ namespace AkademikAi.Web.Controllers.UserController
 
             var result = await _userAnswerService.SubmitUserAnswersAsync(user.Id, userAnswers);
 
-            if (result.Succeeded)
+            if (result.IsSuccess)
             {
                 TempData["SolveSuccessMessage"] = "Sorular başarıyla kaydedildi.";
                 return RedirectToAction("performance", "User");

@@ -31,12 +31,12 @@ namespace AkademikAi.Data.Repositories
             return _dbSet.Where(expression).AsNoTracking();
         }
 
-        public virtual T GetById(object id)
+        public virtual T? GetById(object id)
         {
             return _dbSet.Find(id);
         }
 
-        public virtual T GetFirstOrDefault(Expression<Func<T, bool>> expression)
+        public virtual T? GetFirstOrDefault(Expression<Func<T, bool>> expression)
         {
             return _dbSet.AsNoTracking().FirstOrDefault(expression);
         }
@@ -78,12 +78,12 @@ namespace AkademikAi.Data.Repositories
         }
 
         // Async methods
-        public virtual async Task<T> GetByIdAsync(object id)
+        public virtual async Task<T?> GetByIdAsync(object id)
         {
             return await _dbSet.FindAsync(id);
         }
 
-        public virtual async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> expression)
+        public virtual async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> expression)
         {
             return await _dbSet.FirstOrDefaultAsync(expression);
         }

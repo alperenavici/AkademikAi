@@ -16,12 +16,12 @@ namespace AkademikAi.Data.Repositories
         {
         }
 
-        public async Task<AppUser> GetByEmailAsync(string email)
+        public async Task<AppUser?> GetByEmailAsync(string email)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Email == email);
         }
 
-        public async Task<AppUser> GetByUserNameAsync(string userName)
+        public async Task<AppUser?> GetByUserNameAsync(string userName)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.UserName == userName);
         }

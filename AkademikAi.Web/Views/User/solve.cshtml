@@ -164,7 +164,6 @@
                 <div class="progress-text">0 / 0 soru tamamlandı</div>
             </div>
 
-            <!-- Results Screen -->
             <div class="results-container" id="resultsContainer" style="display: none;">
                 <h2>Odaklanma Alanı Sonucu</h2>
                 <div class="results-stats">
@@ -186,7 +185,6 @@
                     </div>
                 </div>
                 
-                <!-- Form for submitting results -->
                 <form id="submitResultsForm" asp-action="SubmitSolve" asp-controller="User" method="post" style="display: none;">
                     <input type="hidden" id="userAnswersData" name="userAnswers" />
                 </form>
@@ -212,7 +210,7 @@
         let currentQuestionIndex = 0;
         let questions = [];
         let totalQuestions = 0;
-        let userAnswers = []; // Kullanıcı cevaplarını tutmak için dizi
+        let userAnswers = []; 
         let timeLeft = 15 * 60; // 15 dakika
         let timerInterval;
         let nullOption=0;

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AkademikAi.Entity\AkademikAi.Entity.csproj" />
+    <ProjectReference Include="..\AkademikAi.Core\AkademikAi.Core.csproj" />
   </ItemGroup>
 
 </Project>

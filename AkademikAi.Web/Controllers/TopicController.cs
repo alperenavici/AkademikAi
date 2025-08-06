@@ -195,7 +195,7 @@ namespace AkademikAi.Web.Controllers
         {
             try
             {
-                var hierarchy = await _topicService.GetTopicHierarchyAsync();
+                var hierarchy = _topicService.GetTopicHierarchyAsync();
                 return View(hierarchy);
             }
             catch (Exception ex)

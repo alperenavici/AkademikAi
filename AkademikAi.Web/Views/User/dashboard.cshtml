@@ -1,3 +1,4 @@
+@model AkademikAi.Web.Models.PerformanceViewModel
 @{
     ViewData["Title"] = "Ana Sayfa - AkademikAI";
 }
@@ -65,7 +66,7 @@
             }
 
             <header class="main-header">
-                <h1>Hoş geldin, @Model.Name</h1>
+                <h1>Hoş geldin, @Model.User.Name @Model.User.Surname</h1>
                 <p>Bugün öğrenmeye hazır mısın?</p>
             </header>
 
@@ -86,23 +87,22 @@
             <div class="stats-grid">
                 <div class="card stat-card">
                     <span class="stat-label">Çözülen Soru</span>
-                    <div class="stat-value">1,240</div>
-                    <span class="stat-change positive">+12%</span>
+                    <div class="stat-value">@Model.TotalQuestions</div>
+                    <span class="stat-change @(Model.TotalQuestionsPercentageChange >= 0 ? "positive" : "negative")">
+                        @Math.Round(Model.TotalQuestionsPercentageChange, 1)%
+                    </span>
                 </div>
                 <div class="card stat-card">
                     <span class="stat-label">Genel Başarı</span>
-                    <div class="stat-value">88%</div>
-                    <span class="stat-change positive">+5%</span>
+                    <div class="stat-value">%@Math.Round(Model.AverageSuccessRate, 1)</div>
+                    <span class="stat-change @(Model.SuccessRatePercentageChange >= 0 ? "positive" : "negative")">
+                        @Math.Round(Model.SuccessRatePercentageChange, 1)%
+                    </span>
                 </div>
                 <div class="card stat-card">
-                    <span class="stat-label">Tamamlanan Ders</span>
+                    <span class="stat-label">Tamamlanan Denemeler</span> <!--Buraya Deneme Sayısı Eklenicek-->
                     <div class="stat-value">12</div>
                     <span class="stat-change positive">+8%</span>
-                </div>
-                <div class="card stat-card">
-                    <span class="stat-label">Aktif Ders</span>
-                    <div class="stat-value">4</div>
-                    <span class="stat-change negative">-3%</span>
                 </div>
             </div>
 
@@ -144,5 +144,18 @@
 
         </main>
     </div>
+    <script>
+        // Heatmap verilerini global değişkene ata
+        window.heatmapData = @Html.Raw(Json.Serialize(Model.ActivitiesLastYear));
+        
+        // Debug: Veri yapısını konsola yazdır
+        console.log('Heatmap Data:', window.heatmapData);
+        console.log('Data length:', window.heatmapData ? window.heatmapData.length : 0);
+        
+        if (window.heatmapData && window.heatmapData.length > 0) {
+            console.log('Sample data item:', window.heatmapData[0]);
+        }
+    </script>
+
 </body>
 </html>

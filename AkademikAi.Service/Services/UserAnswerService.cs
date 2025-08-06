@@ -143,13 +143,18 @@ namespace AkademikAi.Service.Services
             return true;
         }
 
-        public async Task<ServiceResponse> SubmitUserAnswersAsync(Guid userId, List<UserAnswerDto> userAnswers)
+        public async Task<ServiceResponse<List<UserAnswers>>> SubmitUserAnswersAsync(Guid userId, List<UserAnswerDto> userAnswers)
         {
             try
             {
                 if (userAnswers == null || !userAnswers.Any())
                 {
-                    return ServiceResponse.Failure("Cevap verisi bulunamadı");
+                    return new ServiceResponse<List<UserAnswers>>
+                    {
+                        IsSuccess = false,
+                        Message = "Cevap verisi bulunamadı",
+                        Data = null
+                    };
                 }
 
                 // 1. Tüm soruların bilgilerini tek seferde çek
@@ -158,7 +163,12 @@ namespace AkademikAi.Service.Services
                 
                 if (!questions.Any())
                 {
-                    return ServiceResponse.Failure("Sorular bulunamadı");
+                    return new ServiceResponse<List<UserAnswers>>
+                    {
+                        IsSuccess = false,
+                        Message = "Sorular bulunamadı",
+                        Data = null
+                    };
                 }
 
                 // 2. Kullanıcı cevaplarını hazırla
@@ -247,17 +257,32 @@ namespace AkademikAi.Service.Services
                     await _unitOfWork.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    return ServiceResponse.Success("Sorular başarıyla kaydedildi");
+                    return new ServiceResponse<List<UserAnswers>>
+                    {
+                        IsSuccess = true,
+                        Message = "Sorular başarıyla kaydedildi",
+                        Data = userAnswerEntities
+                    };
                 }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    return ServiceResponse.Failure($"Veritabanı işlemi sırasında hata: {ex.Message}");
+                    return new ServiceResponse<List<UserAnswers>>
+                    {
+                        IsSuccess = false,
+                        Message = $"Veritabanı işlemi sırasında hata: {ex.Message}",
+                        Data = null
+                    };
                 }
             }
             catch (Exception ex)
             {
-                return ServiceResponse.Failure($"İşlem sırasında hata: {ex.Message}");
+                return new ServiceResponse<List<UserAnswers>>
+                {
+                    IsSuccess = false,
+                    Message = $"İşlem sırasında hata: {ex.Message}",
+                    Data = null
+                };
             }
         }
     }

@@ -56,7 +56,7 @@ namespace AkademikAi.Service.Services
             return true;
         }
 
-        public async Task<Dictionary<string, int>> GetAveragePerformanceByTopicAsync()
+        public Dictionary<string, int> GetAveragePerformanceByTopicAsync()
         {
             // This would typically involve joining with user answers and calculating averages
             // For now, returning empty dictionary as placeholder
@@ -68,7 +68,7 @@ namespace AkademikAi.Service.Services
             return await _topicRepository.GetWhereAsync(t => t.ParentTopicId == null);
         }
 
-        public async Task<List<Topics>> GetPerformanceSummariesBySuccessRateRangeAsync(double minRate, double maxRate)
+        public List<Topics> GetPerformanceSummariesBySuccessRateRangeAsync(double minRate, double maxRate)
         {
             // This would typically involve complex queries with user performance data
             // For now, returning empty list as placeholder
@@ -80,7 +80,7 @@ namespace AkademikAi.Service.Services
             return await _topicRepository.GetWhereAsync(t => t.ParentTopicId == parentTopicId);
         }
 
-        public async Task<List<Topics>> GetTopicHierarchyAsync()
+        public List<Topics> GetTopicHierarchyAsync()
         {
             // This would return a hierarchical structure of topics
             // For now, returning empty list as placeholder
@@ -118,7 +118,7 @@ namespace AkademikAi.Service.Services
             return topicCounts;
         }
 
-        public async Task<Topics> GetTopicWithSubTopicsAsync(Guid topicId)
+        public async Task<Topics?> GetTopicWithSubTopicsAsync(Guid topicId)
         {
             var topic = await _topicRepository.GetByIdAsync(topicId);
             if (topic == null) return null;
@@ -131,7 +131,7 @@ namespace AkademikAi.Service.Services
             return topic;
         }
 
-        public async Task<List<Topics>> GetTopPerformersAsync(int count = 10)
+        public List<Topics> GetTopPerformersAsync(int count = 10)
         {
             // This would typically involve complex queries with user performance data
             // For now, returning empty list as placeholder

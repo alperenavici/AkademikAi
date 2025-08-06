@@ -22,6 +22,6 @@ namespace AkademikAi.Service.IServices
         Task<Dictionary<string, double>> GetUserPerformanceByTopicAsync(Guid userId);
         
         // Yeni metod: Toplu cevap gönderme
-        Task<ServiceResponse> SubmitUserAnswersAsync(Guid userId, List<UserAnswerDto> userAnswers);
+        Task<ServiceResponse<List<UserAnswers>>> SubmitUserAnswersAsync(Guid userId, List<UserAnswerDto> userAnswers);
     }
 } 

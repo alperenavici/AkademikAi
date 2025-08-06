@@ -9,8 +9,8 @@ namespace AkademikAi.Data.IRepositories
 {
     public interface IAppUserRepository : IGenericRepository<AppUser>
     {
-        Task<AppUser> GetByEmailAsync(string email);
-        Task<AppUser> GetByUserNameAsync(string userName);
+        Task<AppUser?> GetByEmailAsync(string email);
+        Task<AppUser?> GetByUserNameAsync(string userName);
         Task<List<AppUser>> GetUsersByRoleAsync(UserRole userRole);
         Task<List<AppUser>> GetUsersWithAnswersAsync();
         Task<List<AppUser>> GetUsersWithNotificationsAsync();
