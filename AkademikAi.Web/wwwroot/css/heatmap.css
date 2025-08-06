@@ -1,123 +1,125 @@
-﻿/* Ana Kart Konteyneri (Değişiklik yok) */
-.card {
-    border: 1px solid #d0d7de;
-    border-radius: 6px;
-    padding: 16px;
-    background-color: #ffffff;
-    max-width: 1200px;
-    width: 100%;
-}
-
-.card-header {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 16px;
-}
-
-/* 
- * KUSURSUZ HİZALAMA İÇİN YENİ ANA YAPI
- * Burası tüm sihrin gerçekleştiği yer.
-*/
+﻿/* Ana grid yapısını ve hizalamayı yöneten layout */
 .heatmap-layout {
     display: grid;
-    /* 2 satır, 2 sütunlu bir grid oluşturuyoruz */
+    /* Alanları isimlendir: aylar, günler ve ızgara */
     grid-template-areas:
-        ".      months" /* Üst satır: Boşluk ve Aylar */
-        "days   grid"; /* Alt satır: Günler ve Izgara */
-    /* Sütunlar: 1. sütun içeriğe göre, 2. sütun kalan alanı doldurur */
+        ". months"
+        "days grid";
+    /* Sütun genişlikleri: gün etiketleri için sabit, ızgara için esnek */
     grid-template-columns: auto 1fr;
-    /* Satırlar: 1. satır içeriğe göre, 2. satır kalan alanı doldurur */
-    grid-template-rows: auto 1fr;
-    gap: 10px; /* Günler ve ızgara arasındaki boşluk */
+    gap: 10px; /* Bileşenler arası boşluk */
+    padding: 10px 0;
 }
 
-/* 1. AY ETİKETLERİ */
+/* Ay etiketlerini içeren konteyner */
 .month-labels {
-    grid-area: months; /* Grid'de "months" alanına yerleş */
+    grid-area: months; /* 'months' alanına yerleş */
     display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: #57606a;
-}
-/* JavaScript ile oluşturulan her ay etiketi için (Değişiklik yok) */
-.month-label {
-}
-
-/* 2. GÜN ETİKETLERİ */
-.heatmap-labels {
-    grid-area: days; /* Grid'de "days" alanına yerleş */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-size: 12px;
-    color: #57606a;
-}
-
-    .heatmap-labels .day-label:nth-child(2n) {
-        display: none;
-    }
-
-/* 3. ISI HARİTASI IZGARASI */
-.heatmap-grid-wrapper {
-    grid-area: grid; /* Grid'de "grid" alanına yerleş */
-    overflow-x: auto;
+    justify-content: space-around; /* Ay isimlerini eşit aralıklarla dağıt */
     padding-bottom: 5px;
 }
 
-.heatmap-grid {
-    display: grid;
-    grid-template-columns: repeat(53, 12px); /* 53 hafta */
-    grid-auto-rows: 12px;
-    gap: 3px;
-}
-
-.heatmap-day {
-    width: 12px;
-    height: 12px;
-    background-color: #ebedf0;
-    border-radius: 2px;
-}
-
-    .heatmap-day[title] {
-        cursor: pointer;
-    }
-
-
-/* AÇIKLAMA KISMI (Değişiklik yok) */
-.heatmap-legend {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 4px;
+.month-label {
     font-size: 12px;
     color: #57606a;
-    margin-top: 10px; /* Üstteki harita ile arasına boşluk koyar */
+    flex-grow: 1; /* Esnek büyüme */
+    text-align: center;
 }
 
-    .heatmap-legend .heatmap-legend-color {
-        width: 12px;
-        height: 12px;
-        border-radius: 2px;
-        border: 1px solid rgba(27, 31, 36, 0.15);
+/* Gün etiketlerini (Pzt, Çar...) içeren konteyner */
+.heatmap-labels {
+    grid-area: days; /* 'days' alanına yerleş */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    font-size: 12px;
+    color: #57606a;
+    padding-right: 5px;
+}
+
+/* Asıl ısı haritası ızgarasını saran konteyner */
+.heatmap-grid-wrapper {
+    grid-area: grid; /* 'grid' alanına yerleş */
+}
+
+/* Isı haritası kutularını içeren ızgara */
+.heatmap-grid {
+    display: grid;
+    /* Sütunları otomatik akışla oluştur, her sütun 7 satırdan oluşur */
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 1fr);
+    gap: 3px;
+    min-height: 100px; /* Minimum yükseklik ekle */
+}
+
+/* Tek bir ısı haritası kutusu (hücre) */
+.heatmap-cell {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+    background-color: #ebedf0; /* Varsayılan renk (aktivite yok) */
+    transition: transform 0.1s ease-in-out;
+    border: 1px solid #e1e4e8; /* Hücreleri daha görünür yapmak için border ekle */
+}
+
+    .heatmap-cell:hover {
+        transform: scale(1.1); /* Fare üzerine gelince hafifçe büyüt */
     }
 
-/* Renkler (Değişiklik yok) */
-.heatmap-day.level-0 {
-    background-color: #EBEDF0;
+    /* Renk Seviyeleri Sınıfları */
+    .heatmap-cell.color-level-0 {
+        background-color: #ebedf0 !important;
+    }
+
+    .heatmap-cell.color-level-1 {
+        background-color: #9be9a8 !important;
+    }
+
+    .heatmap-cell.color-level-2 {
+        background-color: #40c463 !important;
+    }
+
+    .heatmap-cell.color-level-3 {
+        background-color: #30a14e !important;
+    }
+
+    .heatmap-cell.color-level-4 {
+        background-color: #216e39 !important;
+    }
+
+
+/* Tooltip (İpucu) Stili */
+.heatmap-tooltip {
+    position: absolute; /* Sayfaya göre mutlak konumlandırma */
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    /* Tooltip'in fare olaylarını engellemesini önler */
+    pointer-events: none;
+    z-index: 9999;
+    white-space: nowrap; /* İçeriğin tek satırda kalmasını sağlar */
+    transition: opacity 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.heatmap-day.level-1 {
-    background-color: #9BE9A8;
+/* Açıklama (Legend) Stili */
+.heatmap-legend {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #57606a;
+    padding-top: 10px;
 }
 
-.heatmap-day.level-2 {
-    background-color: #40C463;
-}
-
-.heatmap-day.level-3 {
-    background-color: #30A14E;
-}
-
-.heatmap-day.level-4 {
-    background-color: #216E39;
+.heatmap-legend-color {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.1);
 }

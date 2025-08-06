@@ -9,11 +9,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/css/dashboard.css">
-    <link rel="stylesheet" href="~/css/dashboard-new.css" />
-    <script src="~/js/heatmap.js"></script>
-    <link rel="stylesheet" href="~/css/heatmap.css" />
-    
+         <link rel="stylesheet" href="~/css/dashboard.css">
+     <link rel="stylesheet" href="~/css/dashboard-new.css" />
+     <link rel="stylesheet" href="~/css/heatmap.css" />
+     
+     <!-- CSS yüklenme testi için inline style -->
+     <style>
+         .heatmap-cell.color-level-1 { background-color: #9be9a8 !important; }
+         .heatmap-cell.color-level-2 { background-color: #40c463 !important; }
+         .heatmap-cell.color-level-3 { background-color: #30a14e !important; }
+         .heatmap-cell.color-level-4 { background-color: #216e39 !important; }
+     </style>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -77,6 +84,7 @@
                     <h3 class="card-header" style="padding: 0; border: none;">AI Koç Önerisi</h3>
                 </div>
                 <p class="ai-coach-message">
+                    @* Burası ileride dinamikleşecek *@
                     Matematik konusunda son 3 günde %15 gerileme gösteriyorsun.
                     Trigonometri konusuna odaklanmanı öneriyorum. Hemen pratiğe başlayalım!
                 </p>
@@ -89,14 +97,14 @@
                     <span class="stat-label">Çözülen Soru</span>
                     <div class="stat-value">@Model.TotalQuestions</div>
                     <span class="stat-change @(Model.TotalQuestionsPercentageChange >= 0 ? "positive" : "negative")">
-                        @Math.Round(Model.TotalQuestionsPercentageChange, 1)%
+                        @Math.Abs(Model.TotalQuestionsPercentageChange).ToString("F0")%
                     </span>
                 </div>
                 <div class="card stat-card">
                     <span class="stat-label">Genel Başarı</span>
-                    <div class="stat-value">%@Math.Round(Model.AverageSuccessRate, 1)</div>
+                    <div class="stat-value">@Model.SuccessRatePercentageChange.ToString("F0")%</div>
                     <span class="stat-change @(Model.SuccessRatePercentageChange >= 0 ? "positive" : "negative")">
-                        @Math.Round(Model.SuccessRatePercentageChange, 1)%
+                        @Math.Abs(Model.SuccessRatePercentageChange).ToString("F0")%
                     </span>
                 </div>
                 <div class="card stat-card">
@@ -106,14 +114,16 @@
                 </div>
             </div>
 
+            <!-- Aktivite Isı Haritası Kartı -->
             <div class="card">
                 <h3 class="card-header">Aktivite Isı Haritası (Son 1 Yıl)</h3>
 
-                <!-- YENİ ANA YAPI: Tüm bileşenler tek bir grid içinde -->
+                <!-- YENİ ANA YAPI: Isı haritası bileşenlerini içeren layout -->
                 <div class="heatmap-layout">
-                    <div class="month-labels" id="month-labels-container">
-                    </div>
+                    <!-- Ay isimlerinin JavaScript ile ekleneceği yer -->
+                    <div class="month-labels" id="month-labels-container"></div>
 
+                    <!-- Sabit gün etiketleri -->
                     <div class="heatmap-labels">
                         <div class="day-label">Pzt</div>
                         <div class="day-label"></div>
@@ -124,9 +134,10 @@
                         <div class="day-label">Paz</div>
                     </div>
 
+                    <!-- Izgaranın JavaScript ile doldurulacağı sarmalayıcı -->
                     <div class="heatmap-grid-wrapper">
-                        <div class="heatmap-grid" id="heatmap-grid">
-                        </div>
+                        <!-- Isı haritası kutularının ekleneceği yer -->
+                        <div class="heatmap-grid" id="heatmap-grid"></div>
                     </div>
                 </div>
                 <!-- / YENİ ANA YAPI SONU -->
@@ -144,18 +155,158 @@
 
         </main>
     </div>
+
+    <!-- Fare üzerine gelince görünecek ipucu (başlangıçta gizli) -->
+    <!-- Bu div'i body'nin sonuna eklemek, z-index sorunlarını önlemeye yardımcı olur. -->
+    <div id="tooltip" class="heatmap-tooltip" style="display:none;"></div>
+
     <script>
-        // Heatmap verilerini global değişkene ata
-        window.heatmapData = @Html.Raw(Json.Serialize(Model.ActivitiesLastYear));
-        
-        // Debug: Veri yapısını konsola yazdır
-        console.log('Heatmap Data:', window.heatmapData);
-        console.log('Data length:', window.heatmapData ? window.heatmapData.length : 0);
-        
-        if (window.heatmapData && window.heatmapData.length > 0) {
-            console.log('Sample data item:', window.heatmapData[0]);
-        }
+        const grid = document.getElementById('heatmap-grid');
+         const tooltip = document.getElementById('tooltip');
+         const monthLabelsContainer = document.getElementById('month-labels-container');
+         const activityData = @Html.Raw(Json.Serialize(Model.ActivitiesLastYear)) || [];
+
+                  // Heatmap başlatılıyor...
+
+         // Elementler bulunamazsa işlemi durdur
+         if (!grid || !tooltip || !monthLabelsContainer) {
+             console.error('Heatmap için gerekli HTML elementlerinden biri bulunamadı!');
+         } else {
+             // 2. VERİYİ "YYYY-MM-DD" ANAHTARLI BİR NESNEYE DÖNÜŞTÜR
+             const activityMap = {};
+                           activityData.forEach(item => {
+                  // DateTime'ı string'e çevir ve YYYY-MM-DD formatına getir
+                  const dateStr = new Date(item.date).toISOString().substring(0, 10);
+                  activityMap[dateStr] = item.questionCount;
+              });
+              
+              // Veri aralığını bul
+              const activityDates = Object.keys(activityMap);
+
+             // 3. RENK SKALASI FONKSİYONU
+             function getColorClass(count) {
+                 if (!count || count === 0) return 'color-level-0';
+                 if (count >= 1 && count <= 5) return 'color-level-1';
+                 if (count >= 6 && count <= 10) return 'color-level-2';
+                 if (count >= 11 && count <= 20) return 'color-level-3';
+                 if (count > 20) return 'color-level-4';
+                 return 'color-level-0';
+             }
+
+             // 4. ISI HARİTASI IZGARASINI OLUŞTUR
+                           grid.innerHTML = '';
+              monthLabelsContainer.innerHTML = ''; // Ay etiketlerini de temizle
+
+                           // Veri aralığına göre tarih hesapla
+              let startDate, endDate;
+              
+              if (activityDates.length > 0) {
+                  // Veri varsa, veri aralığına göre hesapla
+                  const minDate = new Date(Math.min(...activityDates.map(d => new Date(d))));
+                  const maxDate = new Date(Math.max(...activityDates.map(d => new Date(d))));
+                  
+                  // Veri yılından başla
+                  startDate = new Date(minDate.getFullYear(), 0, 1); // Yılın başı
+                  endDate = new Date(maxDate.getFullYear(), 11, 31); // Yılın sonu
+              } else {
+                  // Veri yoksa, bugünden 1 yıl öncesini al
+                  endDate = new Date();
+                  startDate = new Date();
+                  startDate.setFullYear(startDate.getFullYear() - 1);
+              }
+              
+              
+
+             const firstDay = startDate.getDay();
+             const emptyCellsAtStart = (firstDay === 0) ? 6 : firstDay - 1;
+
+             for (let i = 0; i < emptyCellsAtStart; i++) {
+                 grid.appendChild(document.createElement('div')).className = 'heatmap-cell';
+             }
+
+             const monthNames = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+             let currentMonth = -1;
+
+                           for (let currentDate = new Date(startDate); currentDate <= endDate; currentDate.setDate(currentDate.getDate() + 1)) {
+                 // Ay etiketlerini ekle
+                 if (currentDate.getMonth() !== currentMonth) {
+                      if (currentDate.getDate() === 1 || (currentDate.getTime() === startDate.getTime())) {
+                         currentMonth = currentDate.getMonth();
+                         const monthLabel = document.createElement('div');
+                         monthLabel.className = 'month-label';
+                         monthLabel.textContent = monthNames[currentMonth];
+                         monthLabelsContainer.appendChild(monthLabel);
+                     }
+                 }
+
+                 const year = currentDate.getFullYear();
+                 const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                 const day = String(currentDate.getDate()).padStart(2, '0');
+                 const dateKey = `${year}-${month}-${day}`;
+
+                                   const count = activityMap[dateKey] || 0;
+                  
+                  
+
+                                   const cell = document.createElement('div');
+                  cell.className = 'heatmap-cell';
+                  cell.classList.add(getColorClass(count));
+                  cell.dataset.date = dateKey;
+                  cell.dataset.count = count;
+                  
+                  // Hücreyi daha görünür yap
+                  cell.style.width = '15px';
+                  cell.style.height = '15px';
+                  cell.style.borderRadius = '3px';
+                  cell.style.border = '1px solid #e1e4e8';
+                  cell.style.backgroundColor = '#ebedf0'; // Varsayılan renk
+                  
+                                     // Inline style da ekle (CSS yüklenmezse)
+                   if (count > 0) {
+                       const colorMap = {
+                           'color-level-1': '#9be9a8',
+                           'color-level-2': '#40c463',
+                           'color-level-3': '#30a14e',
+                           'color-level-4': '#216e39'
+                       };
+                       const colorClass = getColorClass(count);
+                                               if (colorMap[colorClass]) {
+                            cell.style.backgroundColor = colorMap[colorClass];
+                        }
+                   }
+                  
+                  
+
+                                   cell.addEventListener('mouseover', (event) => {
+                      const cellData = event.target.dataset;
+                      const count = parseInt(cellData.count) || 0;
+                      const readableDate = new Date(cellData.date + 'T12:00:00Z').toLocaleDateString('tr-TR', {
+                          year: 'numeric', month: 'long', day: 'numeric'
+                      });
+                      
+                      if (count > 0) {
+                          tooltip.innerHTML = `<strong>${count} soru</strong><br>${readableDate}`;
+                      } else {
+                          tooltip.innerHTML = `<strong>0 soru</strong><br>${readableDate}`;
+                      }
+                      
+                      tooltip.style.display = 'block';
+                      tooltip.style.left = `${event.pageX + 10}px`;
+                      tooltip.style.top = `${event.pageY + 10}px`;
+                  });
+                  cell.addEventListener('mouseout', () => { tooltip.style.display = 'none'; });
+
+                 grid.appendChild(cell);
+             }
+             
+             
+         }
+         
+       
     </script>
 
+
+
+  
 </body>
 </html>

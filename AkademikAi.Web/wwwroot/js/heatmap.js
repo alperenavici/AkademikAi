@@ -1,90 +1,120 @@
-﻿document.addEventListener('DOMContentLoaded', function () {
-    const heatmapGrid = document.getElementById('heatmap-grid');
+﻿// heatmap.js - Geliştirilmiş ve Sağlamlaştırılmış Versiyon
+
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. GEREKLİ ELEMENTLERİ VE VERİYİ SEÇ
+    const grid = document.getElementById('heatmap-grid');
+    const tooltip = document.getElementById('tooltip');
     const monthLabelsContainer = document.getElementById('month-labels-container');
+    const activityData = window.heatmapData || [];
 
-    // Sabitler
-    const TOTAL_DAYS = 365;
-    const today = new Date();
-    const monthNames = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
-
-    // Renk skalası
-    const colorScale = [
-        { threshold: 0, color: "#EBEDF0" },
-        { threshold: 1, color: "#9BE9A8" },
-        { threshold: 5, color: "#40C463" },
-        { threshold: 10, color: "#30A14E" },
-        { threshold: 20, color: "#216E39" }
-    ];
-
-    function getColor(activityLevel) {
-        for (let i = colorScale.length - 1; i >= 0; i--) {
-            if (activityLevel >= colorScale[i].threshold) {
-                return colorScale[i].color;
-            }
-        }
-        return "#EBEDF0";
+    if (!grid) {
+        console.error('Heatmap grid elementi (#heatmap-grid) bulunamadı!');
+        return;
     }
 
-    // Haritanın başlangıç tarihini hesapla (Bugünden 365 gün önce)
-    const startDate = new Date();
-    startDate.setDate(today.getDate() - TOTAL_DAYS);
+    // --- SAAT DİLİMİ SORUNUNU ÇÖZMEK İÇİN YARDIMCI FONKSİYON ---
+    // Bir tarihi alıp saat, dakika, saniye ve milisaniyelerini sıfırlayarak
+    // sadece Yıl-Ay-Gün olarak temsil eden bir UTC Date nesnesi döndürür.
+    function getUtcDateKey(date) {
+        return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getUTCDate()));
+    }
 
-    // Başlangıç gününü Pazar'a (haftanın ilk günü) ayarla
-    const dayOfWeek = startDate.getDay(); // 0: Pazar, 1: Pazartesi, ...
-    startDate.setDate(startDate.getDate() - dayOfWeek);
+    // YYYY-MM-DD formatında string anahtar döndüren fonksiyon
+    function getDateString(date) {
+        return date.toISOString().split('T')[0];
+    }
 
-    let currentDate = new Date(startDate);
-    let lastMonth = -1;
-    let weekCount = 0;
 
-    // Ay etiketlerini oluştur
-    for (let i = 0; i < TOTAL_DAYS + dayOfWeek + 7; i++) {
-        const currentMonth = currentDate.getMonth();
-        if (currentMonth !== lastMonth) {
-            lastMonth = currentMonth;
-            const weekIndex = Math.floor(i / 7);
+    // 2. VERİYİ HIZLI ERİŞİM İÇİN BİR HARİTAYA (MAP) DÖNÜŞTÜR
+    const activityMap = new Map();
+    activityData.forEach(item => {
+        const itemDate = new Date(item.date);
+        const dateKey = getDateString(getUtcDateKey(itemDate));
+        // DEĞİŞİKLİK: item.count yerine item.questionCount kullanıyoruz.
+        activityMap.set(dateKey, item.questionCount);
+    });
 
-            const monthLabel = document.createElement('div');
-            monthLabel.className = 'month-label';
-            monthLabel.textContent = monthNames[currentMonth];
-            monthLabel.style.gridColumnStart = weekIndex + 1;
-            monthLabelsContainer.appendChild(monthLabel);
-        }
 
-        // Gün hücresini oluştur
-        const dayCell = document.createElement('div');
-        dayCell.className = 'heatmap-day';
+    // 3. RENK SKALASI FONKSİYONU (Değişiklik yok)
+    function getColorClass(count) {
+        if (!count || count === 0) return 'color-level-0';
+        if (count >= 1 && count <= 5) return 'color-level-1';
+        if (count >= 6 && count <= 10) return 'color-level-2';
+        if (count >= 11 && count <= 20) return 'color-level-3';
+        if (count > 20) return 'color-level-4';
+        return 'color-level-0';
+    }
 
-        // Sadece son 365 günü renklendir
-        if (currentDate <= today && (today.getTime() - currentDate.getTime()) / (1000 * 3600 * 24) <= TOTAL_DAYS) {
-            // Bu gün için aktivite verisi var mı kontrol et
-            const dateString = currentDate.toISOString().split('T')[0];
-            const activityData = window.heatmapData ? window.heatmapData.find(d => {
-                // Date formatını kontrol et (DateTime objesi olabilir)
-                const dataDate = typeof d.Date === 'string' ? d.Date.split('T')[0] : new Date(d.Date).toISOString().split('T')[0];
-                return dataDate === dateString;
-            }) : null;
-            
-            if (activityData) {
-                // Gerçek veri kullan
-                const activityLevel = activityData.QuestionCount || 0;
-                dayCell.style.backgroundColor = getColor(activityLevel);
-                dayCell.title = `${activityData.QuestionCount || 0} soru - ${currentDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
-                
-                // Debug: İlk birkaç eşleşen veriyi konsola yazdır
-                if (Math.random() < 0.1) { // %10 ihtimalle debug bilgisi
-                    console.log('Found activity data:', activityData, 'for date:', dateString);
-                }
-            } else {
-                // Veri yoksa boş bırak
-                dayCell.style.backgroundColor = "#EBEDF0";
-                dayCell.title = `0 soru - ${currentDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+
+    // 4. ISI HARİTASI IZGARASINI VE AY ETİKETLERİNİ OLUŞTUR
+    // Grid'i ve ay etiketlerini temizle (sayfa yenilemelerinde tekrar eklenmemesi için)
+    grid.innerHTML = '';
+    monthLabelsContainer.innerHTML = '';
+
+    const today = getUtcDateKey(new Date());
+    const oneYearAgo = getUtcDateKey(new Date());
+    oneYearAgo.setUTCFullYear(today.getUTCFullYear() - 1);
+    oneYearAgo.setUTCDate(oneYearAgo.getUTCDate() + 1); // Tam 365 gün öncesi için ayarla
+
+    // BAŞLANGIÇ GÜNÜ HESAPLAMASINI SAĞLAMLAŞTIRMA
+    // JavaScript'te getDay() 0=Pazar, 6=Cumartesi. Bizim gridimiz Pazartesi başlıyor.
+    // Pazar için 6, Pazartesi için 0 boşluk, Salı için 1 boşluk...
+    let firstDayOfWeek = oneYearAgo.getUTCDay(); // 0=Pazar, 1=Pzt...
+    let emptyCellsAtStart = (firstDayOfWeek === 0) ? 6 : firstDayOfWeek - 1; // Eğer Pazar ise 6, diğer günler için (gün-1) boşluk
+
+    for (let i = 0; i < emptyCellsAtStart; i++) {
+        grid.appendChild(document.createElement('div'));
+    }
+
+    const monthNames = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+    let currentMonth = -1;
+
+    for (let day = new Date(oneYearAgo); day <= today; day.setUTCDate(day.getUTCDate() + 1)) {
+        const loopDate = getUtcDateKey(day);
+
+        // Ay etiketlerini oluştur
+        if (loopDate.getUTCMonth() !== currentMonth) {
+            currentMonth = loopDate.getUTCMonth();
+            // Ayın ilk günü veya ayın ilk haftası ise etiketi ekle
+            if (loopDate.getUTCDate() <= 7) {
+                const monthLabel = document.createElement('div');
+                monthLabel.className = 'month-label';
+                monthLabel.textContent = monthNames[currentMonth];
+                monthLabelsContainer.appendChild(monthLabel);
             }
         }
 
-        heatmapGrid.appendChild(dayCell);
+        const dateKey = getDateString(loopDate);
+        const count = activityMap.get(dateKey) || 0;
 
-        // Bir sonraki güne geç
-        currentDate.setDate(currentDate.getDate() + 1);
+        const cell = document.createElement('div');
+        cell.className = 'heatmap-cell';
+        cell.classList.add(getColorClass(count));
+
+        cell.dataset.date = dateKey;
+        cell.dataset.count = count;
+
+        // 5. TOOLTIP (İPUCU) İÇİN EVENT LISTENER'LARI EKLE
+        cell.addEventListener('mouseover', (event) => {
+            const cellData = event.target.dataset;
+            if (cellData.count && parseInt(cellData.count, 10) > 0) {
+                // Tooltip tarihi için saat dilimi dönüşümünü engelle
+                const [year, month, day] = cellData.date.split('-').map(Number);
+                const readableDate = new Date(year, month - 1, day).toLocaleDateString('tr-TR', {
+                    year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC'
+                });
+
+                tooltip.innerHTML = `<strong>${cellData.count} soru</strong><br>${readableDate}`;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${event.pageX + 10}px`;
+                tooltip.style.top = `${event.pageY + 10}px`;
+            }
+        });
+
+        cell.addEventListener('mouseout', () => {
+            tooltip.style.display = 'none';
+        });
+
+        grid.appendChild(cell);
     }
 });
