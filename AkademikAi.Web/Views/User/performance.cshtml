@@ -1,4 +1,4 @@
-@model AkademikAi.Entity.Entites.AppUser
+@model AkademikAi.Web.Models.PerformanceViewModel
 @{
     ViewData["Title"] = "MR Sonuçlarınız - AkademikAI";
 }
@@ -55,6 +55,22 @@
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Success/Error Messages -->
+            @if (TempData["SolveSuccessMessage"] != null)
+            {
+                <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; margin: 15px; border-radius: 5px; border: 1px solid #c3e6cb;">
+                    <i class="fas fa-check-circle"></i>
+                    @TempData["SolveSuccessMessage"]
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin: 15px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
             <header class="main-header">
                 <h1>MR Sonuçlarınız </h1>
                 <p>Detaylı performans analizi ve gelişim grafikleriniz.</p>
@@ -67,19 +83,20 @@
                         <label for="course-filter">Ders:</label>
                         <select id="course-filter" class="filter-select">
                             <option value="">Tüm Dersler</option>
-                            <option value="matematik">Matematik</option>
-                            <option value="fizik">Fizik</option>
-                            <option value="kimya">Kimya</option>
-                            <option value="biyoloji">Biyoloji</option>
+                            @foreach (var topic in Model.AllTopics.Where(t => t.ParentTopicId == null))
+                            {
+                                <option value="@topic.Id">@topic.TopicName</option>
+                            }
                         </select>
                     </div>
                     <div class="filter-group">
                         <label for="topic-filter">Konu:</label>
                         <select id="topic-filter" class="filter-select">
                             <option value="">Tüm Konular</option>
-                            <option value="geometri">Geometri</option>
-                            <option value="cebir">Cebir</option>
-                            <option value="trigonometri">Trigonometri</option>
+                            @foreach (var topic in Model.AllTopics.Where(t => t.ParentTopicId != null))
+                            {
+                                <option value="@topic.Id">@topic.TopicName</option>
+                            }
                         </select>
                     </div>
                     <div class="filter-group">
@@ -102,7 +119,7 @@
                             <i class="fas fa-question-circle"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-value">1,240</div>
+                            <div class="stat-value">@Model.TotalQuestions</div>
                             <div class="stat-label">Toplam Soru</div>
                         </div>
                     </div>
@@ -111,7 +128,7 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-value">1,092</div>
+                            <div class="stat-value">@Model.TotalCorrectAnswers</div>
                             <div class="stat-label">Doğru Cevap</div>
                         </div>
                     </div>
@@ -120,7 +137,7 @@
                             <i class="fas fa-percentage"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-value">%88</div>
+                            <div class="stat-value">%@Math.Round(Model.AverageSuccessRate, 1)</div>
                             <div class="stat-label">Başarı Oranı</div>
                         </div>
                     </div>
@@ -129,7 +146,7 @@
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-value">45.2</div>
+                            <div class="stat-value">@(Model.AverageTimePerQuestion > 0 ? Math.Round(Model.AverageTimePerQuestion, 1).ToString() : "N/A")</div>
                             <div class="stat-label">Ort. Süre (dk)</div>
                         </div>
                     </div>
@@ -154,46 +171,31 @@
                         <div class="topic-success">Başarı Oranı</div>
                         <div class="topic-progress">İlerleme</div>
                     </div>
-                    <div class="topic-row">
-                        <div class="topic-name">Geometri</div>
-                        <div class="topic-stats">320</div>
-                        <div class="topic-success">%92</div>
-                        <div class="topic-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 92%;"></div>
+                    @if (Model.PerformanceSummaries.Any())
+                    {
+                        @foreach (var performance in Model.PerformanceSummaries.OrderByDescending(p => p.SuccessRate))
+                        {
+                            var topicName = Model.AllTopics.FirstOrDefault(t => t.Id == performance.TopicId)?.TopicName ?? "Bilinmeyen Konu";
+                            <div class="topic-row">
+                                <div class="topic-name">@topicName</div>
+                                <div class="topic-stats">@performance.TotalQuestionsAnswered</div>
+                                <div class="topic-success">%@Math.Round(performance.SuccessRate, 1)</div>
+                                <div class="topic-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: @(performance.SuccessRate)%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="topic-row">
+                            <div class="topic-name" colspan="4" style="text-align: center; padding: 20px;">
+                                Henüz performans verisi bulunmuyor. Soru çözmeye başlayın!
                             </div>
                         </div>
-                    </div>
-                    <div class="topic-row">
-                        <div class="topic-name">Cebir</div>
-                        <div class="topic-stats">280</div>
-                        <div class="topic-success">%85</div>
-                        <div class="topic-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 85%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="topic-row">
-                        <div class="topic-name">Trigonometri</div>
-                        <div class="topic-stats">180</div>
-                        <div class="topic-success">%78</div>
-                        <div class="topic-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 78%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="topic-row">
-                        <div class="topic-name">Analitik Geometri</div>
-                        <div class="topic-stats">150</div>
-                        <div class="topic-success">%82</div>
-                        <div class="topic-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 82%;"></div>
-                            </div>
-                        </div>
-                    </div>
+                    }
                 </div>
             </section>
 
@@ -201,31 +203,65 @@
             <section class="ai-recommendations">
                 <h3>AI Koç Önerileri</h3>
                 <div class="recommendations-grid">
-                    <div class="recommendation-card">
-                        <div class="recommendation-icon">
-                            <i class="fas fa-lightbulb"></i>
+                    @if (Model.WeakestTopics.Any())
+                    {
+                        var weakestTopic = Model.WeakestTopics.First();
+                        var topicName = Model.AllTopics.FirstOrDefault(t => t.Id == weakestTopic.TopicId)?.TopicName ?? "Bu Konu";
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h4>@topicName Konusunu Güçlendir</h4>
+                                <p>Bu konudaki başarı oranın %@Math.Round(weakestTopic.SuccessRate, 1). @topicName sorularına daha fazla odaklanmanı öneriyorum.</p>
+                            </div>
                         </div>
-                        <div class="recommendation-content">
-                            <h4>Trigonometri Konusunu Güçlendir</h4>
-                            <p>Bu konudaki başarı oranın %78. Trigonometri sorularına daha fazla odaklanmanı öneriyorum.</p>
+                    }
+                    else
+                    {
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h4>İlk Adımı At</h4>
+                                <p>Henüz soru çözmeye başlamamışsın. İlk sorunu çözerek öğrenme yolculuğuna başla!</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="recommendation-card">
-                        <div class="recommendation-icon">
-                            <i class="fas fa-target"></i>
+                    }
+                    
+                    @if (Model.AverageSuccessRate > 0)
+                    {
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-target"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h4>Hedefini Belirle</h4>
+                                <p>Şu anki başarı oranın %@Math.Round(Model.AverageSuccessRate, 1). %90'ın üzerine çıkmak için düzenli çalışmaya devam et.</p>
+                            </div>
                         </div>
-                        <div class="recommendation-content">
-                            <h4>Hızını Artır</h4>
-                            <p>Ortalama soru çözme süren 45.2 dakika. Hız antrenmanları yaparak bunu 35 dakikaya düşürebilirsin.</p>
+                    }
+                    else
+                    {
+                        <div class="recommendation-card">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-target"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h4>Hedefini Belirle</h4>
+                                <p>İlk hedefin günde en az 10 soru çözmek olsun. Düzenli çalışma ile başarıya ulaşacaksın.</p>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    
                     <div class="recommendation-card">
                         <div class="recommendation-icon">
                             <i class="fas fa-chart-line"></i>
                         </div>
                         <div class="recommendation-content">
                             <h4>Günlük Hedef Belirle</h4>
-                            <p>Günde en az 20 soru çözerek tutarlı bir ilerleme sağlayabilirsin.</p>
+                            <p>Günde en az 20 soru çözerek tutarlı bir ilerleme sağlayabilirsin. Düzenli çalışma anahtardır.</p>
                         </div>
                     </div>
                 </div>
@@ -234,65 +270,102 @@
     </div>
 
     <script>
-        // Chart.js ile gelişim grafiği
-        const ctx = document.getElementById('progressChart').getContext('2d');
-        const progressChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['1. Hafta', '2. Hafta', '3. Hafta', '4. Hafta', '5. Hafta', '6. Hafta', '7. Hafta'],
-                datasets: [{
-                    label: 'Başarı Oranı (%)',
-                    data: [65, 70, 75, 80, 85, 80, 88],
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+        let progressChart;
+
+        // Grafik verilerini yükle
+        async function loadChartData() {
+            try {
+                const response = await fetch('/User/GetPerformanceChartData');
+                const result = await response.json();
+                
+                if (result.success) {
+                    createChart(result.labels, result.data);
+                } else {
+                    console.error('Grafik verisi yüklenemedi:', result.message);
+                    // Hata durumunda boş grafik oluştur
+                    createChart([], []);
+                }
+            } catch (error) {
+                console.error('Grafik verisi yüklenirken hata:', error);
+                createChart([], []);
+            }
+        }
+
+        // Chart.js ile gelişim grafiği oluştur
+        function createChart(labels, data) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            // Eğer önceki grafik varsa yok et
+            if (progressChart) {
+                progressChart.destroy();
+            }
+            
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.length > 0 ? labels : ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'],
+                    datasets: [{
+                        label: 'Başarı Oranı (%)',
+                        data: data.length > 0 ? data : [0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        grid: {
-                            color: 'rgba(37, 99, 235, 0.1)'
-                        },
-                        ticks: {
-                            color: '#64748b',
-                            callback: function(value) {
-                                return value + '%';
-                            }
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
                         }
                     },
-                    x: {
-                        grid: {
-                            color: 'rgba(37, 99, 235, 0.1)'
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(37, 99, 235, 0.1)'
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
                         },
-                        ticks: {
-                            color: '#64748b'
+                        x: {
+                            grid: {
+                                color: 'rgba(37, 99, 235, 0.1)'
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            }
                         }
                     }
                 }
-            }
+            });
+        }
+
+        // Sayfa yüklendiğinde grafik verilerini yükle
+        document.addEventListener('DOMContentLoaded', function() {
+            loadChartData();
         });
 
         // Filtre değişikliklerini dinle
         document.getElementById('course-filter').addEventListener('change', function() {
             console.log('Ders filtresi değişti:', this.value);
+            // Burada filtreleme işlemi yapılabilir
         });
 
         document.getElementById('topic-filter').addEventListener('change', function() {
             console.log('Konu filtresi değişti:', this.value);
+            // Burada filtreleme işlemi yapılabilir
         });
 
         document.getElementById('date-filter').addEventListener('change', function() {
             console.log('Tarih filtresi değişti:', this.value);
+            // Burada filtreleme işlemi yapılabilir
         });
     </script>
 </body>

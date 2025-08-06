@@ -53,6 +53,15 @@ namespace AkademikAi.Data.Repositories
                 .FirstOrDefaultAsync(q => q.Id == questionId);
         }
 
+        public Task<List<Questions>> GetQuestionsByIdsAsync(List<Guid> questionIds)
+        {
+            return _context.Questions
+                .Include(q => q.QuestionsOptions)
+                .Include(q => q.QuestionsTopics)
+                .Where(q => questionIds.Contains(q.Id))
+                .ToListAsync();
+        }
+
         public Task <List<Questions>>GetQuestionsByDifficultyAsync(QuestionsDiff DiffucultyDifficultyLevel)
         {
             return _context.Questions

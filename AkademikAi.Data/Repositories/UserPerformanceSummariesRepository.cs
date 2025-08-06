@@ -30,7 +30,7 @@ namespace AkademikAi.Data.Repositories
             return await _context.UserPerformanceSummaries
                 .Where(p => p.UserId == userId)
                 .Include(p => p.Topic) 
-                .OrderBy(p => (double)p.CorrectAnswers / p.TotalAnsweredQuestions) 
+                .OrderBy(p => (double)p.CorrectAnswers / p.TotalQuestionsAnswered) 
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -38,9 +38,9 @@ namespace AkademikAi.Data.Repositories
         public async Task<List<UserPerformanceSummaries>> GetWeakestTopicsForUserAsync(Guid userId, int count = 5)
         {
             return await _context.UserPerformanceSummaries
-                .Where(p => p.UserId == userId && p.TotalAnsweredQuestions > 5) 
+                .Where(p => p.UserId == userId && p.TotalQuestionsAnswered > 5) 
                 .Include(p => p.Topic)
-                .OrderBy(p => (double)p.CorrectAnswers / p.TotalAnsweredQuestions)
+                .OrderBy(p => (double)p.CorrectAnswers / p.TotalQuestionsAnswered)
                 .Take(count) 
                 .AsNoTracking()
                 .ToListAsync();
@@ -57,6 +57,12 @@ namespace AkademikAi.Data.Repositories
             return await _context.UserPerformanceSummaries
                 .Where(p => p.UserId == userId)
                 .ToListAsync();
+        }
+
+        public async Task<UserPerformanceSummaries?> GetUserPerformanceSummaryByUserAndTopicAsync(Guid userId, Guid topicId)
+        {
+            return await _context.UserPerformanceSummaries
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.TopicId == topicId);
         }
     }
 }

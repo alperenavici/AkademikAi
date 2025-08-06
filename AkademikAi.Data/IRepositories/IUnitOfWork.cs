@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,16 +20,12 @@ namespace AkademikAi.Data.IRepositories
         public IUserNotificationsRepository userNotifications { get; }
         public IUserAnswersRepository userAnswers { get; }
 
-
-
-
-
         Task<int> SaveChangesAsync();
         void SaveChanges();
-        Task BeginTransactionAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync();
         void Commit();
+        Task CommitAsync();
         void Rollback();
+        Task RollbackAsync();
     }
-    
-   
 }

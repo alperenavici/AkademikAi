@@ -1,3 +1,4 @@
+using AkademikAi.Core.DTOs;
 using AkademikAi.Entity.Entites;
 using System;
 using System.Collections.Generic;
@@ -19,5 +20,8 @@ namespace AkademikAi.Service.IServices
         Task<double> GetAppUseruccessRateByDifficultyAsync(Guid userId, int difficultyLevel);
         Task<List<UserAnswers>> GetUserRecentAnswersAsync(Guid userId, int count = 10);
         Task<Dictionary<string, double>> GetUserPerformanceByTopicAsync(Guid userId);
+        
+        // Yeni metod: Toplu cevap gönderme
+        Task<ServiceResponse> SubmitUserAnswersAsync(Guid userId, List<UserAnswerDto> userAnswers);
     }
 } 

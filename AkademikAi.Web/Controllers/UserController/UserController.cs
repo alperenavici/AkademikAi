@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace AkademikAi.Web.Controllers.UserController
 {
@@ -20,14 +21,19 @@ namespace AkademikAi.Web.Controllers.UserController
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IQuestionService _questionService;
         private readonly ITopicService _topicService;
+        private readonly IUserPerformanceSummaryService _performanceService;
+        private readonly IUserAnswerService _userAnswerService;
         
         public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, 
-                            IQuestionService questionService, ITopicService topicService)
+                            IQuestionService questionService, ITopicService topicService,
+                            IUserPerformanceSummaryService performanceService, IUserAnswerService userAnswerService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _questionService = questionService;
             _topicService = topicService;
+            _performanceService = performanceService;
+            _userAnswerService = userAnswerService;
         }
         [HttpGet]
         public IActionResult Login()
@@ -224,9 +230,31 @@ namespace AkademikAi.Web.Controllers.UserController
             return View();
         }
         [HttpGet]
-        public IActionResult performance()
+        [Authorize]
+        public async Task<IActionResult> performance()
         {
-            return View();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            var userPerformanceSummaries = await _performanceService.GetUserPerformanceSummariesByUserIdAsync(user.Id);
+            
+            var allTopics = await _topicService.GetAllAsync();
+            
+            var performanceData = new PerformanceViewModel
+            {
+                User = user,
+                PerformanceSummaries = userPerformanceSummaries,
+                AllTopics = allTopics,
+                TotalQuestions = userPerformanceSummaries.Sum(p => p.TotalQuestionsAnswered),
+                TotalCorrectAnswers = userPerformanceSummaries.Sum(p => p.CorrectAnswers),
+                AverageSuccessRate = userPerformanceSummaries.Any() ? userPerformanceSummaries.Average(p => p.SuccessRate) : 0,
+                WeakestTopics = userPerformanceSummaries.OrderBy(p => p.SuccessRate).Take(3).ToList()
+            };
+
+            return View(performanceData);
         }
         [HttpGet]
         [Authorize]
@@ -249,6 +277,36 @@ namespace AkademikAi.Web.Controllers.UserController
             ViewBag.CurrentUser = user;
             
             return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> SubmitSolve([FromBody] List<UserAnswerDto> userAnswers)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            if (userAnswers == null || !userAnswers.Any())
+            {
+                TempData["ErrorMessage"] = "Cevap verisi bulunamadı.";
+                return RedirectToAction("solve", "User");
+            }
+
+            var result = await _userAnswerService.SubmitUserAnswersAsync(user.Id, userAnswers);
+
+            if (result.Succeeded)
+            {
+                TempData["SolveSuccessMessage"] = "Sorular başarıyla kaydedildi.";
+                return RedirectToAction("performance", "User");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result.Message;
+                return RedirectToAction("solve", "User");
+            }
         }
 
         [HttpGet]
@@ -308,7 +366,61 @@ namespace AkademikAi.Web.Controllers.UserController
             {
                 return Json(new { success = false, message = "Alt konular yüklenirken hata oluştu" });
             }
-        } 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPerformanceChartData()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Kullanıcı bulunamadı" });
+            }
+
+            try
+            {
+                var performanceSummaries = await _performanceService.GetUserPerformanceSummariesByUserIdAsync(user.Id);
+                
+                // Son 7 günlük veri için örnek veri oluştur (gerçek uygulamada tarih bazlı filtreleme yapılır)
+                var chartData = new List<object>();
+                var labels = new List<string>();
+                var data = new List<double>();
+
+                if (performanceSummaries.Any())
+                {
+                    // Son 7 gün için örnek veri
+                    for (int i = 6; i >= 0; i--)
+                    {
+                        var date = DateTime.Now.AddDays(-i);
+                        labels.Add(date.ToString("dd/MM"));
+                        
+                        // Bu gün için ortalama başarı oranı (gerçek uygulamada tarih bazlı hesaplanır)
+                        var daySuccessRate = performanceSummaries.Average(p => p.SuccessRate);
+                        data.Add(Math.Round(daySuccessRate, 1));
+                    }
+                }
+                else
+                {
+                    // Veri yoksa örnek veri
+                    for (int i = 6; i >= 0; i--)
+                    {
+                        var date = DateTime.Now.AddDays(-i);
+                        labels.Add(date.ToString("dd/MM"));
+                        data.Add(0);
+                    }
+                }
+
+                return Json(new { 
+                    success = true, 
+                    labels = labels,
+                    data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Grafik verisi yüklenirken hata oluştu" });
+            }
+        }
        
 
     }

@@ -14,5 +14,6 @@ namespace AkademikAi.Data.IRepositories
         Task<List<UserPerformanceSummaries>> GetWeakestTopicsForUserAsync(Guid userId, int count = 5);
         Task<UserPerformanceSummaries?> GetUserPerformanceSummaryByUserIdAsync(Guid userId);
         Task<List<UserPerformanceSummaries>> GetUserPerformanceSummariesByUserIdAsync(Guid userId);
+        Task<UserPerformanceSummaries?> GetUserPerformanceSummaryByUserAndTopicAsync(Guid userId, Guid topicId);
     }
 }

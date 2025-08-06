@@ -99,6 +99,11 @@ namespace AkademikAi.Service.Services
             return await _questionRepository.GetQuestionByIdAsync(questionId);
         }
 
+        public async Task<List<Questions>> GetQuestionsByIdsAsync(List<Guid> questionIds)
+        {
+            return await _questionRepository.GetQuestionsByIdsAsync(questionIds);
+        }
+
         public async Task<List<Questions>> GetQuestionsByDifficultyAsync(QuestionsDiff difficultyLevel)
         {
             return await _questionRepository.GetQuestionsByDifficultyAsync(difficultyLevel);

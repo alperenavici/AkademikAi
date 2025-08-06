@@ -11,7 +11,6 @@ namespace AkademikAi.Entity.Entites
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid TopicId { get; set; } 
-        public int TotalAnsweredQuestions { get; set; }
         public int TotalQuestionsAnswered { get; set; }
         public int CorrectAnswers { get; set; }
         public double SuccessRate { get; set; }

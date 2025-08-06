@@ -12,6 +12,7 @@ namespace AkademikAi.Service.IServices
         Task<List<Questions>> GetQuestionsByUserIdAsync(Guid userId);
         Task<List<Questions>> GetActiveQuestionsAsync();
         Task<Questions> GetQuestionByIdAsync(Guid questionId);
+        Task<List<Questions>> GetQuestionsByIdsAsync(List<Guid> questionIds);
         Task<List<Questions>> GetQuestionsByDifficultyAsync(QuestionsDiff difficultyLevel);
         Task<List<Questions>> GetQuestionsBySourceAsync(string source);
         Task<List<Questions>> GetQuestionsByUserIdAndDifficultyAsync(Guid userId, QuestionsDiff difficultyLevel);

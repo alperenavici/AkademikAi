@@ -57,6 +57,16 @@ namespace AkademikAi.Service.Services
             return await _performanceRepository.GetUserPerformanceSummaryByUserIdAsync(userId);
         }
 
+        public async Task<List<UserPerformanceSummaries>> GetUserPerformanceSummariesByUserIdAsync(Guid userId)
+        {
+            return await _performanceRepository.GetUserPerformanceSummariesByUserIdAsync(userId);
+        }
+
+        public async Task<UserPerformanceSummaries> GetUserPerformanceSummaryByUserAndTopicAsync(Guid userId, Guid topicId)
+        {
+            return await _performanceRepository.GetUserPerformanceSummaryByUserAndTopicAsync(userId, topicId);
+        }
+
         public async Task<List<UserPerformanceSummaries>> GetUserPerformanceSummariesByDateRangeAsync(Guid userId, DateTime startDate, DateTime endDate)
         {
             var summaries = await _performanceRepository.GetUserPerformanceSummariesByUserIdAsync(userId);

@@ -185,11 +185,20 @@
                         <span class="stat-label">Başarı</span>
                     </div>
                 </div>
+                
+                <!-- Form for submitting results -->
+                <form id="submitResultsForm" asp-action="SubmitSolve" asp-controller="User" method="post" style="display: none;">
+                    <input type="hidden" id="userAnswersData" name="userAnswers" />
+                </form>
+                
                 <div class="results-actions">
+                    <button id="saveResults" class="btn-action btn-primary">
+                        <i class="fas fa-save"></i> Sonuçları Kaydet
+                    </button>
                     <button id="restartTest" class="btn-action btn-secondary">
                         <i class="fas fa-redo"></i> Yeniden Başla
                     </button>
-                    <a href="@Url.Action("Dashboard", "User")" class="btn-action btn-primary">
+                    <a href="@Url.Action("Dashboard", "User")" class="btn-action btn-secondary">
                         <i class="fas fa-compass"></i> Pusulaya Dön
                     </a>
                 </div>
@@ -457,10 +466,78 @@
             document.querySelector('#resultsIncorrect .stat-value').textContent = incorrectCount;
             document.querySelector('#resultsNullCorrect .stat-value').textContent = nullcorrectCount;
             document.querySelector('#resultsPercentage .stat-value').textContent = `${percentage}%`;
+
+            // Kullanıcı cevaplarını UserAnswerDto formatında hazırla
+            const userAnswerDtos = [];
+            for (let i = 0; i < questions.length; i++) {
+                const question = questions[i];
+                const userAnswer = userAnswers[i];
+                
+                // Kullanıcının seçtiği seçeneği bul
+                let selectedOptionId = null;
+                let isCorrect = false;
+                let isAnswered = false;
+                
+                if (userAnswer !== null) {
+                    isAnswered = true;
+                    // Doğru seçeneği bul
+                    const correctOption = question.options.find(opt => opt.isCorrect);
+                    isCorrect = userAnswer === true;
+                    
+                    // Kullanıcının seçtiği seçeneği bul (basit implementasyon)
+                    if (userAnswer === true) {
+                        selectedOptionId = correctOption.id;
+                    } else {
+                        // Yanlış seçenek için rastgele bir yanlış seçenek seç
+                        const wrongOptions = question.options.filter(opt => !opt.isCorrect);
+                        if (wrongOptions.length > 0) {
+                            selectedOptionId = wrongOptions[0].id;
+                        }
+                    }
+                }
+                
+                userAnswerDtos.push({
+                    questionId: question.id,
+                    selectedOptionId: selectedOptionId,
+                    isCorrect: isCorrect,
+                    isAnswered: isAnswered,
+                    timeSpent: 0 // Basit implementasyon
+                });
+            }
+
+            // Kullanıcı cevaplarını form input'una gönder
+            document.getElementById('userAnswersData').value = JSON.stringify(userAnswerDtos);
         }
 
         document.getElementById('restartTest').addEventListener('click', function() {
             window.location.reload(); // Sayfayı yenileyerek testi baştan başlat
+        });
+
+        document.getElementById('saveResults').addEventListener('click', function() {
+            if (confirm('Sonuçları kaydetmek istediğinizden emin misiniz?')) {
+                const userAnswersData = document.getElementById('userAnswersData').value;
+                const userAnswers = JSON.parse(userAnswersData);
+                
+                fetch('/User/SubmitSolve', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userAnswers)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Sonuçlar başarıyla kaydedildi!');
+                        window.location.href = '/User/performance';
+                    } else {
+                        alert('Sonuçlar kaydedilirken hata oluştu!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Hata:', error);
+                    alert('Sonuçlar kaydedilirken hata oluştu!');
+                });
+            }
         });
 
         document.querySelector('.btn-exit').addEventListener('click', function () {

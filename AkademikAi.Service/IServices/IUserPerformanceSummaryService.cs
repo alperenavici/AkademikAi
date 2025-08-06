@@ -8,8 +8,10 @@ namespace AkademikAi.Service.IServices
     public interface IUserPerformanceSummaryService : IGenericService<UserPerformanceSummaries>
     {
         Task<UserPerformanceSummaries> GetUserPerformanceSummaryAsync(Guid userId);
+        Task<List<UserPerformanceSummaries>> GetUserPerformanceSummariesByUserIdAsync(Guid userId);
         Task<List<UserPerformanceSummaries>> GetUserPerformanceSummariesByDateRangeAsync(Guid userId, DateTime startDate, DateTime endDate);
         Task<UserPerformanceSummaries> GetLatestUserPerformanceSummaryAsync(Guid userId);
+        Task<UserPerformanceSummaries> GetUserPerformanceSummaryByUserAndTopicAsync(Guid userId, Guid topicId);
         
         Task<UserPerformanceSummaries> CreateOrUpdatePerformanceSummaryAsync(Guid userId);
         Task<bool> UpdatePerformanceSummaryAsync(UserPerformanceSummaries summary);

@@ -148,7 +148,7 @@ namespace AkademikAi.Data.Context
                 entity.HasKey(ups => ups.Id);
                 entity.HasIndex(ups => new { ups.UserId, ups.TopicId }).IsUnique();
 
-                entity.Property(ups => ups.TotalAnsweredQuestions).IsRequired();
+                entity.Property(ups => ups.TotalQuestionsAnswered).IsRequired();
                 entity.Property(ups => ups.CorrectAnswers).IsRequired();
 
                 entity.HasOne(ups => ups.User)
