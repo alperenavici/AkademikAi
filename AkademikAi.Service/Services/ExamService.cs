@@ -1,5 +1,6 @@
 ﻿using AkademikAi.Core.DTOs;
 using AkademikAi.Data.IRepositories;
+using AkademikAi.Data.Repositories;
 using AkademikAi.Entity.Entites;
 using AkademikAi.Entity.Enums;
 using AkademikAi.Service.IServices;
@@ -13,7 +14,22 @@ namespace AkademikAi.Service.Services
         private readonly IGenericRepository<UserAnswers> _userAnswersRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IQuestionRepository _questionRepository;
 
+        public ExamService(
+        IExamRepository examRepository,
+        IGenericRepository<UserAnswers> userAnswersRepository,
+        IMapper mapper,
+        IUnitOfWork unitOfWork,
+        IQuestionRepository questionRepository) 
+        {
+            _examRepository = examRepository;
+            _userAnswersRepository = userAnswersRepository;
+            _mapper = mapper;
+            _unitOfWork = unitOfWork;
+
+            _questionRepository = questionRepository;
+        }
         public ExamService(IExamRepository examRepository, IGenericRepository<UserAnswers> userAnswersRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _examRepository = examRepository;
@@ -153,5 +169,84 @@ namespace AkademikAi.Service.Services
 
             return Math.Round(score, 2);
         }
+        public async Task<Guid> CreateCustomExamFromUserRequestAsync(CustomExamCreateDto dto, Guid userId)
+        {
+            var questions = await _questionRepository.GetRandomQuestionsByCriteriaAsync(
+                dto.TopicId,
+                (QuestionsDiff)dto.Difficulty, // Enum'a cast et
+                dto.QuestionCount
+            );
+
+            if (questions == null || !questions.Any())
+            {
+                throw new Exception("Belirtilen kriterlere uygun yeterli sayıda soru bulunamadı.");
+            }
+
+            var newExam = new Exam
+            {
+                Id = Guid.NewGuid(),
+                Title = dto.TestName,
+                Description = "Kullanıcı tarafından oluşturulan özel test.",
+                StartTime = DateTime.UtcNow, // Anında başlasın
+                EndTime = DateTime.UtcNow.AddYears(1), // Uzun bir bitiş tarihi verelim
+                DurationMinutes = dto.DurationMinutes,
+                Status = ExamStatus.InProgress,
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            int order = 1;
+            foreach (var question in questions)
+            {
+                newExam.ExamQuestions.Add(new ExamQuestions { QuestionId = question.Id, QuestionOrder = order++ });
+            }
+
+            newExam.Participants.Add(new ExamParticipant
+            {
+                UserId = userId,
+                Status = ExamParticipationStatus.Registered 
+            });
+
+            // 5. Veritabanına kaydet
+            await _examRepository.AddAsync(newExam);
+            await _unitOfWork.SaveChangesAsync();
+
+            return newExam.Id;
+        }
+
+        public async Task<List<ExamHistoryDto>> GetUserExamHistoryAsync(Guid userId)
+        {
+            var userExams = await _examRepository.GetUserExamHistoryAsync(userId);
+            
+            return userExams.Select(exam => 
+            {
+                var userAnswers = exam.UserAnswers.Where(ua => ua.UserId == userId).ToList();
+                var correctAnswers = userAnswers.Count(ua => ua.IsCorrect);
+                var totalAnswers = userAnswers.Count;
+                var wrongAnswers = totalAnswers - correctAnswers;
+                var successRate = totalAnswers > 0 ? (double)correctAnswers / totalAnswers * 100 : 0;
+                var score = CalculateScore(correctAnswers, wrongAnswers);
+
+                return new ExamHistoryDto
+                {
+                    Id = exam.Id,
+                    Title = exam.Title,
+                    CreatedAt = exam.CreatedAt,
+                    Score = score,
+                    CorrectAnswers = correctAnswers,
+                    WrongAnswers = wrongAnswers,
+                    SuccessRate = successRate
+                };
+            }).ToList();
+        }
+
+        private double CalculateScore(int correctAnswers, int wrongAnswers)
+        {
+            // Basit bir puanlama sistemi: Doğru cevap başına 5 puan, yanlış cevap başına -1 puan
+            var score = (correctAnswers * 5.0) - (wrongAnswers * 1.0);
+            return Math.Max(0, score); // Negatif puan olmaz
+        }
+
+        
+     
     }
 }

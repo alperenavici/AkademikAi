@@ -73,7 +73,7 @@ namespace AkademikAi.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var createdTopic = await _topicService.CreateTopicAsync(topic.TopicName, topic.ParentTopicId);
+                    var createdTopic = await _topicService.CreateTopicAsync(topic.TopicName, topic.SubjectId, topic.ParentTopicId);
                     TempData["Success"] = "Konu başarıyla oluşturuldu.";
                     return RedirectToAction(nameof(Details), new { id = createdTopic.Id });
                 }
@@ -121,7 +121,7 @@ namespace AkademikAi.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _topicService.UpdateTopicAsync(id, topic.TopicName, topic.ParentTopicId);
+                    var result = await _topicService.UpdateTopicAsync(id, topic.TopicName, topic.SubjectId, topic.ParentTopicId);
                     if (result)
                     {
                         TempData["Success"] = "Konu başarıyla güncellendi.";

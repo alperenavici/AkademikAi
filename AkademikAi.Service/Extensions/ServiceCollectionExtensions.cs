@@ -10,7 +10,7 @@ namespace AkademikAi.Service.Extensions
     {
         public static IServiceCollection AddServiceLayerDependencies(this IServiceCollection services)
         {
-            // AutoMapper kaydýný da buraya taþýmak en temiz yöntemdir.
+            // AutoMapper kaydï¿½nï¿½ da buraya taï¿½ï¿½mak en temiz yï¿½ntemdir.
             services.AddAutoMapper(cfg =>
             {
                 cfg.AddMaps(Assembly.GetExecutingAssembly());
@@ -19,10 +19,11 @@ namespace AkademikAi.Service.Extensions
             services.AddScoped<IAppUserService, AppUserService>();
             services.AddScoped<IAppRoleService, AppRoleService>();
             services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<IExamService, ExamService>();
 
-            // --- HATA VEREN EKSÝK SERVÝSLERÝN KAYDI ---
+            // --- HATA VEREN EKSï¿½K SERVï¿½SLERï¿½N KAYDI ---
             services.AddScoped<IUserAnswerService, UserAnswerService>();
             services.AddScoped<IUserPerformanceSummaryService, UserPerformanceSummaryService>();
             services.AddScoped<IUserRecommendationService, UserRecommendationService>();

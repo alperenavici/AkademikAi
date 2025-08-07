@@ -165,50 +165,49 @@
                     <div id="custom-exams" class="tab-panel">
                         <div class="custom-exam-form">
                             <h3>Özel Test Oluştur</h3>
-                            <form class="exam-form">
+                            <form id="customExamForm" asp-action="CreateCustomExam" asp-controller="User" method="Post" class="exam-form">
+                                @Html.AntiForgeryToken()
                                 <div class="form-group">
                                     <label for="exam-name">Test Adı:</label>
-                                    <input type="text" id="exam-name" placeholder="Örn: Geometri Özel Test">
+                                    <input type="text" id="exam-name" name="TestName" placeholder="Örn: Geometri Özel Test" required>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="exam-subject">Ders:</label>
-                                    <select id="exam-subject">
+                                    <select id="exam-subject" name="SubjectId" required>
                                         <option value="">Ders Seçin</option>
-                                        <option value="matematik">Matematik</option>
-                                        <option value="fizik">Fizik</option>
-                                        <option value="kimya">Kimya</option>
-                                        <option value="biyoloji">Biyoloji</option>
+                                        @foreach(var subject in ViewBag.Subjects)
+                                        {
+                                            <option value="@subject.Id">@subject.SubjectName</option>
+                                        }
                                     </select>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="exam-topic">Konu:</label>
-                                    <select id="exam-topic">
-                                        <option value="">Konu Seçin</option>
-                                        <option value="geometri">Geometri</option>
-                                        <option value="cebir">Cebir</option>
-                                        <option value="trigonometri">Trigonometri</option>
+                                    <select id="exam-topic" name="TopicId" required>
+                                        <option value="">Önce ders seçiniz</option>
                                     </select>
                                 </div>
 
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="question-count">Soru Sayısı:</label>
-                                        <input type="number" id="question-count" min="5" max="50" value="20">
+                                        <input type="number" id="question-count" name="QuestionCount" min="5" max="50" value="20" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="exam-duration">Süre (dakika):</label>
-                                        <input type="number" id="exam-duration" min="10" max="180" value="30">
+                                        <input type="number" id="exam-duration" name="DurationMinutes" min="10" max="180" value="30" required>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="exam-difficulty">Zorluk Seviyesi:</label>
-                                    <select id="exam-difficulty">
-                                        <option value="easy">Kolay</option>
-                                        <option value="medium" selected>Orta</option>
-                                        <option value="hard">Zor</option>
+                                    <select id="exam-difficulty" name="Difficulty">
+                                        <option value="1">Kolay</option>
+                                        <option value="2" selected>Orta</option>
+                                        <option value="3">Zor</option>
+                                        <option value="0">Karışık</option>
                                     </select>
                                 </div>
 
@@ -236,49 +235,9 @@
                                     <div class="result-success">Başarı %</div>
                                     <div class="result-action">İşlem</div>
                                 </div>
-                                
-                                <div class="result-row">
-                                    <div class="result-exam">TYT Matematik Denemesi</div>
-                                    <div class="result-date">15.01.2024</div>
-                                    <div class="result-score">85.5</div>
-                                    <div class="result-correct">34</div>
-                                    <div class="result-wrong">6</div>
-                                    <div class="result-success">85%</div>
-                                    <div class="result-action">
-                                        <button class="btn-view-result">
-                                            <i class="fas fa-eye"></i>
-                                            Görüntüle
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="result-row">
-                                    <div class="result-exam">AYT Fizik Denemesi</div>
-                                    <div class="result-date">12.01.2024</div>
-                                    <div class="result-score">78.2</div>
-                                    <div class="result-correct">21</div>
-                                    <div class="result-wrong">9</div>
-                                    <div class="result-success">70%</div>
-                                    <div class="result-action">
-                                        <button class="btn-view-result">
-                                            <i class="fas fa-eye"></i>
-                                            Görüntüle
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="result-row">
-                                    <div class="result-exam">TYT Genel Deneme</div>
-                                    <div class="result-date">08.01.2024</div>
-                                    <div class="result-score">92.1</div>
-                                    <div class="result-correct">108</div>
-                                    <div class="result-wrong">12</div>
-                                    <div class="result-success">90%</div>
-                                    <div class="result-action">
-                                        <button class="btn-view-result">
-                                            <i class="fas fa-eye"></i>
-                                            Görüntüle
-                                        </button>
+                                <div id="exam-history-content">
+                                    <div class="loading-row">
+                                        <div class="loading-text">Sınav geçmişiniz yükleniyor...</div>
                                     </div>
                                 </div>
                             </div>
@@ -574,65 +533,218 @@
             background: var(--color-primary-dark);
             transform: translateY(-1px);
         }
+
+        .loading-row {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .loading-text {
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+
+        .no-results-row {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .no-results-text {
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
     </style>
 
     <script>
-        // Tab switching functionality
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons and panels
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-                
-                // Add active class to clicked button
-                this.classList.add('active');
-                
-                // Show corresponding panel
-                const targetTab = this.getAttribute('data-tab');
-                document.getElementById(targetTab).classList.add('active');
-            });
-        });
+        document.addEventListener('DOMContentLoaded', function() {
 
-        // Exam start functionality
-        document.querySelectorAll('.btn-start-exam').forEach(button => {
-            button.addEventListener('click', function() {
-                const examCard = this.closest('.exam-card');
-                const examName = examCard.querySelector('h3').textContent;
-                
-                if (confirm(`${examName} sınavını başlatmak istediğinizden emin misiniz?`)) {
-                    // Redirect to solve page with exam parameters
-                    window.location.href = '/User/Solve';
-                }
-            });
-        });
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
 
-        // Custom exam form submission
-        document.querySelector('.exam-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanels.forEach(panel => panel.classList.remove('active'));
+
+                    this.classList.add('active');
+
+                    const targetTabId = this.getAttribute('data-tab');
+                    document.getElementById(targetTabId).classList.add('active');
+
+                    // Geçmiş sonuçlar tabına tıklandığında veriyi yükle
+                    if (targetTabId === 'past-results') {
+                        loadExamHistory();
+                    }
+                });
+            });
+
+            // Ders seçimi değiştiğinde konuları yükle
+            const examSubjectSelect = document.getElementById('exam-subject');
+            const examTopicSelect = document.getElementById('exam-topic');
             
-            const examName = document.getElementById('exam-name').value;
-            const examSubject = document.getElementById('exam-subject').value;
-            const questionCount = document.getElementById('question-count').value;
-            const duration = document.getElementById('exam-duration').value;
-            
-            if (!examName || !examSubject) {
-                alert('Lütfen tüm gerekli alanları doldurun.');
-                return;
+            if (examSubjectSelect && examTopicSelect) {
+                examSubjectSelect.addEventListener('change', function() {
+                    const selectedSubjectId = this.value;
+                    
+                    // Konu seçimini temizle
+                    examTopicSelect.innerHTML = '<option value="">Konu yükleniyor...</option>';
+                    examTopicSelect.disabled = true;
+                    
+                    if (selectedSubjectId) {
+                        // API'den konuları getir
+                        fetch(`/User/GetTopicsBySubject?subjectId=${selectedSubjectId}`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Konular yüklenirken hata oluştu');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                examTopicSelect.innerHTML = '<option value="">Konu Seçin</option>';
+                                data.forEach(topic => {
+                                    const option = document.createElement('option');
+                                    option.value = topic.id;
+                                    option.textContent = topic.topicName;
+                                    examTopicSelect.appendChild(option);
+                                });
+                                examTopicSelect.disabled = false;
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                examTopicSelect.innerHTML = '<option value="">Hata oluştu</option>';
+                                examTopicSelect.disabled = false;
+                            });
+                    } else {
+                        examTopicSelect.innerHTML = '<option value="">Önce ders seçiniz</option>';
+                        examTopicSelect.disabled = false;
+                    }
+                });
             }
-            
-            alert(`${examName} adlı özel test başarıyla oluşturuldu!`);
-            this.reset();
-        });
 
-        // View result functionality
-        document.querySelectorAll('.btn-view-result').forEach(button => {
-            button.addEventListener('click', function() {
-                const resultRow = this.closest('.result-row');
-                const examName = resultRow.querySelector('.result-exam').textContent;
+                                        const customExamForm = document.getElementById('customExamForm');
+            if (customExamForm) {
+                customExamForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const form = this;
+                    const formData = new FormData(form);
+                    const button = form.querySelector('.btn-create-exam');
+                    const originalButtonText = button.innerHTML;
+
+                    // Form validasyonu
+                    const testName = formData.get('TestName');
+                    const subjectId = formData.get('SubjectId');
+                    const topicId = formData.get('TopicId');
+                    const questionCount = formData.get('QuestionCount');
+                    const durationMinutes = formData.get('DurationMinutes');
+
+                    if (!testName || !subjectId || !topicId || !questionCount || !durationMinutes) {
+                        alert('Lütfen tüm alanları doldurun.');
+                        return;
+                    }
+
+                    if (parseInt(questionCount) < 5 || parseInt(questionCount) > 50) {
+                        alert('Soru sayısı 5 ile 50 arasında olmalıdır.');
+                        return;
+                    }
+
+                    if (parseInt(durationMinutes) < 10 || parseInt(durationMinutes) > 180) {
+                        alert('Süre 10 ile 180 dakika arasında olmalıdır.');
+                        return;
+                    }
+
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Oluşturuluyor...';
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw new Error(err.message || 'Bir sunucu hatası oluştu.'); });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message);
+                            form.reset();
+                            // Form resetlendiğinde konu selectini de sıfırla
+                            examTopicSelect.innerHTML = '<option value="">Önce ders seçiniz</option>';
+                            examTopicSelect.disabled = false;
+                            document.querySelector('.tab-button[data-tab="ready-exams"]').click();
+                        } else {
+                            alert('Hata: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Hata: ' + error.message);
+                    })
+                    .finally(() => {
+                        button.disabled = false;
+                        button.innerHTML = originalButtonText;
+                    });
+                });
+            }
+
+            // Sınav geçmişini yükle
+            function loadExamHistory() {
+                const examHistoryContent = document.getElementById('exam-history-content');
                 
-                alert(`${examName} sonuçları görüntüleniyor...`);
-                // Here you can redirect to a detailed result page
-            });
+                fetch('/User/GetUserExamHistory')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Sınav geçmişi yüklenirken hata oluştu');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            examHistoryContent.innerHTML = '';
+                            data.forEach(exam => {
+                                const row = document.createElement('div');
+                                row.className = 'result-row';
+                                row.innerHTML = `
+                                    <div class="result-exam">${exam.examName}</div>
+                                    <div class="result-date">${exam.date}</div>
+                                    <div class="result-score">${exam.score}</div>
+                                    <div class="result-correct">${exam.correctAnswers}</div>
+                                    <div class="result-wrong">${exam.wrongAnswers}</div>
+                                    <div class="result-success">${exam.successRate}%</div>
+                                    <div class="result-action">
+                                        <button class="btn-view-result" onclick="viewExamResult('${exam.examId}')">
+                                            <i class="fas fa-eye"></i>
+                                            Görüntüle
+                                        </button>
+                                    </div>
+                                `;
+                                examHistoryContent.appendChild(row);
+                            });
+                        } else {
+                            examHistoryContent.innerHTML = `
+                                <div class="no-results-row">
+                                    <div class="no-results-text">Henüz tamamlanmış sınavınız bulunmamaktadır.</div>
+                                </div>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        examHistoryContent.innerHTML = `
+                            <div class="no-results-row">
+                                <div class="no-results-text">Sınav geçmişi yüklenirken hata oluştu.</div>
+                            </div>
+                        `;
+                    });
+            }
+
+            // Sınav sonucunu görüntüle
+            function viewExamResult(examId) {
+                // Bu fonksiyon sınav detay sayfasına yönlendirebilir
+                alert('Sınav detayları gösterimi henüz geliştirilmemiştir. Sınav ID: ' + examId);
+            }
         });
     </script>
 </body>

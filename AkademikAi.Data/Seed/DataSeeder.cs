@@ -14,19 +14,23 @@ namespace AkademikAi.Data.Seed
             var users = GetSeedUsers();
             modelBuilder.Entity<AppUser>().HasData(users);
 
-            // 1. Tüm ana ve alt konuları oluştur ve veritabanına ekle
-            var allTopics = GetTopics();
+            // 1. Subject'ları (dersleri) oluştur ve ekle
+            var subjects = GetSubjects();
+            modelBuilder.Entity<Subject>().HasData(subjects);
+
+            // 2. Tüm konuları oluştur ve veritabanına ekle
+            var allTopics = GetTopics(subjects);
             modelBuilder.Entity<Topics>().HasData(allTopics);
 
-            // Sadece alt konuları (derslerin içindeki konuları) seç, çünkü sorular alt konulara aittir.
-            var subTopics = allTopics.Where(t => t.ParentTopicId != null).ToList();
+            // Tüm konuları al, çünkü artık tüm konular doğrudan derslere ait
+            var allActiveTopics = allTopics.Where(t => t.IsActive).ToList();
 
             var allQuestions = new List<Questions>();
             var allQuestionOptions = new List<QuestionsOptions>();
             var allQuestionsTopics = new List<QuestionsTopic>();
 
-            // 2. Her bir alt konu için 5 soru oluştur (20'den 5'e düşürüldü)
-            foreach (var topic in subTopics)
+            // 3. Her bir konu için 5 soru oluştur (20'den 5'e düşürüldü)
+            foreach (var topic in allActiveTopics)
             {
                 for (int i = 1; i <= 5; i++) // 20'den 5'e düşürüldü
                 {
@@ -72,65 +76,97 @@ namespace AkademikAi.Data.Seed
                 }
             }
 
-            // 3. Oluşturulan tüm verileri veritabanına ekle
+            // 4. Oluşturulan tüm verileri veritabanına ekle
             modelBuilder.Entity<Questions>().HasData(allQuestions);
             modelBuilder.Entity<QuestionsOptions>().HasData(allQuestionOptions);
             modelBuilder.Entity<QuestionsTopic>().HasData(allQuestionsTopics);
 
-            // 4. UserPerformanceSummaries için örnek veriler oluştur
-            var userPerformanceSummaries = GetUserPerformanceSummaries(allTopics);
+            // 5. UserPerformanceSummaries için örnek veriler oluştur
+            var userPerformanceSummaries = GetUserPerformanceSummaries(allActiveTopics);
             modelBuilder.Entity<UserPerformanceSummaries>().HasData(userPerformanceSummaries);
         }
 
-        private static List<Topics> GetTopics()
+        private static List<Subject> GetSubjects()
         {
-            var topics = new List<Topics>
+            return new List<Subject>
             {
-                // Ana Dersler (Kök Konular) - Sadece 4 ana ders
-                new Topics { Id = Guid.NewGuid(), TopicName = "Matematik", ParentTopicId = null },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Fizik", ParentTopicId = null },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Kimya", ParentTopicId = null },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Biyoloji", ParentTopicId = null }
+                new Subject 
+                { 
+                    Id = Guid.Parse("f458884d-bb86-46a8-a604-5beb8469a5a8"), 
+                    SubjectName = "Matematik", 
+                    Description = "Temel matematik konuları",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Subject 
+                { 
+                    Id = Guid.Parse("7ed69d3c-87ab-44d9-b863-61219df3a23e"), 
+                    SubjectName = "Fizik", 
+                    Description = "Temel fizik konuları",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Subject 
+                { 
+                    Id = Guid.Parse("7580abcc-0b61-4569-8a54-953195b09a4d"), 
+                    SubjectName = "Kimya", 
+                    Description = "Temel kimya konuları",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Subject 
+                { 
+                    Id = Guid.Parse("da61c306-0160-49db-92b6-eaa8418a2f8c"), 
+                    SubjectName = "Biyoloji", 
+                    Description = "Temel biyoloji konuları",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                }
             };
+        }
 
-            // --- Matematik Konuları (Sadece 5 alt konu) ---
-            var mathId = topics.First(t => t.TopicName == "Matematik").Id;
+        private static List<Topics> GetTopics(List<Subject> subjects)
+        {
+            var topics = new List<Topics>();
+            var mathId = subjects.First(s => s.SubjectName == "Matematik").Id;
+            var physicsId = subjects.First(s => s.SubjectName == "Fizik").Id;
+            var chemistryId = subjects.First(s => s.SubjectName == "Kimya").Id;
+            var biologyId = subjects.First(s => s.SubjectName == "Biyoloji").Id;
+
+            // --- Matematik Konuları (5 alt konu) ---
             topics.AddRange(new[] {
-                new Topics { Id = Guid.NewGuid(), TopicName = "Temel Kavramlar", ParentTopicId = mathId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Sayı Basamakları", ParentTopicId = mathId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Bölme ve Bölünebilme", ParentTopicId = mathId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Rasyonel Sayılar", ParentTopicId = mathId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Problemler", ParentTopicId = mathId }
+                new Topics { Id = Guid.NewGuid(), TopicName = "Temel Kavramlar", SubjectId = mathId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Sayı Basamakları", SubjectId = mathId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Bölme ve Bölünebilme", SubjectId = mathId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Rasyonel Sayılar", SubjectId = mathId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Problemler", SubjectId = mathId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow }
             });
 
-            // --- Fizik Konuları (Sadece 5 alt konu) ---
-            var physicsId = topics.First(t => t.TopicName == "Fizik").Id;
+            // --- Fizik Konuları (5 alt konu) ---
             topics.AddRange(new[] {
-                new Topics { Id = Guid.NewGuid(), TopicName = "Fizik Bilimine Giriş", ParentTopicId = physicsId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Madde ve Özellikleri", ParentTopicId = physicsId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Kuvvet ve Hareket", ParentTopicId = physicsId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "İş, Güç ve Enerji", ParentTopicId = physicsId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Elektrostatik", ParentTopicId = physicsId }
+                new Topics { Id = Guid.NewGuid(), TopicName = "Fizik Bilimine Giriş", SubjectId = physicsId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Madde ve Özellikleri", SubjectId = physicsId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kuvvet ve Hareket", SubjectId = physicsId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "İş, Güç ve Enerji", SubjectId = physicsId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Elektrostatik", SubjectId = physicsId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow }
             });
 
-            // --- Kimya Konuları (Sadece 5 alt konu) ---
-            var chemistryId = topics.First(t => t.TopicName == "Kimya").Id;
+            // --- Kimya Konuları (5 alt konu) ---
             topics.AddRange(new[] {
-                new Topics { Id = Guid.NewGuid(), TopicName = "Kimya Bilimi", ParentTopicId = chemistryId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Atom ve Periyodik Sistem", ParentTopicId = chemistryId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Kimyasal Türler Arası Etkileşimler", ParentTopicId = chemistryId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Maddenin Halleri", ParentTopicId = chemistryId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Asitler, Bazlar ve Tuzlar", ParentTopicId = chemistryId }
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimya Bilimi", SubjectId = chemistryId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Atom ve Periyodik Sistem", SubjectId = chemistryId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kimyasal Türler Arası Etkileşimler", SubjectId = chemistryId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Maddenin Halleri", SubjectId = chemistryId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Asitler, Bazlar ve Tuzlar", SubjectId = chemistryId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow }
             });
 
-            // --- Biyoloji Konuları (Sadece 5 alt konu) ---
-            var biologyId = topics.First(t => t.TopicName == "Biyoloji").Id;
+            // --- Biyoloji Konuları (5 alt konu) ---
             topics.AddRange(new[] {
-                new Topics { Id = Guid.NewGuid(), TopicName = "Yaşam Bilimi Biyoloji", ParentTopicId = biologyId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Hücre", ParentTopicId = biologyId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Canlıların Sınıflandırılması", ParentTopicId = biologyId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Hücre Bölünmeleri", ParentTopicId = biologyId },
-                new Topics { Id = Guid.NewGuid(), TopicName = "Kalıtım", ParentTopicId = biologyId }
+                new Topics { Id = Guid.NewGuid(), TopicName = "Yaşam Bilimi Biyoloji", SubjectId = biologyId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Hücre", SubjectId = biologyId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Canlıların Sınıflandırılması", SubjectId = biologyId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Hücre Bölünmeleri", SubjectId = biologyId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow },
+                new Topics { Id = Guid.NewGuid(), TopicName = "Kalıtım", SubjectId = biologyId, ParentTopicId = null, IsActive = true, CreatedAt = DateTime.UtcNow }
             });
 
             return topics;
@@ -149,12 +185,9 @@ namespace AkademikAi.Data.Seed
                 Guid.Parse("33333333-3333-3333-3333-333333333333")
             };
 
-            // Sadece alt konuları (ParentTopicId != null) al
-            var subTopics = allTopics.Where(t => t.ParentTopicId != null).ToList();
-
             foreach (var userId in sampleUserIds)
             {
-                foreach (var topic in subTopics.Take(5)) // Her kullanıcı için 5 konu (10'dan 5'e düşürüldü)
+                foreach (var topic in allTopics.Take(5)) // Her kullanıcı için 5 konu (10'dan 5'e düşürüldü)
                 {
                     var totalQuestions = random.Next(10, 100);
                     var correctAnswers = random.Next(5, totalQuestions);

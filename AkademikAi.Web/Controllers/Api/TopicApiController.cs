@@ -77,6 +77,20 @@ namespace AkademikAi.Web.Controllers.Api
             }
         }
 
+        [HttpGet("by-subject/{subjectId}")]
+        public async Task<ActionResult<List<Topics>>> GetTopicsBySubject(Guid subjectId)
+        {
+            try
+            {
+                var topics = await _topicService.GetTopicsBySubjectIdAsync(subjectId);
+                return Ok(topics);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         [HttpGet("{id}/with-subtopics")]
         public async Task<ActionResult<Topics>> GetTopicWithSubTopics(Guid id)
         {
@@ -141,7 +155,7 @@ namespace AkademikAi.Web.Controllers.Api
         {
             try
             {
-                var topic = await _topicService.CreateTopicAsync(createTopicDto.TopicName, createTopicDto.ParentTopicId);
+                var topic = await _topicService.CreateTopicAsync(createTopicDto.TopicName, createTopicDto.SubjectId, createTopicDto.ParentTopicId);
                 return CreatedAtAction(nameof(GetTopicById), new { id = topic.Id }, topic);
             }
             catch (Exception ex)
@@ -155,7 +169,7 @@ namespace AkademikAi.Web.Controllers.Api
         {
             try
             {
-                var result = await _topicService.UpdateTopicAsync(id, updateTopicDto.TopicName, updateTopicDto.ParentTopicId);
+                var result = await _topicService.UpdateTopicAsync(id, updateTopicDto.TopicName, updateTopicDto.SubjectId, updateTopicDto.ParentTopicId);
                 if (!result)
                     return NotFound();
 
@@ -188,12 +202,14 @@ namespace AkademikAi.Web.Controllers.Api
     public class CreateTopicDto
     {
         public string TopicName { get; set; }
+        public Guid SubjectId { get; set; }
         public Guid? ParentTopicId { get; set; }
     }
 
     public class UpdateTopicDto
     {
         public string TopicName { get; set; }
+        public Guid SubjectId { get; set; }
         public Guid? ParentTopicId { get; set; }
     }
 } 

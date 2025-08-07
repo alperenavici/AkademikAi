@@ -15,4 +15,15 @@ namespace AkademikAi.Core.DTOs
         public int DurationMinutes { get; set; }
         public List<QuestionDto> Questions { get; set; }
     }
+
+    public class ExamHistoryDto
+    {
+        public Guid Id { get; set; }
+        public string Title { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public double? Score { get; set; }
+        public int CorrectAnswers { get; set; }
+        public int WrongAnswers { get; set; }
+        public double? SuccessRate { get; set; }
+    }
 }

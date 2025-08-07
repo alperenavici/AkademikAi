@@ -14,7 +14,7 @@ namespace AkademikAi.Data.IRepositories
         Task<List<Questions>> GetQuestionsByTopicIdAsync(Guid topicId);
         Task<List<Questions>> GetQuestionsByUserIdAsync(Guid userId);
         Task<List<Questions>> GetActiveQuestionsAsync();
-
+        Task<List<Questions>> GetRandomQuestionsByCriteriaAsync(Guid topicId, QuestionsDiff difficulty, int count);
         Task<Questions?> GetQuestionByIdAsync(Guid questionId);
         Task<List<Questions>> GetQuestionsByIdsAsync(List<Guid> questionIds);
 

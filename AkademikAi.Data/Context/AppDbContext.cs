@@ -17,6 +17,7 @@ namespace AkademikAi.Data.Context
         }
        public DbSet<Questions> Questions { get; set; }
        public DbSet<QuestionsOptions> QuestionsOptions { get; set; }
+       public DbSet<Subject> Subjects { get; set; }
        public DbSet<Topics> Topics { get; set; }
        public DbSet<QuestionsTopic> QuestionsTopics { get; set; }
        public DbSet<UserAnswers> UserAnswers { get; set; }
@@ -71,13 +72,34 @@ namespace AkademikAi.Data.Context
             });
 
 
+            modelBuilder.Entity<Subject>(entity =>
+            {
+                entity.HasKey(s => s.Id);
+                entity.Property(s => s.SubjectName).IsRequired().HasMaxLength(100);
+                entity.Property(s => s.Description).HasMaxLength(500);
+                entity.Property(s => s.IsActive).HasDefaultValue(true);
+                entity.Property(s => s.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+                entity.HasMany(s => s.Topics)
+                      .WithOne(t => t.Subject)
+                      .HasForeignKey(t => t.SubjectId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
             modelBuilder.Entity<Topics>(entity =>
             {
                 entity.HasKey(t => t.Id);
                 entity.Property(t => t.TopicName).IsRequired().HasMaxLength(100);
+                entity.Property(t => t.IsActive).HasDefaultValue(true);
+                entity.Property(t => t.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
 
-                entity.HasOne<Topics>()
-                      .WithMany()
+                entity.HasOne(t => t.Subject)
+                      .WithMany(s => s.Topics)
+                      .HasForeignKey(t => t.SubjectId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(t => t.ParentTopic)
+                      .WithMany(t => t.SubTopics)
                       .HasForeignKey(t => t.ParentTopicId)
                       .OnDelete(DeleteBehavior.Restrict)
                       .IsRequired(false);

@@ -11,5 +11,10 @@ namespace AkademikAi.Data.IRepositories
     {
         Task<List<Topics>> GetAllTopicsAsync();
         Task<Topics?> GetTopicByIdAsync(Guid topicId);
+        Task<List<Topics>> GetTopicsBySubjectIdAsync(Guid subjectId);
+        Task<List<Topics>> GetMainTopicsAsync();
+        Task<List<Topics>> GetSubTopicsAsync(Guid parentTopicId);
+        Task<List<Topics>> GetActiveTopicsAsync();
+        Task<Topics?> GetTopicWithSubTopicsAsync(Guid topicId);
     }
 }

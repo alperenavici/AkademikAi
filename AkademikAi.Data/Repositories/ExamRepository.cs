@@ -63,5 +63,14 @@ namespace AkademikAi.Data.Repositories
                 // Mevcut bir katılımcı kaydını günceller
                 _context.ExamParticipants.Update(participant);
             }
+
+            public async Task<List<Exam>> GetUserExamHistoryAsync(Guid userId)
+            {
+                return await _context.Exams
+                    .Include(e => e.UserAnswers.Where(ua => ua.UserId == userId))
+                    .Where(e => e.Participants.Any(p => p.UserId == userId))
+                    .OrderByDescending(e => e.CreatedAt)
+                    .ToListAsync();
+            }
         }
 }

@@ -12,6 +12,7 @@ namespace AkademikAi.Data.IRepositories
         public IAppUserRepository AppUser { get; }
         public IAppRoleRepository AppRole { get; }
         public IQuestionRepository questions { get; }
+        public ISubjectRepository subjects { get; }
         public ITopicRepository topics { get; }
         public IQuestionOptionsRepository questionsOptions { get; }
         public IQuestionTopicRepository questionsTopic { get; }

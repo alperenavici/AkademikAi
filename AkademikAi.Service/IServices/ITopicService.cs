@@ -9,11 +9,12 @@ namespace AkademikAi.Service.IServices
     {
         Task<List<Topics>> GetMainTopicsAsync();
         Task<List<Topics>> GetSubTopicsAsync(Guid parentTopicId);
+        Task<List<Topics>> GetTopicsBySubjectIdAsync(Guid subjectId);
         Task<Topics?> GetTopicWithSubTopicsAsync(Guid topicId);
         List<Topics> GetTopicHierarchyAsync();
         
-        Task<Topics> CreateTopicAsync(string topicName, Guid? parentTopicId = null);
-        Task<bool> UpdateTopicAsync(Guid topicId, string topicName, Guid? parentTopicId = null);
+        Task<Topics> CreateTopicAsync(string topicName, Guid subjectId, Guid? parentTopicId = null);
+        Task<bool> UpdateTopicAsync(Guid topicId, string topicName, Guid subjectId, Guid? parentTopicId = null);
         Task<bool> DeleteTopicAsync(Guid topicId);
         Task<List<Topics>> GetTopicsByQuestionCountAsync(int minQuestionCount = 0);
         Task<Dictionary<string, int>> GetTopicQuestionCountsAsync();

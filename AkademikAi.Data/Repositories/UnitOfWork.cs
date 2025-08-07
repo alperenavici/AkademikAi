@@ -18,6 +18,7 @@ namespace AkademikAi.Data.Repositories
         private IAppUserRepository? _appUserRepository;
         private IAppRoleRepository? _appRoleRepository;
         private IQuestionRepository? _questionRepository;
+        private ISubjectRepository? _subjectRepository;
         private ITopicRepository? _topicRepository;
         private IQuestionOptionsRepository? _questionOptionRepository;
         private IQuestionTopicRepository? _questionTopicRepository;
@@ -35,6 +36,7 @@ namespace AkademikAi.Data.Repositories
         public IAppUserRepository AppUser => _appUserRepository ??= new AppUserRepository(_context);
         public IAppRoleRepository AppRole => _appRoleRepository ??= new AppRoleRepository(_context);
         public IQuestionRepository questions => _questionRepository ??= new QuestionRepository(_context);
+        public ISubjectRepository subjects => _subjectRepository ??= new SubjectRepository(_context);
         public ITopicRepository topics => _topicRepository ??= new TopicRepository(_context);
         public IQuestionOptionsRepository questionsOptions => _questionOptionRepository ??= new QuestionOptionsRepository(_context);
         public IQuestionTopicRepository questionsTopic => _questionTopicRepository ??= new QuestionTopicRepository(_context);

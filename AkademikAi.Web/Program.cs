@@ -57,6 +57,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IAppRoleRepository, AppRoleRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ITopicRepository, TopicRepository>();
 builder.Services.AddScoped<IQuestionOptionsRepository, QuestionOptionsRepository>();
 builder.Services.AddScoped<IQuestionTopicRepository, QuestionTopicRepository>();
@@ -73,6 +74,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAppUserService, AppUserService>();
 builder.Services.AddScoped<IAppRoleService, AppRoleService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ITopicService, TopicService>();
 builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<IUserAnswerService, UserAnswerService>();

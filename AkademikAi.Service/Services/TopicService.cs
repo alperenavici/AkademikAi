@@ -12,25 +12,31 @@ namespace AkademikAi.Service.Services
     {
         private readonly ITopicRepository _topicRepository;
         private readonly IQuestionTopicRepository _questionTopicRepository;
+        private readonly ISubjectRepository _subjectRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public TopicService(
             ITopicRepository topicRepository,
             IQuestionTopicRepository questionTopicRepository,
+            ISubjectRepository subjectRepository,
             IUnitOfWork unitOfWork) : base(topicRepository)
         {
             _topicRepository = topicRepository;
             _questionTopicRepository = questionTopicRepository;
+            _subjectRepository = subjectRepository;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Topics> CreateTopicAsync(string topicName, Guid? parentTopicId = null)
+        public async Task<Topics> CreateTopicAsync(string topicName, Guid subjectId, Guid? parentTopicId = null)
         {
             var topic = new Topics
             {
                 Id = Guid.NewGuid(),
                 TopicName = topicName,
-                ParentTopicId = parentTopicId
+                SubjectId = subjectId,
+                ParentTopicId = parentTopicId,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
             };
 
             await _topicRepository.AddAsync(topic);
@@ -65,7 +71,12 @@ namespace AkademikAi.Service.Services
 
         public async Task<List<Topics>> GetMainTopicsAsync()
         {
-            return await _topicRepository.GetWhereAsync(t => t.ParentTopicId == null);
+            return await _topicRepository.GetMainTopicsAsync();
+        }
+
+        public async Task<List<Topics>> GetTopicsBySubjectIdAsync(Guid subjectId)
+        {
+            return await _topicRepository.GetTopicsBySubjectIdAsync(subjectId);
         }
 
         public List<Topics> GetPerformanceSummariesBySuccessRateRangeAsync(double minRate, double maxRate)
@@ -77,7 +88,7 @@ namespace AkademikAi.Service.Services
 
         public async Task<List<Topics>> GetSubTopicsAsync(Guid parentTopicId)
         {
-            return await _topicRepository.GetWhereAsync(t => t.ParentTopicId == parentTopicId);
+            return await _topicRepository.GetSubTopicsAsync(parentTopicId);
         }
 
         public List<Topics> GetTopicHierarchyAsync()
@@ -138,13 +149,14 @@ namespace AkademikAi.Service.Services
             return new List<Topics>();
         }
 
-        public async Task<bool> UpdateTopicAsync(Guid topicId, string topicName, Guid? parentTopicId = null)
+        public async Task<bool> UpdateTopicAsync(Guid topicId, string topicName, Guid subjectId, Guid? parentTopicId = null)
         {
             var topic = await _topicRepository.GetByIdAsync(topicId);
             if (topic == null) return false;
 
             topic.TopicName = topicName;
-            topic.ParentTopicId = parentTopicId ?? Guid.Empty;
+            topic.SubjectId = subjectId;
+            topic.ParentTopicId = parentTopicId;
 
             _topicRepository.Update(topic);
             await _unitOfWork.SaveChangesAsync();

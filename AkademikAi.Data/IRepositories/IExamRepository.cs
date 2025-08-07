@@ -12,6 +12,7 @@ namespace AkademikAi.Data.IRepositories
         // Raporlama ve Listeleme Sorguları
         Task<Exam> GetExamWithQuestionsAndOptionsAsync(Guid examId);
         Task<List<Exam>> GetActiveAndUpcomingExamsAsync();
+        Task<List<Exam>> GetUserExamHistoryAsync(Guid userId);
 
         Task<bool> IsUserRegisteredForExam(Guid userId, Guid examId);
         Task<ExamParticipant> GetParticipantAsync(Guid userId, Guid examId);

@@ -2,15 +2,16 @@
 using AkademikAi.Entity.Entites;
 using AkademikAi.Entity.Enums;
 using AkademikAi.Service.IServices;
+using AkademikAi.Service.Services;
+using AkademikAi.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using AkademikAi.Web.Models;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace AkademikAi.Web.Controllers.UserController
 {
@@ -21,19 +22,23 @@ namespace AkademikAi.Web.Controllers.UserController
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IQuestionService _questionService;
         private readonly ITopicService _topicService;
+        private readonly ISubjectService _subjectService;
         private readonly IUserPerformanceSummaryService _performanceService;
         private readonly IUserAnswerService _userAnswerService;
-        
+        private readonly IExamService _examService;
+
         public UserController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, 
-                            IQuestionService questionService, ITopicService topicService,
-                            IUserPerformanceSummaryService performanceService, IUserAnswerService userAnswerService)
+                            IQuestionService questionService, ITopicService topicService, ISubjectService subjectService,
+                            IUserPerformanceSummaryService performanceService, IUserAnswerService userAnswerService, IExamService examService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _questionService = questionService;
             _topicService = topicService;
+            _subjectService = subjectService;
             _performanceService = performanceService;
             _userAnswerService = userAnswerService;
+            _examService = examService;
         }
         [HttpGet]
         public IActionResult Login()
@@ -242,11 +247,47 @@ namespace AkademikAi.Web.Controllers.UserController
             return Ok(userDto);
         }
 
-        [HttpGet]
-        public IActionResult exams()
+
+        [Authorize]
+        public async Task<IActionResult> Exams()
         {
-            return View();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+            
+            var subjects = await _subjectService.GetActiveSubjectsAsync();
+            ViewBag.Subjects = subjects;
+            return View(user);
         }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken] // Form'a @Html.AntiForgeryToken() eklemeyi unutmayın
+        public async Task<IActionResult> CreateCustomExam(CustomExamCreateDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Lütfen tüm alanları doğru bir şekilde doldurun." });
+            }
+
+            try
+            {
+                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var newExamId = await _examService.CreateCustomExamFromUserRequestAsync(dto, userId);
+
+                // Başarılı olursa, kullanıcıya bir mesaj ve belki de yeni sınavın ID'sini dönebiliriz.
+                return Json(new { success = true, message = "Özel testiniz başarıyla oluşturuldu!", examId = newExamId });
+            }
+            catch (Exception ex)
+            {
+                // Hata detayını loglayın
+                // _logger.LogError(ex, "Özel test oluşturulurken hata oluştu.");
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> performance()
@@ -360,27 +401,92 @@ namespace AkademikAi.Web.Controllers.UserController
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetSubTopics(string parentTopicId)
         {
+            // Guid kontrolünüz zaten doğru, aynen kalabilir.
             if (string.IsNullOrEmpty(parentTopicId) || !Guid.TryParse(parentTopicId, out Guid parentGuid))
             {
-                return Json(new { success = false, message = "Geçersiz ana konu" });
+                // Direkt olarak bir hata nesnesi dönebiliriz.
+                return BadRequest(new { message = "Geçersiz ana konu ID'si." });
             }
 
             try
             {
                 var subTopics = await _topicService.GetSubTopicsAsync(parentGuid);
-                return Json(new { 
-                    success = true, 
-                    subTopics = subTopics.Select(t => new {
-                        id = t.Id,
-                        name = t.TopicName
-                    }).ToList()
-                });
+
+                
+                var result = subTopics.Select(t => new {
+                    id = t.Id,
+                    topicName = t.TopicName // 'name' yerine 'topicName' olarak değiştirildi.
+                }).ToList();
+
+                // Veriyi doğrudan Ok() içinde döndürün.
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Alt konular yüklenirken hata oluştu" });
+                // Gerçek bir uygulamada burada hatayı loglamalısınız.
+                // _logger.LogError(ex, "Alt konular yüklenirken hata oluştu.");
+                return StatusCode(500, new { message = "Sunucu hatası: Alt konular yüklenemedi." });
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetTopicsBySubject(string subjectId)
+        {
+            if (string.IsNullOrEmpty(subjectId) || !Guid.TryParse(subjectId, out Guid subjectGuid))
+            {
+                return BadRequest(new { message = "Geçersiz ders ID'si." });
+            }
+
+            try
+            {
+                var topics = await _topicService.GetTopicsBySubjectIdAsync(subjectGuid);
+
+                var result = topics.Select(t => new {
+                    id = t.Id,
+                    topicName = t.TopicName
+                }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Sunucu hatası: Konular yüklenemedi." });
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserExamHistory()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Kullanıcı bulunamadı" });
+            }
+
+            try
+            {
+                var userExams = await _examService.GetUserExamHistoryAsync(user.Id);
+
+                var result = userExams.Select(exam => new {
+                    examName = exam.Title,
+                    date = exam.CreatedAt.ToString("dd.MM.yyyy"),
+                    score = exam.Score?.ToString("F1") ?? "0.0",
+                    correctAnswers = exam.CorrectAnswers,
+                    wrongAnswers = exam.WrongAnswers,
+                    successRate = exam.SuccessRate?.ToString("F0") ?? "0",
+                    examId = exam.Id
+                }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Sınav geçmişi yüklenirken hata oluştu." });
             }
         }
 

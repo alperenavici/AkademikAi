@@ -1,4 +1,5 @@
 ﻿using AkademikAi.Core.DTOs;
+using AkademikAi.Entity.Entites;
 using AkademikAi.Entity.Enums;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace AkademikAi.Service.IServices
         Task CreateExamAsync(ExamCreateDto examCreateDto);
         Task RegisterUserForExamAsync(Guid examId, Guid userId);
         Task StartExamForUserAsync(Guid examId, Guid userId);
+        Task<Guid> CreateCustomExamFromUserRequestAsync(CustomExamCreateDto dto, Guid userId);
+        Task<List<ExamHistoryDto>> GetUserExamHistoryAsync(Guid userId);
+
         Task<double> SubmitAndScoreExamAsync(Guid examId, Guid userId, List<UserAnswerSubmitDto> answers);
     }
 }

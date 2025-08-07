@@ -132,5 +132,26 @@ namespace AkademikAi.Data.Repositories
 
             return query.OrderBy(r => Guid.NewGuid()).Take(count).ToListAsync();
         }
+
+        public async Task<List<Questions>> GetRandomQuestionsByCriteriaAsync(Guid topicId, QuestionsDiff difficulty, int count)
+        {
+            // Temel sorguyu oluştur
+            var query = _context.Questions
+                .Include(q => q.QuestionsTopics)
+                .Where(q => q.QuestionsTopics.Any(qt => qt.TopicId == topicId));
+
+            // Zorluk seviyesi 'Karışık' (0) değilse, filtrele
+            if ((int)difficulty != 0)
+            {
+                query = query.Where(q => q.DifficultyLevel == difficulty);
+            }
+
+            // Soruları rastgele sırala ve istenen sayıda al
+            return await query
+                .OrderBy(q => Guid.NewGuid()) // SQL Server'da NEWID() olarak çevrilir, rastgele sıralama sağlar
+                .Take(count)
+                .ToListAsync();
+        }
+
     }
 }
