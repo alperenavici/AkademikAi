@@ -241,9 +241,8 @@ namespace AkademikAi.Service.Services
 
         private double CalculateScore(int correctAnswers, int wrongAnswers)
         {
-            // Basit bir puanlama sistemi: Doğru cevap başına 5 puan, yanlış cevap başına -1 puan
             var score = (correctAnswers * 5.0) - (wrongAnswers * 1.0);
-            return Math.Max(0, score); // Negatif puan olmaz
+            return Math.Max(0, score); 
         }
 
         

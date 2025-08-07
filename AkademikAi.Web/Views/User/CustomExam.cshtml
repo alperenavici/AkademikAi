@@ -1,0 +1,174 @@
+﻿@model AkademikAi.Entity.Entites.AppUser
+@{
+    ViewData["Title"] = "Odaklanma Alanı - AkademikAI";
+    var mainTopics = ViewBag.MainTopics as List<AkademikAi.Entity.Entites.Topics>;
+    var questions = ViewBag.Questions as List<AkademikAi.Entity.Entites.Questions>;
+    var currentUser = ViewBag.CurrentUser as AkademikAi.Entity.Entites.AppUser;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link rel="stylesheet" href="~/css/dashboard-new.css" />
+    <link rel="stylesheet" href="~/css/solve.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+   
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header Bar -->
+            <div class="solve-header" id="solveHeader">
+                <div class="header-left">
+                    <h2 id="currentTopic">Tüm Konular</h2>
+                    <span class="question-progress">Soru <span id="currentQuestionNumber">1</span> / <span id="totalQuestions">0</span></span>
+                </div>
+                <div class="header-right">
+                    <div class="timer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timer">00:00</span>
+                    </div>
+                    <button class="btn-exit">
+                        <i class="fas fa-times"></i>
+                        Çıkış
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <section class="filters-section" id="filtersSection">
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label for="course-filter">Ana Konu:</label>
+                        <select id="course-filter" class="filter-select">
+                            <option value="">Tüm Konular</option>
+                            @if (mainTopics != null)
+                            {
+                                foreach (var topic in mainTopics)
+                                {
+                                    <option value="@topic.Id">@topic.TopicName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="topic-filter">Alt Konu:</label>
+                        <select id="topic-filter" class="filter-select" disabled>
+                            <option value="">Önce ana konu seçin</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button id="loadQuestions" class="btn-action btn-primary">
+                            <i class="fas fa-search"></i>
+                            Soruları Yükle
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="question-container" id="questionContainer" style="display: none;">
+                <div class="question-content">
+                    <div class="question-text">
+                        <h3 id="questionTitle">Soru 1</h3>
+                        <p id="questionText">Lütfen bir konu seçin ve soruları yükleyin.</p>
+                        <div class="question-image" id="questionImage" style="display: none;">
+                            <!-- Resim buraya gelecek -->
+                        </div>
+                    </div>
+
+                    <div class="options-container" id="optionsContainer">
+                        <!-- Seçenekler buraya gelecek -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-action btn-secondary" id="showSolution" style="display: none;">
+                        <i class="fas fa-lightbulb"></i>
+                        Çözümü Gör
+                    </button>
+                    <div class="navigation-buttons">
+                        <button class="btn-action btn-secondary" id="prevQuestion" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                            Önceki Soru
+                        </button>
+                        <button class="btn-action btn-primary" id="nextQuestion" disabled>
+                            Sonraki Soru
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Solution Area -->
+                <div class="solution-area" id="solutionArea" style="display: none;">
+                    <div class="solution-header">
+                        <h4><i class="fas fa-check-circle"></i> Çözüm</h4>
+                        <button class="btn-close-solution" id="closeSolution">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="solution-content">
+                        <p id="correctAnswer"></p>
+                        <p id="solutionText"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-text">0 / 0 soru tamamlandı</div>
+            </div>
+
+            <div class="results-container" id="resultsContainer" style="display: none;">
+                <h2>Odaklanma Alanı Sonucu</h2>
+                <div class="results-stats">
+                    <div class="stat-item" id="resultsCorrect">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Doğru</span>
+                    </div>
+                    <div class="stat-item" id="resultsIncorrect">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Yanlış</span>
+                    </div>
+                    <div class="stat-item" id="resultsNullCorrect">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Boş</span>
+                    </div>
+                    <div class="stat-item" id="resultsPercentage">
+                        <span class="stat-value">0%</span>
+                        <span class="stat-label">Başarı</span>
+                    </div>
+                </div>
+
+                <form id="submitResultsForm" asp-action="SubmitSolve" asp-controller="User" method="post" style="display: none;">
+                    <input type="hidden" id="userAnswersData" name="userAnswers" />
+                </form>
+
+                <div class="results-actions">
+                    <button id="saveResults" class="btn-action btn-primary">
+                        <i class="fas fa-save"></i> Sonuçları Kaydet
+                    </button>
+                    <button id="restartTest" class="btn-action btn-secondary">
+                        <i class="fas fa-redo"></i> Yeniden Başla
+                    </button>
+                    <a href="@Url.Action("Dashboard", "User")" class="btn-action btn-secondary">
+                        <i class="fas fa-compass"></i> Pusulaya Dön
+                    </a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    
+</body>
+</html>

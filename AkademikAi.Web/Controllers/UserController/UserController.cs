@@ -277,13 +277,11 @@ namespace AkademikAi.Web.Controllers.UserController
                 var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 var newExamId = await _examService.CreateCustomExamFromUserRequestAsync(dto, userId);
 
-                // Başarılı olursa, kullanıcıya bir mesaj ve belki de yeni sınavın ID'sini dönebiliriz.
                 return Json(new { success = true, message = "Özel testiniz başarıyla oluşturuldu!", examId = newExamId });
             }
             catch (Exception ex)
             {
-                // Hata detayını loglayın
-                // _logger.LogError(ex, "Özel test oluşturulurken hata oluştu.");
+                
                 return Json(new { success = false, message = ex.Message });
             }
         }
@@ -418,18 +416,23 @@ namespace AkademikAi.Web.Controllers.UserController
                 
                 var result = subTopics.Select(t => new {
                     id = t.Id,
-                    topicName = t.TopicName // 'name' yerine 'topicName' olarak değiştirildi.
+                    topicName = t.TopicName 
                 }).ToList();
 
-                // Veriyi doğrudan Ok() içinde döndürün.
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                // Gerçek bir uygulamada burada hatayı loglamalısınız.
-                // _logger.LogError(ex, "Alt konular yüklenirken hata oluştu.");
+                
                 return StatusCode(500, new { message = "Sunucu hatası: Alt konular yüklenemedi." });
             }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> CustomExam()
+        {
+           return View();
         }
 
         [HttpGet]
@@ -489,6 +492,8 @@ namespace AkademikAi.Web.Controllers.UserController
                 return StatusCode(500, new { message = "Sınav geçmişi yüklenirken hata oluştu." });
             }
         }
+
+        
 
         [HttpGet]
         public async Task<IActionResult> GetPerformanceChartData()
