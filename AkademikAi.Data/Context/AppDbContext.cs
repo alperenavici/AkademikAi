@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using AkademikAi.Data.Seed;
+using Microsoft.IdentityModel.Tokens;
+using AkademikAi.Entity.Enums;
+
 
 
 namespace AkademikAi.Data.Context
@@ -21,13 +24,18 @@ namespace AkademikAi.Data.Context
        public DbSet<UserRecommendation> UserRecommendations { get; set; }
        public DbSet<UserPerformanceSummaries> UserPerformanceSummaries { get; set; }
 
+       public DbSet<Exam> Exams { get; set; }
+       public DbSet<ExamQuestions> ExamQuestions { get; set; }
+       public DbSet<ExamParticipant> ExamParticipants { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-           
+
+            ConfigureExamEntities(modelBuilder);
+
             // Seed data'yı ekle
             DataSeeder.SeedData(modelBuilder);
-           
+
             modelBuilder.Entity<Questions>(entity =>
             {
                 entity.HasKey(q => q.Id);
@@ -53,7 +61,7 @@ namespace AkademikAi.Data.Context
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
-            
+
             modelBuilder.Entity<QuestionsOptions>(entity =>
             {
                 entity.HasKey(o => o.Id);
@@ -62,7 +70,7 @@ namespace AkademikAi.Data.Context
                 entity.Property(o => o.IsCorrect).IsRequired();
             });
 
-            
+
             modelBuilder.Entity<Topics>(entity =>
             {
                 entity.HasKey(t => t.Id);
@@ -110,6 +118,13 @@ namespace AkademikAi.Data.Context
                       .WithMany(q => q.UserAnswers)
                       .HasForeignKey(ua => ua.QuestionId)
                       .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ua => ua.Exam)
+                      .WithMany(e => e.UserAnswers)
+                      .HasForeignKey(ua => ua.ExamId)
+                      .IsRequired(false)
+
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<UserNotifications>(entity =>
@@ -161,7 +176,56 @@ namespace AkademikAi.Data.Context
                       .HasForeignKey(ups => ups.TopicId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
-        }
 
+        }
+        
+
+
+             private void ConfigureExamEntities(ModelBuilder modelBuilder)
+            {
+                 modelBuilder.Entity<Exam>(entity =>
+                {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(250);
+                entity.Property(e => e.Description).HasMaxLength(1000);
+                entity.Property(e => e.StartTime).IsRequired();
+                entity.Property(e => e.EndTime).IsRequired();
+                entity.Property(e => e.Status).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
+            });
+
+            modelBuilder.Entity<ExamQuestions>(entity =>
+            {
+                entity.HasKey(eq => new { eq.ExamId, eq.QuestionId });
+
+                entity.HasOne(eq => eq.Exam)
+                      .WithMany(e => e.ExamQuestions)
+                      .HasForeignKey(eq => eq.ExamId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(eq => eq.Question)
+                      .WithMany(q => q.ExamQuestions) // Yazım hatası düzeltildi: ExamQuestion -> ExamQuestions
+                      .HasForeignKey(eq => eq.QuestionId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ExamParticipant>(entity =>
+            {
+                entity.HasKey(ep => new { ep.UserId, ep.ExamId });
+
+                entity.HasOne(ep => ep.User)
+                      .WithMany(u => u.ExamParticipants)
+                      .HasForeignKey(ep => ep.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ep => ep.Exam)
+                      .WithMany(e => e.Participants)
+                      .HasForeignKey(ep => ep.ExamId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+        }
     }
+
+    
 }
+

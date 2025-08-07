@@ -18,6 +18,7 @@ namespace AkademikAi.Entity.Entites
         public ICollection<UserRecommendation> UserRecommendations { get; set; }
         public ICollection<UserNotifications> UserNotifications { get; set; }
         public ICollection<UserPerformanceSummaries> UserPerformanceSummaries { get; set; }
+        public ICollection<ExamParticipant> ExamParticipants { get; set; } // Sınav katılımcıları
 
 
 

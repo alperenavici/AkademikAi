@@ -17,5 +17,8 @@ namespace AkademikAi.Entity.Entites
         public char UserAnswer { get; set; } // e.g., 'A', 'B', 'C', 'D'
         public AppUser User { get; set; }
         public Questions Question { get; set; }
+        public Guid? ExamId { get; set; }
+        public Exam Exam { get; set; } // Sınav ile ilişkilendirme
+
     }
 }

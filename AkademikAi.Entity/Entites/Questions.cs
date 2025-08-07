@@ -20,8 +20,8 @@ namespace AkademikAi.Entity.Entites
         public AppUser GeneratedForUser { get; set; }
         public ICollection<QuestionsTopic> QuestionsTopics { get; set; }
         public ICollection<QuestionsOptions> QuestionsOptions { get; set; }
-        public ICollection<UserAnswers> UserAnswers { get; set; } // Eksikse ekle
-
+        public ICollection<UserAnswers> UserAnswers { get; set; } 
+        public ICollection<ExamQuestions> ExamQuestions { get; set; }
 
     }
 }

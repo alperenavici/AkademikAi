@@ -1,0 +1,20 @@
+﻿using AkademikAi.Core.DTOs;
+using AkademikAi.Entity.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AkademikAi.Service.IServices
+{
+    public interface IExamService
+    {
+        Task<List<ExamListDto>> GetAllExamsAsync();
+        Task<ExamDetailDto> GetExamForStudentAsync(Guid examId, Guid userId);
+        Task CreateExamAsync(ExamCreateDto examCreateDto);
+        Task RegisterUserForExamAsync(Guid examId, Guid userId);
+        Task StartExamForUserAsync(Guid examId, Guid userId);
+        Task<double> SubmitAndScoreExamAsync(Guid examId, Guid userId, List<UserAnswerSubmitDto> answers);
+    }
+}

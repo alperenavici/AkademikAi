@@ -397,20 +397,17 @@ namespace AkademikAi.Web.Controllers.UserController
             {
                 var performanceSummaries = await _performanceService.GetUserPerformanceSummariesByUserIdAsync(user.Id);
                 
-                // Son 7 günlük veri için örnek veri oluştur (gerçek uygulamada tarih bazlı filtreleme yapılır)
                 var chartData = new List<object>();
                 var labels = new List<string>();
                 var data = new List<double>();
 
                 if (performanceSummaries.Any())
                 {
-                    // Son 7 gün için örnek veri
                     for (int i = 6; i >= 0; i--)
                     {
                         var date = DateTime.Now.AddDays(-i);
                         labels.Add(date.ToString("dd/MM"));
                         
-                        // Bu gün için ortalama başarı oranı (gerçek uygulamada tarih bazlı hesaplanır)
                         var daySuccessRate = performanceSummaries.Average(p => p.SuccessRate);
                         data.Add(Math.Round(daySuccessRate, 1));
                     }
