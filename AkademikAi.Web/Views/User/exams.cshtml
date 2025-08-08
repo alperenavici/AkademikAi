@@ -43,10 +43,7 @@
                     <i class="fas fa-user-circle"></i>
                     <span>Kişisel Alan</span>
                 </a>
-                <a href="@Url.Action("CustomExam","User")" class="nav-link">
-                    <i class="fas fa-key"></i>
-                    <span>Özel Test</span>
-                </a>
+              
             </nav>
             <div class="sidebar-footer">
                 <form asp-action="Logout" asp-controller="User" method="post" style="display: inline;">
@@ -582,7 +579,6 @@
                 });
             });
 
-            // Ders seçimi değiştiğinde konuları yükle
             const examSubjectSelect = document.getElementById('exam-subject');
             const examTopicSelect = document.getElementById('exam-topic');
             
@@ -590,12 +586,10 @@
                 examSubjectSelect.addEventListener('change', function() {
                     const selectedSubjectId = this.value;
                     
-                    // Konu seçimini temizle
                     examTopicSelect.innerHTML = '<option value="">Konu yükleniyor...</option>';
                     examTopicSelect.disabled = true;
                     
                     if (selectedSubjectId) {
-                        // API'den konuları getir
                         fetch(`/User/GetTopicsBySubject?subjectId=${selectedSubjectId}`)
                             .then(response => {
                                 if (!response.ok) {
@@ -635,7 +629,6 @@
                     const button = form.querySelector('.btn-create-exam');
                     const originalButtonText = button.innerHTML;
 
-                    // Form validasyonu
                     const testName = formData.get('TestName');
                     const subjectId = formData.get('SubjectId');
                     const topicId = formData.get('TopicId');
@@ -674,7 +667,6 @@
                         if (data.success) {
                             alert(data.message+"şimdi teste yönlendirliyorsunuz.");
                             form.reset();
-                            // Form resetlendiğinde konu selectini de sıfırla
                             window.location.href = `/User/CustomExam?examId=${data.examId}`;
                         } else {
                             alert('Hata: ' + data.message);
@@ -691,7 +683,6 @@
                 });
             }
 
-            // Sınav geçmişini yükle
             function loadExamHistory() {
                 const examHistoryContent = document.getElementById('exam-history-content');
                 
@@ -742,9 +733,7 @@
                     });
             }
 
-            // Sınav sonucunu görüntüle
             function viewExamResult(examId) {
-                // Bu fonksiyon sınav detay sayfasına yönlendirebilir
                 alert('Sınav detayları gösterimi henüz geliştirilmemiştir. Sınav ID: ' + examId);
             }
         });

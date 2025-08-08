@@ -264,7 +264,7 @@ namespace AkademikAi.Web.Controllers.UserController
 
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken] // Form'a @Html.AntiForgeryToken() eklemeyi unutmayın
+        [ValidateAntiForgeryToken] 
         public async Task<IActionResult> CreateCustomExam(CustomExamCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -300,7 +300,6 @@ namespace AkademikAi.Web.Controllers.UserController
             {
                 var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-                // Önce sınavı kullanıcı için "Başladı" durumuna getir
                 await _examService.StartExamForUserAsync(examId, userId);
 
                 var examDetails = await _examService.GetExamForStudentAsync(examId, userId);
@@ -492,7 +491,6 @@ namespace AkademikAi.Web.Controllers.UserController
 
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitExam([FromBody] SubmitExamRequest request)
         {
             if (!ModelState.IsValid)
@@ -507,17 +505,18 @@ namespace AkademikAi.Web.Controllers.UserController
                     return Json(new { success = false, message = "Kullanıcı kimliği bulunamadı." });
                     
                 var userId = Guid.Parse(userIdClaim);
+                
+                // Test kaydetme işlemini başlat
                 var score = await _examService.SubmitAndScoreExamAsync(request.ExamId, userId, request.Answers);
 
                 // Calculate statistics from submitted answers
-                var exam = await _examService.GetExamForStudentAsync(request.ExamId, userId);
-                var totalQuestions = exam.Questions.Count;
-                var answeredQuestions = request.Answers.Count;
-                
-                // Success rate based on score
+                var totalQuestions = request.Answers.Count; 
                 var successRate = score;
                 var correctAnswers = (int)Math.Round((score / 100.0) * totalQuestions);
                 var wrongAnswers = totalQuestions - correctAnswers;
+
+                // Log işlem başarısı
+                System.Diagnostics.Debug.WriteLine($"✅ Test başarıyla kaydedildi - ExamId: {request.ExamId}, UserId: {userId}, Score: {score}");
 
                 return Json(new 
                 { 
@@ -527,7 +526,7 @@ namespace AkademikAi.Web.Controllers.UserController
                     wrongAnswers = wrongAnswers,
                     successRate = successRate,
                     totalQuestions = totalQuestions,
-                    message = "Test başarıyla tamamlandı!"
+                    message = "Test başarıyla tamamlandı ve kaydedildi! 🎉"
                 });
             }
             catch (Exception ex)

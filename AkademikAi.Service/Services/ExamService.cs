@@ -15,28 +15,24 @@ namespace AkademikAi.Service.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IQuestionRepository _questionRepository;
+        private readonly IUserPerformanceSummaryService _performanceService;
 
         public ExamService(
         IExamRepository examRepository,
         IGenericRepository<UserAnswers> userAnswersRepository,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        IQuestionRepository questionRepository) 
+        IQuestionRepository questionRepository,
+        IUserPerformanceSummaryService performanceService) 
         {
             _examRepository = examRepository;
             _userAnswersRepository = userAnswersRepository;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
-
             _questionRepository = questionRepository;
+            _performanceService = performanceService;
         }
-        public ExamService(IExamRepository examRepository, IGenericRepository<UserAnswers> userAnswersRepository, IMapper mapper, IUnitOfWork unitOfWork)
-        {
-            _examRepository = examRepository;
-            _userAnswersRepository = userAnswersRepository;
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
-        }
+
 
         public async Task CreateExamAsync(ExamCreateDto examCreateDto)
         {
@@ -92,7 +88,6 @@ namespace AkademikAi.Service.Services
             }
             catch (Exception ex)
             {
-                // AutoMapper hatası durumunda manuel mapping yap
                 return new ExamDetailDto
                 {
                     Id = examWithQuestions.Id,
@@ -196,8 +191,16 @@ namespace AkademikAi.Service.Services
             participant.Score = score;
             _examRepository.UpdateParticipant(participant);
 
-            
             await _unitOfWork.SaveChangesAsync();
+
+            try
+            {
+                await _performanceService.CreateOrUpdatePerformanceSummaryAsync(userId);
+            }
+            catch (Exception)
+            {
+               
+            }
 
             return Math.Round(score, 2);
         }
@@ -205,7 +208,7 @@ namespace AkademikAi.Service.Services
         {
             var questions = await _questionRepository.GetRandomQuestionsByCriteriaAsync(
                 dto.TopicId,
-                (QuestionsDiff)dto.Difficulty, // Enum'a cast et
+                (QuestionsDiff)dto.Difficulty, 
                 dto.QuestionCount
             );
 
@@ -238,7 +241,6 @@ namespace AkademikAi.Service.Services
                 Status = ExamParticipationStatus.Registered 
             });
 
-            // 5. Veritabanına kaydet
             await _examRepository.AddAsync(newExam);
             await _unitOfWork.SaveChangesAsync();
 

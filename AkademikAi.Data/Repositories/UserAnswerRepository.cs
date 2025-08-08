@@ -23,6 +23,8 @@ namespace AkademikAi.Data.Repositories
         public async Task<List<UserAnswers>> GetUserAnswersByUserIdAsync(Guid userId)
         {
             return await _context.UserAnswers
+                .Include(ua => ua.Question)
+                    .ThenInclude(q => q.QuestionsTopics)
                 .Where(ua => ua.UserId == userId)
                 .ToListAsync();
         }

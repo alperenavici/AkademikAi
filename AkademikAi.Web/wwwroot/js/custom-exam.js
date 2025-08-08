@@ -311,40 +311,74 @@ function submitExam() {
     const examIdElement = document.getElementById('exam-id');
     const examId = examIdElement ? examIdElement.value : null;
 
+    if (!examId) {
+        alert('Sınav ID bulunamadı. Lütfen sayfayı yenileyin.');
+        return;
+    }
+
+    console.log('📤 Submitting exam:', examId);
+    console.log('📝 User answers:', userAnswers);
+
     // Prepare answers for submission
     const answersArray = Object.entries(userAnswers).map(([questionId, optionId]) => ({
         questionId: questionId,
         selectedOptionId: optionId
     }));
 
+    if (answersArray.length === 0) {
+        if (!confirm('Hiç soru cevaplanmadı. Yine de testi bitirmek istiyor musunuz?')) {
+            return;
+        }
+    }
+
+    console.log('📋 Answers array:', answersArray);
+
     // Show loading
     showSubmitLoading();
 
     const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
     
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+        headers['RequestVerificationToken'] = token;
+    }
+    
+    const submitData = {
+        examId: examId,
+        answers: answersArray
+    };
+    
+    console.log('🚀 Sending data:', submitData);
+    
     fetch('/User/SubmitExam', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': token
-        },
-        body: JSON.stringify({
-            examId: examId,
-            answers: answersArray
-        })
+        headers: headers,
+        body: JSON.stringify(submitData)
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('📨 Response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`Server Error: ${response.status} - ${response.statusText}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('✅ Response data:', data);
         if (data.success) {
+            console.log('🎉 Test başarıyla kaydedildi!');
             showExamResults(data);
         } else {
+            console.error('❌ Server Error:', data);
             alert('Hata: ' + (data.message || 'Bilinmeyen bir hata oluştu.'));
             hideSubmitLoading();
         }
     })
     .catch(error => {
-        console.error('Submit error:', error);
-        alert('Sınav gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+        console.error('💥 Submit error:', error);
+        alert('Sınav gönderilirken bir hata oluştu. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.\n\nHata: ' + error.message);
         hideSubmitLoading();
     });
 }
@@ -408,16 +442,16 @@ function showExamResults(data) {
                     </div>
                 </div>
                 
-                <div class="results-actions">
-                    <a href="/User/Exams" class="btn-primary">
-                        <i class="fas fa-list"></i>
-                        Sınavlar Sayfasına Dön
-                    </a>
-                    <a href="/User/Performance" class="btn-secondary">
-                        <i class="fas fa-chart-line"></i>
-                        Performansımı Görüntüle
-                    </a>
-                </div>
+                                    <div class="results-actions">
+                        <a href="/User/Performance" class="btn-primary">
+                            <i class="fas fa-chart-line"></i>
+                            Performansımı Görüntüle
+                        </a>
+                        <a href="/User/Exams" class="btn-secondary">
+                            <i class="fas fa-list"></i>
+                            Sınavlar Sayfasına Dön
+                        </a>
+                    </div>
             </div>
         `;
     }

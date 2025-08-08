@@ -88,40 +88,55 @@ namespace AkademikAi.Service.Services
                 return null;
             }
 
-            var totalAnswers = userAnswers.Count;
-            var correctAnswers = userAnswers.Count(ua => ua.IsCorrect);
-            var successRate = (double)correctAnswers / totalAnswers * 100;
+            // Topic bazında performans hesaplama
+            var topicGroups = userAnswers.Where(ua => ua.Question?.QuestionsTopics.Any() == true)
+                                      .SelectMany(ua => ua.Question.QuestionsTopics.Select(qt => new { UserAnswer = ua, TopicId = qt.TopicId }))
+                                      .GroupBy(x => x.TopicId);
 
-            var existingSummary = await _performanceRepository.GetUserPerformanceSummaryByUserIdAsync(userId);
-            
-            if (existingSummary != null)
-            {
-                existingSummary.TotalQuestionsAnswered = totalAnswers;
-                existingSummary.CorrectAnswers = correctAnswers;
-                existingSummary.SuccessRate = successRate;
-                existingSummary.LastUpdatedAt = DateTime.UtcNow;
+            UserPerformanceSummaries? lastUpdatedSummary = null;
 
-                _performanceRepository.Update(existingSummary);
-                await _unitOfWork.SaveChangesAsync();
-                return existingSummary;
-            }
-            else
+            foreach (var topicGroup in topicGroups)
             {
-                var newSummary = new UserPerformanceSummaries
+                var topicId = topicGroup.Key;
+                var topicAnswers = topicGroup.Select(x => x.UserAnswer).ToList();
+                
+                var totalAnswers = topicAnswers.Count;
+                var correctAnswers = topicAnswers.Count(ua => ua.IsCorrect);
+                var successRate = (double)correctAnswers / totalAnswers * 100;
+
+                var existingSummary = await _performanceRepository.GetUserPerformanceSummaryByUserAndTopicAsync(userId, topicId);
+                
+                if (existingSummary != null)
                 {
-                    Id = Guid.NewGuid(),
-                    UserId = userId,
-                    TotalQuestionsAnswered = totalAnswers,
-                    CorrectAnswers = correctAnswers,
-                    SuccessRate = successRate,
-                    CreatedAt = DateTime.UtcNow,
-                    LastUpdatedAt = DateTime.UtcNow
-                };
+                    existingSummary.TotalQuestionsAnswered = totalAnswers;
+                    existingSummary.CorrectAnswers = correctAnswers;
+                    existingSummary.SuccessRate = successRate;
+                    existingSummary.LastUpdatedAt = DateTime.UtcNow;
 
-                await _performanceRepository.AddAsync(newSummary);
-                await _unitOfWork.SaveChangesAsync();
-                return newSummary;
+                    _performanceRepository.Update(existingSummary);
+                    lastUpdatedSummary = existingSummary;
+                }
+                else
+                {
+                    var newSummary = new UserPerformanceSummaries
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = userId,
+                        TopicId = topicId,
+                        TotalQuestionsAnswered = totalAnswers,
+                        CorrectAnswers = correctAnswers,
+                        SuccessRate = successRate,
+                        CreatedAt = DateTime.UtcNow,
+                        LastUpdatedAt = DateTime.UtcNow
+                    };
+
+                    await _performanceRepository.AddAsync(newSummary);
+                    lastUpdatedSummary = newSummary;
+                }
             }
+
+            await _unitOfWork.SaveChangesAsync();
+            return lastUpdatedSummary;
         }
 
         public async Task<bool> UpdatePerformanceSummaryAsync(UserPerformanceSummaries summary)

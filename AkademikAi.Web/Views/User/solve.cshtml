@@ -46,10 +46,7 @@
                     <i class="fas fa-user-circle"></i>
                     <span>Kişisel Alan</span>
                 </a>
-                <a href="@Url.Action("CustomExam", "User")" class="nav-link">
-                    <i class="fas fa-key"></i>
-                    <span>Özel Test</span>
-                </a>
+            
             </nav>
             <div class="sidebar-footer">
                 <form asp-action="Logout" asp-controller="User" method="post" style="display: inline;">
@@ -85,7 +82,7 @@
             <section class="filters-section" id="filtersSection">
                 <div class="filter-container">
                     <div class="filter-group">
-                        <label for="course-filter">Ana Konu:</label>
+                        <label for="course-filter">Ders:</label>
                         <select id="course-filter" class="filter-select">
                             <option value="">Tüm Konular</option>
                             @if (mainTopics != null)
@@ -421,7 +418,6 @@
         });
 
         document.getElementById('nextQuestion').addEventListener('click', function () {
-            // Cevap verilmemişse yanlış say
             if (userAnswers[currentQuestionIndex] === null) {
                 userAnswers[currentQuestionIndex] = nullOption;
                 nullOption+=1;
@@ -482,15 +478,12 @@
                 
                 if (userAnswer !== null) {
                     isAnswered = true;
-                    // Doğru seçeneği bul
                     const correctOption = question.options.find(opt => opt.isCorrect);
                     isCorrect = userAnswer === true;
                     
-                    // Kullanıcının seçtiği seçeneği bul (basit implementasyon)
                     if (userAnswer === true) {
                         selectedOptionId = correctOption.id;
                     } else {
-                        // Yanlış seçenek için rastgele bir yanlış seçenek seç
                         const wrongOptions = question.options.filter(opt => !opt.isCorrect);
                         if (wrongOptions.length > 0) {
                             selectedOptionId = wrongOptions[0].id;
