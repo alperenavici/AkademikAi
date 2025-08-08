@@ -18,6 +18,8 @@ namespace AkademikAi.Service.IServices
         Task StartExamForUserAsync(Guid examId, Guid userId);
         Task<Guid> CreateCustomExamFromUserRequestAsync(CustomExamCreateDto dto, Guid userId);
         Task<List<ExamHistoryDto>> GetUserExamHistoryAsync(Guid userId);
+        Task<List<ExamListDto>> GetUserRegisteredExamsAsync(Guid userId);
+        Task UpdateExamStatusAsync(Guid examId, ExamStatus status);
 
         Task<double> SubmitAndScoreExamAsync(Guid examId, Guid userId, List<UserAnswerSubmitDto> answers);
     }

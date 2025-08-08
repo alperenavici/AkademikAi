@@ -1,6 +1,5 @@
 ﻿using AkademikAi.Core.DTOs;
 using AkademikAi.Entity.Entites;
-using AkademikAi.Entity.Entites;
 using AutoMapper;
 
 namespace AkademikAi.Service.AutoMapper.Exams
@@ -10,7 +9,8 @@ namespace AkademikAi.Service.AutoMapper.Exams
         public ExamProfile()
         {
             CreateMap<Exam, ExamListDto>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.ParticipantCount, opt => opt.MapFrom(src => src.Participants.Count()));
 
             CreateMap<Exam, ExamDetailDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

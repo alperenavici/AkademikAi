@@ -13,6 +13,7 @@ namespace AkademikAi.Data.IRepositories
         Task<Exam> GetExamWithQuestionsAndOptionsAsync(Guid examId);
         Task<List<Exam>> GetActiveAndUpcomingExamsAsync();
         Task<List<Exam>> GetUserExamHistoryAsync(Guid userId);
+        Task<List<Exam>> GetUserRegisteredExamsAsync(Guid userId);
 
         Task<bool> IsUserRegisteredForExam(Guid userId, Guid examId);
         Task<ExamParticipant> GetParticipantAsync(Guid userId, Guid examId);

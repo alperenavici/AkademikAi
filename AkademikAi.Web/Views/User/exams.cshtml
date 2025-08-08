@@ -83,82 +83,69 @@
                 <div class="tab-content">
                     <!-- Hazır Sınavlar Tab -->
                     <div id="ready-exams" class="tab-panel active">
-                        <div class="exam-grid">
-                            <div class="exam-card">
-                                <div class="exam-header">
-                                    <h3>TYT Matematik Denemesi</h3>
-                                    <span class="exam-difficulty easy">Kolay</span>
-                                </div>
-                                <div class="exam-details">
-                                    <div class="exam-info">
-                                        <span><i class="fas fa-clock"></i> 45 dakika</span>
-                                        <span><i class="fas fa-question-circle"></i> 40 soru</span>
-                                        <span><i class="fas fa-AppUser"></i> 1,234 katılım</span>
+                        <div class="exam-grid" id="available-exams-grid">
+                            @{
+                                var availableExams = ViewBag.AvailableExams as List<AkademikAi.Core.DTOs.ExamListDto>;
+                            }
+                            @if (availableExams != null && availableExams.Any())
+                            {
+                                @foreach (var exam in availableExams)
+                                {
+                                    <div class="exam-card" data-exam-id="@exam.Id">
+                                        <div class="exam-header">
+                                            <h3>@exam.Title</h3>
+                                            <span class="exam-difficulty @(exam.Status.ToString().ToLower())">@exam.Status</span>
+                                        </div>
+                                        <div class="exam-details">
+                                            <div class="exam-info">
+                                                <span><i class="fas fa-clock"></i> @exam.DurationMinutes dakika</span>
+                                                <span><i class="fas fa-calendar"></i> @exam.StartTime.ToString("dd.MM.yyyy HH:mm")</span>
+                                                <span><i class="fas fa-users"></i> @exam.ParticipantCount katılım</span>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(exam.Description))
+                                            {
+                                                <p>@exam.Description</p>
+                                            }
+                                        </div>
+                                        @if (exam.Status == "Scheduled" && exam.StartTime > DateTime.Now)
+                                        {
+                                            <button class="btn-start-exam" onclick="registerForExam('@exam.Id')">
+                                                <i class="fas fa-user-plus"></i>
+                                                Sınava Kayıt Ol
+                                            </button>
+                                        }
+                                        else if (exam.Status == "InProgress" && exam.StartTime <= DateTime.Now && exam.EndTime >= DateTime.Now)
+                                        {
+                                            <button class="btn-start-exam" onclick="startExam('@exam.Id')">
+                                                <i class="fas fa-play"></i>
+                                                Sınavı Başlat
+                                            </button>
+                                        }
+                                        else if (exam.Status == "Completed" || exam.EndTime < DateTime.Now)
+                                        {
+                                            <button class="btn-start-exam" disabled style="background-color: #95a5a6;">
+                                                <i class="fas fa-check"></i>
+                                                Sınav Tamamlandı
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn-start-exam" disabled style="background-color: #95a5a6;">
+                                                <i class="fas fa-clock"></i>
+                                                Beklemede
+                                            </button>
+                                        }
                                     </div>
-                                    <p>TYT matematik konularını kapsayan kapsamlı deneme sınavı.</p>
+                                }
+                            }
+                            else
+                            {
+                                <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                                    <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                                    <h3>Henüz Aktif Sınav Bulunmuyor</h3>
+                                    <p>Yakında yeni sınavlar eklenecek. Bu arada özel test oluşturabilirsiniz.</p>
                                 </div>
-                                <button class="btn-start-exam">
-                                    <i class="fas fa-play"></i>
-                                    Sınavı Başlat
-                                </button>
-                            </div>
-
-                            <div class="exam-card">
-                                <div class="exam-header">
-                                    <h3>AYT Fizik Denemesi</h3>
-                                    <span class="exam-difficulty hard">Zor</span>
-                                </div>
-                                <div class="exam-details">
-                                    <div class="exam-info">
-                                        <span><i class="fas fa-clock"></i> 60 dakika</span>
-                                        <span><i class="fas fa-question-circle"></i> 30 soru</span>
-                                        <span><i class="fas fa-AppUser"></i> 856 katılım</span>
-                                    </div>
-                                    <p>AYT fizik konularını içeren detaylı deneme sınavı.</p>
-                                </div>
-                                <button class="btn-start-exam">
-                                    <i class="fas fa-play"></i>
-                                    Sınavı Başlat
-                                </button>
-                            </div>
-
-                            <div class="exam-card">
-                                <div class="exam-header">
-                                    <h3>TYT Genel Deneme</h3>
-                                    <span class="exam-difficulty medium">Orta</span>
-                                </div>
-                                <div class="exam-details">
-                                    <div class="exam-info">
-                                        <span><i class="fas fa-clock"></i> 135 dakika</span>
-                                        <span><i class="fas fa-question-circle"></i> 120 soru</span>
-                                        <span><i class="fas fa-AppUser"></i> 2,156 katılım</span>
-                                    </div>
-                                    <p>Tüm TYT konularını kapsayan genel deneme sınavı.</p>
-                                </div>
-                                <button class="btn-start-exam">
-                                    <i class="fas fa-play"></i>
-                                    Sınavı Başlat
-                                </button>
-                            </div>
-
-                            <div class="exam-card">
-                                <div class="exam-header">
-                                    <h3>AYT Kimya Denemesi</h3>
-                                    <span class="exam-difficulty easy">Kolay</span>
-                                </div>
-                                <div class="exam-details">
-                                    <div class="exam-info">
-                                        <span><i class="fas fa-clock"></i> 45 dakika</span>
-                                        <span><i class="fas fa-question-circle"></i> 25 soru</span>
-                                        <span><i class="fas fa-AppUser"></i> 678 katılım</span>
-                                    </div>
-                                    <p>AYT kimya konularını içeren temel deneme sınavı.</p>
-                                </div>
-                                <button class="btn-start-exam">
-                                    <i class="fas fa-play"></i>
-                                    Sınavı Başlat
-                                </button>
-                            </div>
+                            }
                         </div>
                     </div>
 
@@ -557,6 +544,40 @@
     </style>
 
     <script>
+        // Sınava kayıt olma
+        function registerForExam(examId) {
+            if (confirm('Bu sınava kayıt olmak istediğinizden emin misiniz?')) {
+                fetch('/User/RegisterForExam', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ examId: examId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ ' + data.message);
+                        location.reload(); // Sayfayı yenile
+                    } else {
+                        alert('❌ Kayıt sırasında hata: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('❌ Bir hata oluştu. Lütfen tekrar deneyiniz.');
+                });
+            }
+        }
+
+        // Sınavı başlatma
+        function startExam(examId) {
+            if (confirm('Sınavı başlatmak istediğinizden emin misiniz?')) {
+                // Sınav başlatma sayfasına yönlendir
+                window.location.href = `/User/StartAndGetExam?examId=${examId}`;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
 
             const tabButtons = document.querySelectorAll('.tab-button');

@@ -1,0 +1,374 @@
+@model AkademikAi.Core.DTOs.ExamCreateDto
+@{
+    ViewData["Title"] = "Sınav Oluştur - AkademikAI";
+    var subjects = ViewBag.Subjects as List<AkademikAi.Core.DTOs.SubjectDto>;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link rel="stylesheet" href="~/css/dashboard-new.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .question-selector {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .questions-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 10px;
+            background: white;
+            margin-top: 10px;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .question-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .question-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .question-text {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .question-difficulty {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+        }
+
+        .difficulty-easy {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-hard {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .selected-questions {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f5e8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">AkademikAI Admin</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="@Url.Action("Index", "Admin")" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Panel</span>
+                </a>
+                <a href="@Url.Action("ExamManagement", "Admin")" class="nav-link">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Sınav Yönetimi</span>
+                </a>
+                <a href="@Url.Action("CreateExam", "Admin")" class="nav-link active">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Sınav Oluştur</span>
+                </a>
+                <a href="@Url.Action("Dashboard", "User")" class="nav-link">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Kullanıcı Paneli</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <form asp-action="Logout" asp-controller="User" method="post" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Çıkış Yap</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Yeni Sınav Oluştur</h1>
+                <p>Öğrenciler için yeni bir sınav oluşturun.</p>
+            </header>
+
+            <div class="form-container">
+                <form asp-action="CreateExam" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Temel Bilgiler -->
+                    <div class="form-group">
+                        <label asp-for="Title">Sınav Adı *</label>
+                        <input asp-for="Title" class="form-control" placeholder="Örn: TYT Matematik Denemesi" required />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Description">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Sınav hakkında kısa açıklama..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <!-- Tarih ve Saat -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="StartTime">Başlangıç Tarihi ve Saati *</label>
+                            <input asp-for="StartTime" type="datetime-local" class="form-control" required />
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="EndTime">Bitiş Tarihi ve Saati *</label>
+                            <input asp-for="EndTime" type="datetime-local" class="form-control" required />
+                            <span asp-validation-for="EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DurationMinutes">Sınav Süresi (Dakika) *</label>
+                        <input asp-for="DurationMinutes" type="number" class="form-control" min="1" max="600" placeholder="90" required />
+                        <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+                    </div>
+
+                    <!-- Soru Seçimi -->
+                    <div class="question-selector">
+                        <h4>Soru Seçimi</h4>
+                        
+                        <div class="form-row" style="margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label for="subject-select">Ders Seçin</label>
+                                <select id="subject-select" class="form-control">
+                                    <option value="">Ders seçin...</option>
+                                    @if (subjects != null)
+                                    {
+                                        @foreach (var subject in subjects)
+                                        {
+                                            <option value="@subject.Id">@subject.SubjectName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="topic-select">Konu Seçin</label>
+                                <select id="topic-select" class="form-control" disabled>
+                                    <option value="">Önce ders seçin...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="button" id="load-questions" class="btn-action btn-secondary" disabled>
+                            <i class="fas fa-search"></i>
+                            Soruları Yükle
+                        </button>
+
+                        <div id="questions-container" style="display: none;">
+                            <h5 style="margin-top: 20px;">Soru Listesi</h5>
+                            <div class="questions-list" id="questions-list">
+                                <!-- Sorular burada listelenecek -->
+                            </div>
+                            
+                            <div class="selected-questions">
+                                <strong>Seçilen Sorular: </strong>
+                                <span id="selected-count">0</span> adet
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden field for selected questions -->
+                    <input type="hidden" asp-for="QuestionIds" id="selectedQuestions" />
+
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button type="submit" class="btn-action btn-primary" style="margin-right: 10px;">
+                            <i class="fas fa-save"></i>
+                            Sınavı Oluştur
+                        </button>
+                        <a href="@Url.Action("ExamManagement", "Admin")" class="btn-action btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Geri Dön
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let selectedQuestions = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const subjectSelect = document.getElementById('subject-select');
+            const topicSelect = document.getElementById('topic-select');
+            const loadQuestionsBtn = document.getElementById('load-questions');
+            const questionsContainer = document.getElementById('questions-container');
+
+            // Ders değişikliği
+            subjectSelect.addEventListener('change', function() {
+                const subjectId = this.value;
+                topicSelect.innerHTML = '<option value="">Konu seçin...</option>';
+                topicSelect.disabled = !subjectId;
+                loadQuestionsBtn.disabled = true;
+                questionsContainer.style.display = 'none';
+
+                if (subjectId) {
+                    // Konuları yükle
+                    fetch(`/User/GetTopicsBySubject?subjectId=${subjectId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && Array.isArray(data)) {
+                                data.forEach(topic => {
+                                    topicSelect.innerHTML += `<option value="${topic.id}">${topic.topicName}</option>`;
+                                });
+                                topicSelect.disabled = false;
+                            }
+                        })
+                        .catch(error => console.error('Konu yükleme hatası:', error));
+                }
+            });
+
+            // Konu değişikliği
+            topicSelect.addEventListener('change', function() {
+                loadQuestionsBtn.disabled = !this.value;
+                questionsContainer.style.display = 'none';
+            });
+
+            // Soruları yükle
+            loadQuestionsBtn.addEventListener('click', function() {
+                const topicId = topicSelect.value;
+                if (!topicId) return;
+
+                fetch(`/Admin/GetQuestionsByTopic?topicId=${topicId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.questions) {
+                            displayQuestions(data.questions);
+                            questionsContainer.style.display = 'block';
+                        } else {
+                            alert('Sorular yüklenemedi: ' + (data.message || 'Bilinmeyen hata'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Soru yükleme hatası:', error);
+                        alert('Sorular yüklenirken bir hata oluştu.');
+                    });
+            });
+        });
+
+        function displayQuestions(questions) {
+            const questionsList = document.getElementById('questions-list');
+            questionsList.innerHTML = '';
+
+            questions.forEach(question => {
+                const questionItem = document.createElement('div');
+                questionItem.className = 'question-item';
+                
+                const difficultyClass = `difficulty-${question.difficultyLevel.toLowerCase()}`;
+                
+                questionItem.innerHTML = `
+                    <input type="checkbox" id="question-${question.id}" value="${question.id}" onchange="toggleQuestion('${question.id}')">
+                    <label for="question-${question.id}" class="question-text">${question.questionText}</label>
+                    <span class="question-difficulty ${difficultyClass}">${question.difficultyLevel}</span>
+                `;
+                
+                questionsList.appendChild(questionItem);
+            });
+        }
+
+        function toggleQuestion(questionId) {
+            const checkbox = document.getElementById(`question-${questionId}`);
+            
+            if (checkbox.checked) {
+                if (!selectedQuestions.includes(questionId)) {
+                    selectedQuestions.push(questionId);
+                }
+            } else {
+                selectedQuestions = selectedQuestions.filter(id => id !== questionId);
+            }
+
+            updateSelectedCount();
+            updateHiddenField();
+        }
+
+        function updateSelectedCount() {
+            document.getElementById('selected-count').textContent = selectedQuestions.length;
+        }
+
+        function updateHiddenField() {
+            document.getElementById('selectedQuestions').value = selectedQuestions.join(',');
+        }
+    </script>
+</body>
+</html>

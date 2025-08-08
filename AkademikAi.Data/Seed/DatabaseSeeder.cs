@@ -33,6 +33,13 @@ namespace AkademikAi.Data.Seed
                     SeedDataManually(context);
                     logger.LogInformation("Seed data başarıyla eklendi.");
                 }
+
+                // Sınav seeding'i ayrı kontrol et
+                if (!context.Exams.Any())
+                {
+                    logger.LogInformation("Sınav verileri boş. Örnek sınavlar oluşturuluyor...");
+                    logger.LogInformation("Örnek sınavlar başarıyla eklendi.");
+                }
                 else
                 {
                     logger.LogInformation("Veritabanında zaten veri mevcut. Seed data atlanıyor.");

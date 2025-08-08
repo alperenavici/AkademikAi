@@ -64,13 +64,22 @@ namespace AkademikAi.Data.Repositories
                 _context.ExamParticipants.Update(participant);
             }
 
-            public async Task<List<Exam>> GetUserExamHistoryAsync(Guid userId)
-            {
-                return await _context.Exams
-                    .Include(e => e.UserAnswers.Where(ua => ua.UserId == userId))
-                    .Where(e => e.Participants.Any(p => p.UserId == userId))
-                    .OrderByDescending(e => e.CreatedAt)
-                    .ToListAsync();
-            }
+                    public async Task<List<Exam>> GetUserExamHistoryAsync(Guid userId)
+        {
+            return await _context.Exams
+                .Include(e => e.UserAnswers.Where(ua => ua.UserId == userId))
+                .Where(e => e.Participants.Any(p => p.UserId == userId))
+                .OrderByDescending(e => e.CreatedAt)
+                .ToListAsync();
+        }
+
+        public async Task<List<Exam>> GetUserRegisteredExamsAsync(Guid userId)
+        {
+            return await _context.Exams
+                .Include(e => e.Participants)
+                .Where(e => e.Participants.Any(p => p.UserId == userId && p.Status == ExamParticipationStatus.Registered))
+                .OrderBy(e => e.StartTime)
+                .ToListAsync();
+        }
         }
 }

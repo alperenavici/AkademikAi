@@ -207,6 +207,13 @@ namespace AkademikAi.Web.Controllers.UserController
             {
                 return NotFound();
             }
+
+            // Eğer kullanıcı Teacher ise Admin paneline yönlendir
+            if (user.UserRole == UserRole.Teacher)
+            {
+                return RedirectToAction("Index", "Admin");
+            }
+
             var userPerformanceSummaries = await _performanceService.GetUserPerformanceSummariesByUserIdAsync(user.Id);
 
             var allTopics = await _topicService.GetAllAsync();
@@ -258,7 +265,10 @@ namespace AkademikAi.Web.Controllers.UserController
             }
             
             var subjects = await _subjectService.GetActiveSubjectsAsync();
+            var availableExams = await _examService.GetAllExamsAsync();
+            
             ViewBag.Subjects = subjects;
+            ViewBag.AvailableExams = availableExams;
             return View(user);
         }
 
@@ -351,12 +361,16 @@ namespace AkademikAi.Web.Controllers.UserController
             }
 
             var mainTopics = await _topicService.GetMainTopicsAsync();
-            
             var randomQuestions = await _questionService.GetRandomQuestionsAsync(20);
+            
+            // Kullanıcının kayıtlı olduğu sınavları getir (şimdilik boş liste)
+            // var registeredExams = await _examService.GetUserRegisteredExamsAsync(user.Id);
+            var registeredExams = new List<object>(); // Geçici
             
             ViewBag.MainTopics = mainTopics;
             ViewBag.Questions = randomQuestions;
             ViewBag.CurrentUser = user;
+            ViewBag.RegisteredExams = registeredExams;
             
             return View();
         }
@@ -570,6 +584,50 @@ namespace AkademikAi.Web.Controllers.UserController
         }
 
         
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RegisterForExam(Guid examId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Kullanıcı bulunamadı" });
+            }
+
+            try
+            {
+                await _examService.RegisterUserForExamAsync(examId, user.Id);
+                return Json(new { success = true, message = "Sınava başarıyla kaydoldunuz!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserRegisteredExams()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Kullanıcı bulunamadı" });
+            }
+
+            try
+            {
+                // Bu method ExamService'e eklenecek
+                // var registeredExams = await _examService.GetUserRegisteredExamsAsync(user.Id);
+                // return Json(new { success = true, exams = registeredExams });
+                return Json(new { success = true, exams = new List<object>() });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetPerformanceChartData()

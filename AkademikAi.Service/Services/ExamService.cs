@@ -273,13 +273,28 @@ namespace AkademikAi.Service.Services
             }).ToList();
         }
 
-        private double CalculateScore(int correctAnswers, int wrongAnswers)
+                private double CalculateScore(int correctAnswers, int wrongAnswers)
         {
             var score = (correctAnswers * 5.0) - (wrongAnswers * 1.0);
             return Math.Max(0, score); 
         }
 
-        
-     
+        public async Task<List<ExamListDto>> GetUserRegisteredExamsAsync(Guid userId)
+        {
+            var userExams = await _examRepository.GetUserRegisteredExamsAsync(userId);
+            return _mapper.Map<List<ExamListDto>>(userExams);
+        }
+
+        public async Task UpdateExamStatusAsync(Guid examId, ExamStatus status)
+        {
+            var exam = await _examRepository.GetByIdAsync(examId);
+            if (exam == null)
+                throw new InvalidOperationException("Sınav bulunamadı.");
+
+            exam.Status = status;
+            _examRepository.Update(exam);
+            await _unitOfWork.SaveChangesAsync();
+        }
+      
     }
 }
