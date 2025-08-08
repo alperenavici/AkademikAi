@@ -82,7 +82,39 @@ namespace AkademikAi.Service.Services
                 throw new InvalidOperationException("Bu sınavı zaten tamamladınız.");
 
             var examWithQuestions = await _examRepository.GetExamWithQuestionsAndOptionsAsync(examId);
-            return _mapper.Map<ExamDetailDto>(examWithQuestions);
+            
+            if (examWithQuestions == null)
+                throw new InvalidOperationException("Sınav detayları yüklenemedi.");
+                
+            try
+            {
+                return _mapper.Map<ExamDetailDto>(examWithQuestions);
+            }
+            catch (Exception ex)
+            {
+                // AutoMapper hatası durumunda manuel mapping yap
+                return new ExamDetailDto
+                {
+                    Id = examWithQuestions.Id,
+                    Title = examWithQuestions.Title,
+                    Description = examWithQuestions.Description,
+                    StartTime = examWithQuestions.StartTime,
+                    DurationMinutes = examWithQuestions.DurationMinutes,
+                    Questions = examWithQuestions.ExamQuestions?.OrderBy(eq => eq.QuestionOrder)
+                        .Select(eq => new QuestionDto
+                        {
+                            Id = eq.Question.Id,
+                            QuestionText = eq.Question.QuestionText,
+                            Options = eq.Question.QuestionsOptions?.OrderBy(o => o.OptionOrder)
+                                .Select(o => new QuestionOptionDto
+                                {
+                                    Id = o.Id,
+                                    OptionText = o.OptionText,
+                                    Label = o.Label
+                                }).ToList() ?? new List<QuestionOptionDto>()
+                        }).ToList() ?? new List<QuestionDto>()
+                };
+            }
         }
 
         public async Task RegisterUserForExamAsync(Guid examId, Guid userId)

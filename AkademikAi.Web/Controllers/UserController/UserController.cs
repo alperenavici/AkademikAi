@@ -274,17 +274,45 @@ namespace AkademikAi.Web.Controllers.UserController
 
             try
             {
-                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Json(new { success = false, message = "Kullanıcı kimliği bulunamadı." });
+                    
+                var userId = Guid.Parse(userIdClaim);
                 var newExamId = await _examService.CreateCustomExamFromUserRequestAsync(dto, userId);
 
                 return Json(new { success = true, message = "Özel testiniz başarıyla oluşturuldu!", examId = newExamId });
             }
             catch (Exception ex)
             {
-                
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> StartAndGetExam(Guid examId)
+        {
+            if (examId == Guid.Empty)
+            {
+                return Json(new { success = false, message = "Geçersiz sınav ID'si." });
+            }
+
+            try
+            {
+                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                // Önce sınavı kullanıcı için "Başladı" durumuna getir
+                await _examService.StartExamForUserAsync(examId, userId);
+
+                var examDetails = await _examService.GetExamForStudentAsync(examId, userId);
+
+                return Json(new { success = true, exam = examDetails });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Sınav yüklenirken bir hata oluştu: " + ex.Message });
+            }
+        }
+
 
         [HttpGet]
         [Authorize]
@@ -430,9 +458,10 @@ namespace AkademikAi.Web.Controllers.UserController
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> CustomExam()
+        public async Task<IActionResult> CustomExam(Guid? examId)
         {
-           return View();
+            ViewBag.ExamId = examId;
+            return View();
         }
 
         [HttpGet]
@@ -455,11 +484,59 @@ namespace AkademikAi.Web.Controllers.UserController
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { message = "Sunucu hatası: Konular yüklenemedi." });
             }
         }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitExam([FromBody] SubmitExamRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Geçersiz veri gönderildi." });
+            }
+
+            try
+            {
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Json(new { success = false, message = "Kullanıcı kimliği bulunamadı." });
+                    
+                var userId = Guid.Parse(userIdClaim);
+                var score = await _examService.SubmitAndScoreExamAsync(request.ExamId, userId, request.Answers);
+
+                // Calculate statistics from submitted answers
+                var exam = await _examService.GetExamForStudentAsync(request.ExamId, userId);
+                var totalQuestions = exam.Questions.Count;
+                var answeredQuestions = request.Answers.Count;
+                
+                // Success rate based on score
+                var successRate = score;
+                var correctAnswers = (int)Math.Round((score / 100.0) * totalQuestions);
+                var wrongAnswers = totalQuestions - correctAnswers;
+
+                return Json(new 
+                { 
+                    success = true, 
+                    score = score,
+                    correctAnswers = correctAnswers,
+                    wrongAnswers = wrongAnswers,
+                    successRate = successRate,
+                    totalQuestions = totalQuestions,
+                    message = "Test başarıyla tamamlandı!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
 
         [HttpGet]
         [Authorize]
@@ -487,7 +564,7 @@ namespace AkademikAi.Web.Controllers.UserController
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { message = "Sınav geçmişi yüklenirken hata oluştu." });
             }
@@ -540,7 +617,7 @@ namespace AkademikAi.Web.Controllers.UserController
                     data = data
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Json(new { success = false, message = "Grafik verisi yüklenirken hata oluştu" });
             }

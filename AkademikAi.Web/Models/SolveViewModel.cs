@@ -15,6 +15,7 @@ namespace AkademikAi.Web.Models
         public int IncorrectAnswers { get; set; }
         public int NullAnswers { get; set; }
         public double SuccessRate { get; set; }
+    
         public int TimeSpent { get; set; } // saniye cinsinden
     }
 } 

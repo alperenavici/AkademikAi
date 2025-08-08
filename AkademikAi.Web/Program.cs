@@ -4,7 +4,7 @@ using AkademikAi.Data.Repositories;
 using AkademikAi.Data.Seed;
 using AkademikAi.Entity.Entites;
 using AkademikAi.Service.AutoMapper.Exams;
-using AkademikAi.Service.Extensions;
+
 using AkademikAi.Service.IServices;
 using AkademikAi.Service.Services;
 using Microsoft.AspNetCore.Identity;
@@ -46,10 +46,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Register Services
+// Register Services with AutoMapper from Service Layer
 builder.Services.AddAutoMapper(cfg =>
 {
-    cfg.AddMaps(Assembly.GetExecutingAssembly());
+    cfg.AddMaps(typeof(ExamProfile).Assembly);
 });
 
 // Repository kayıtları - Generic Repository için tüm entity'ler

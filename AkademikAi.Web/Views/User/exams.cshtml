@@ -672,12 +672,10 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            alert(data.message);
+                            alert(data.message+"şimdi teste yönlendirliyorsunuz.");
                             form.reset();
                             // Form resetlendiğinde konu selectini de sıfırla
-                            examTopicSelect.innerHTML = '<option value="">Önce ders seçiniz</option>';
-                            examTopicSelect.disabled = false;
-                            document.querySelector('.tab-button[data-tab="ready-exams"]').click();
+                            window.location.href = `/User/CustomExam?examId=${data.examId}`;
                         } else {
                             alert('Hata: ' + data.message);
                         }
