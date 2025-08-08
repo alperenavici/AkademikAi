@@ -328,13 +328,21 @@ namespace AkademikAi.Web.Controllers.UserController
         public async Task<IActionResult> performance()
         {
             var user = await _userManager.GetUserAsync(User);
+            
+
             if (user == null)
             {
                 return RedirectToAction("Login", "User");
             }
 
+
+           
             var userPerformanceSummaries = await _performanceService.GetUserPerformanceSummariesByUserIdAsync(user.Id);
+            var subjects = await _subjectService.GetActiveSubjectsAsync();
             
+
+            ViewBag.Subjects = subjects;
+
             var allTopics = await _topicService.GetAllAsync();
             
             var performanceData = new PerformanceViewModel
@@ -679,7 +687,8 @@ namespace AkademikAi.Web.Controllers.UserController
                 return Json(new { success = false, message = "Grafik verisi yüklenirken hata oluştu" });
             }
         }
-       
+
+        
 
     }
 

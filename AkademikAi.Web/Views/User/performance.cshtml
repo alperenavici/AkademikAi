@@ -82,22 +82,18 @@
                 <div class="filter-container">
                     <div class="filter-group">
                         <label for="course-filter">Ders:</label>
-                        <select id="course-filter" class="filter-select">
-                            <option value="">Tüm Dersler</option>
-                            @foreach (var topic in Model.AllTopics.Where(t => t.ParentTopicId == null))
+                        <select id="exam-subject" name="SubjectId" class="filter-select" required>
+                            <option value="">Ders Seçin</option>
+                            @foreach (var subject in ViewBag.Subjects)
                             {
-                                <option value="@topic.Id">@topic.TopicName</option>
+                                <option value="@subject.Id">@subject.SubjectName</option>
                             }
                         </select>
                     </div>
                     <div class="filter-group">
                         <label for="topic-filter">Konu:</label>
-                        <select id="topic-filter" class="filter-select">
-                            <option value="">Tüm Konular</option>
-                            @foreach (var topic in Model.AllTopics.Where(t => t.ParentTopicId != null))
-                            {
-                                <option value="@topic.Id">@topic.TopicName</option>
-                            }
+                        <select id="exam-topic" name="TopicId" class="filter-select"required>
+                            <option value="">Önce ders seçiniz</option>
                         </select>
                     </div>
                     <div class="filter-group">
