@@ -214,6 +214,13 @@ namespace AkademikAi.Data.Context
                 entity.Property(e => e.EndTime).IsRequired();
                 entity.Property(e => e.Status).IsRequired();
                 entity.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
+                entity.Property(e => e.CreatedByUserId).IsRequired(false);
+
+                entity.HasOne(e => e.CreatedByUser)
+                      .WithMany()
+                      .HasForeignKey(e => e.CreatedByUserId)
+                      .OnDelete(DeleteBehavior.SetNull)
+                      .IsRequired(false);
             });
 
             modelBuilder.Entity<ExamQuestions>(entity =>

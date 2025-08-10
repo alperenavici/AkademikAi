@@ -12,6 +12,7 @@ namespace AkademikAi.Service.IServices
     public interface IExamService
     {
         Task<List<ExamListDto>> GetAllExamsAsync();
+        Task<List<ExamListDto>> GetAdminExamsOnlyAsync(); // Sadece admin sınavları
         Task<ExamDetailDto> GetExamForStudentAsync(Guid examId, Guid userId);
         Task CreateExamAsync(ExamCreateDto examCreateDto);
         Task RegisterUserForExamAsync(Guid examId, Guid userId);

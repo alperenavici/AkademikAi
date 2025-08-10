@@ -107,7 +107,7 @@
                                                 <p>@exam.Description</p>
                                             }
                                         </div>
-                                        @if (exam.Status == "Scheduled" && exam.StartTime > DateTime.Now)
+                                        @if ((exam.Status == "Scheduled" || exam.Status == "InProgress") && exam.StartTime > DateTime.Now)
                                         {
                                             <button class="btn-start-exam" onclick="registerForExam('@exam.Id')">
                                                 <i class="fas fa-user-plus"></i>

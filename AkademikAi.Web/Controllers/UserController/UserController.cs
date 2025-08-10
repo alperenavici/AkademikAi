@@ -265,7 +265,7 @@ namespace AkademikAi.Web.Controllers.UserController
             }
             
             var subjects = await _subjectService.GetActiveSubjectsAsync();
-            var availableExams = await _examService.GetAllExamsAsync();
+            var availableExams = await _examService.GetAdminExamsOnlyAsync(); // Sadece admin sınavları
             
             ViewBag.Subjects = subjects;
             ViewBag.AvailableExams = availableExams;
@@ -371,9 +371,8 @@ namespace AkademikAi.Web.Controllers.UserController
             var mainTopics = await _topicService.GetMainTopicsAsync();
             var randomQuestions = await _questionService.GetRandomQuestionsAsync(20);
             
-            // Kullanıcının kayıtlı olduğu sınavları getir (şimdilik boş liste)
-            // var registeredExams = await _examService.GetUserRegisteredExamsAsync(user.Id);
-            var registeredExams = new List<object>(); // Geçici
+            // Kullanıcının kayıtlı olduğu sınavları getir
+            var registeredExams = await _examService.GetUserRegisteredExamsAsync(user.Id);
             
             ViewBag.MainTopics = mainTopics;
             ViewBag.Questions = randomQuestions;
@@ -626,10 +625,52 @@ namespace AkademikAi.Web.Controllers.UserController
 
             try
             {
-                // Bu method ExamService'e eklenecek
-                // var registeredExams = await _examService.GetUserRegisteredExamsAsync(user.Id);
-                // return Json(new { success = true, exams = registeredExams });
-                return Json(new { success = true, exams = new List<object>() });
+                var registeredExams = await _examService.GetUserRegisteredExamsAsync(user.Id);
+                var result = registeredExams.Select(exam => new {
+                    id = exam.Id,
+                    title = exam.Title,
+                    description = exam.Description,
+                    startTime = exam.StartTime.ToString("dd.MM.yyyy HH:mm"),
+                    endTime = exam.EndTime.ToString("dd.MM.yyyy HH:mm"),
+                    durationMinutes = exam.DurationMinutes,
+                    status = exam.Status.ToString(),
+                    canStart = exam.Status == "InProgress" && exam.StartTime <= DateTime.Now && exam.EndTime >= DateTime.Now
+                }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Kayıtlı sınavlar yüklenirken hata oluştu." });
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserRegisteredExamsForSolve()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Kullanıcı bulunamadı" });
+            }
+
+            try
+            {
+                var registeredExams = await _examService.GetUserRegisteredExamsAsync(user.Id);
+                var result = registeredExams.Where(exam => exam.Status == "Scheduled" || exam.Status == "InProgress")
+                    .Select(exam => new {
+                        id = exam.Id,
+                        title = exam.Title,
+                        description = exam.Description,
+                        startTime = exam.StartTime.ToString("dd.MM.yyyy HH:mm"),
+                        endTime = exam.EndTime.ToString("dd.MM.yyyy HH:mm"),
+                        durationMinutes = exam.DurationMinutes,
+                        status = exam.Status.ToString(),
+                        canStart = exam.Status == "InProgress" && exam.StartTime <= DateTime.Now && exam.EndTime >= DateTime.Now
+                    }).ToList();
+
+                return Json(new { success = true, exams = result });
             }
             catch (Exception ex)
             {

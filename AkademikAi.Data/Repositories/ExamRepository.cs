@@ -28,6 +28,14 @@ namespace AkademikAi.Data.Repositories
                     .ToListAsync();
             }
 
+            public async Task<List<Exam>> GetAdminExamsOnlyAsync()
+            {
+                return await _context.Exams
+                    .Where(e => e.CreatedByUserId == null && (e.Status == ExamStatus.Scheduled || e.Status == ExamStatus.InProgress))
+                    .OrderBy(e => e.StartTime)
+                    .ToListAsync();
+            }
+
             public async Task<Exam> GetExamWithQuestionsAndOptionsAsync(Guid examId)
             {
                 // Sınavın sorularını ve bu soruların seçeneklerini getiren detaylı sorgu

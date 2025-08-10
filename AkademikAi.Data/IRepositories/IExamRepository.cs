@@ -12,6 +12,7 @@ namespace AkademikAi.Data.IRepositories
         // Raporlama ve Listeleme Sorguları
         Task<Exam> GetExamWithQuestionsAndOptionsAsync(Guid examId);
         Task<List<Exam>> GetActiveAndUpcomingExamsAsync();
+        Task<List<Exam>> GetAdminExamsOnlyAsync(); // Sadece admin tarafından oluşturulan sınavlar
         Task<List<Exam>> GetUserExamHistoryAsync(Guid userId);
         Task<List<Exam>> GetUserRegisteredExamsAsync(Guid userId);
 

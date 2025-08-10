@@ -60,6 +60,12 @@ namespace AkademikAi.Service.Services
             return _mapper.Map<List<ExamListDto>>(exams);
         }
 
+        public async Task<List<ExamListDto>> GetAdminExamsOnlyAsync()
+        {
+            var exams = await _examRepository.GetAdminExamsOnlyAsync();
+            return _mapper.Map<List<ExamListDto>>(exams);
+        }
+
         public async Task<ExamDetailDto> GetExamForStudentAsync(Guid examId, Guid userId)
         {
             var exam = await _examRepository.GetByIdAsync(examId);
@@ -227,6 +233,7 @@ namespace AkademikAi.Service.Services
                 DurationMinutes = dto.DurationMinutes,
                 Status = ExamStatus.InProgress,
                 CreatedAt = DateTime.UtcNow,
+                CreatedByUserId = userId, // Kullanıcı tarafından oluşturulan sınavı işaretle
             };
 
             int order = 1;

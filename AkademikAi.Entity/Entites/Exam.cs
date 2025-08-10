@@ -18,6 +18,8 @@ namespace AkademikAi.Entity.Entites
         public int DurationMinutes { get; set; } // sın süresi dakika cinsinden
         public ExamStatus Status { get; set; } // e.g., Scheduled, Ongoing, Completed
         public DateTime CreatedAt { get; set; } // e.g., 2025-01-01T10:00:00
+        public Guid? CreatedByUserId { get; set; } // Sınavı oluşturan kullanıcı ID'si (null ise admin tarafından oluşturulmuş)
+        public AppUser? CreatedByUser { get; set; } // Sınavı oluşturan kullanıcı
 
 
         public ICollection<ExamQuestions> ExamQuestions { get; set; } = new HashSet<ExamQuestions>(); // Sınav soruları ara tablo üzerinden

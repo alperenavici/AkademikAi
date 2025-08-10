@@ -1,9 +1,6 @@
 @model AkademikAi.Entity.Entites.AppUser
 @{
-    ViewData["Title"] = "Simülasyon Merkezi - AkademikAI";
-    // Bu kısım sınav seçimine göre dinamik olarak doldurulabilir.
-    // Şimdilik ana dersleri temsil ettiğini varsayalım.
-    var mainTopics = ViewBag.MainTopics as List<AkademikAi.Entity.Entites.Topics>;
+    ViewData["Title"] = "Odaklanma Alanı - AkademikAI";
 }
 
 <!DOCTYPE html>
@@ -14,293 +11,7 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/dashboard.css" />
     <link rel="stylesheet" href="~/css/dashboard-new.css" />
-    @* Yeni CSS dosyanız veya stil etiketiniz *@
-    <link rel="stylesheet" href="~/css/exam-simulation.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    @* Sayfa içi stiller (Ayrı bir CSS dosyasına taşınması önerilir) *@
-    <style>
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 60px); /* Header yüksekliği varsayılarak */
-        }
-
-        /* Sınav Seçim Alanı */
-        #examSelectionContainer {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            text-align: center;
-            max-width: 600px;
-            margin: auto;
-        }
-
-            #examSelectionContainer h2 {
-                margin-bottom: 25px;
-                color: #2c3e50;
-            }
-
-        .selection-group {
-            margin-bottom: 20px;
-        }
-
-            .selection-group label {
-                display: block;
-                margin-bottom: 8px;
-                font-weight: 600;
-                color: #34495e;
-            }
-
-        .selection-select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        #startExamBtn {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-            #startExamBtn:hover {
-                background-color: #2980b9;
-            }
-
-            #startExamBtn:disabled {
-                background-color: #bdc3c7;
-                cursor: not-allowed;
-            }
-
-        /* Sınav Alanı */
-        #examArea {
-            display: none;
-            flex-grow: 1;
-            flex-direction: column;
-        }
-
-        .exam-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: #fff;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .exam-header-left h2 {
-            font-size: 1.5rem;
-            color: #2c3e50;
-        }
-
-        .exam-header-left .question-progress {
-            color: #7f8c8d;
-        }
-
-        .exam-header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .timer {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #e74c3c;
-        }
-
-        .exam-body {
-            display: flex;
-            flex-grow: 1;
-            gap: 20px;
-            padding: 20px;
-            overflow-y: hidden;
-        }
-
-        /* Soru Paneli */
-        .question-panel {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            background-color: #fff;
-            border-radius: 12px;
-            padding: 25px;
-            overflow-y: auto;
-        }
-
-        .question-content {
-            flex-grow: 1;
-        }
-
-        .option-btn {
-            display: flex;
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #fff;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-            .option-btn:hover {
-                border-color: #3498db;
-                background-color: #f8f9fa;
-            }
-
-            .option-btn.selected {
-                border-color: #3498db;
-                background-color: #eaf5fc;
-                font-weight: bold;
-            }
-
-        .option-label {
-            margin-right: 15px;
-            font-weight: bold;
-        }
-
-        .question-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-action.btn-flag.flagged {
-            background-color: #f39c12;
-            color: white;
-        }
-
-        /* Optik Form Paneli */
-        .answer-sheet-panel {
-            flex: 1;
-            background-color: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-            .answer-sheet-panel h4 {
-                margin-top: 0;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 10px;
-            }
-
-        .answer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-            gap: 8px;
-        }
-
-        .answer-grid-item {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 40px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-            .answer-grid-item:hover {
-                background-color: #f0f0f0;
-            }
-
-            .answer-grid-item.current {
-                border-color: #e74c3c;
-                border-width: 2px;
-                font-weight: bold;
-            }
-
-            .answer-grid-item.answered {
-                background-color: #2ecc71;
-                color: white;
-                border-color: #27ae60;
-            }
-
-            .answer-grid-item.skipped {
-                background-color: #ecf0f1;
-            }
-
-        .flag-indicator {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            color: #f39c12;
-            font-size: 0.7rem;
-        }
-
-        /* Sonuç Alanı */
-        #resultsContainer {
-            display: none;
-            text-align: center;
-        }
-
-        .results-stats {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .stat-item {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            min-width: 120px;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            display: block;
-        }
-
-        .stat-label {
-            color: #555;
-        }
-
-        #resultsCorrect .stat-value {
-            color: #2ecc71;
-        }
-
-        #resultsIncorrect .stat-value {
-            color: #e74c3c;
-        }
-
-        #resultsBlank .stat-value {
-            color: #95a5a6;
-        }
-
-        #resultsNet .stat-value {
-            color: #3498db;
-        }
-
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -314,7 +25,7 @@
                     <i class="fas fa-compass"></i>
                     <span>Pusulanız</span>
                 </a>
-                <a href="@Url.Action("Solve", "User")" class="nav-link">
+                <a href="@Url.Action("Solve", "User")" class="nav-link active">
                     <i class="fas fa-brain"></i>
                     <span>Odaklanma Alanı</span>
                 </a>
@@ -322,7 +33,7 @@
                     <i class="fas fa-chart-line"></i>
                     <span>MR Sonuçlarınız</span>
                 </a>
-                <a href="@Url.Action("Exams", "User")" class="nav-link active">
+                <a href="@Url.Action("Exams", "User")" class="nav-link">
                     <i class="fas fa-clipboard-check"></i>
                     <span>Simülasyon Merkezi</span>
                 </a>
@@ -343,445 +54,715 @@
 
         <!-- Main Content -->
         <main class="main-content">
+            <header class="main-header">
+                <h1>Odaklanma Alanı</h1>
+                <p>Kayıtlı sınavlarınıza katılın, özel test oluşturun ve sonuçlarınızı takip edin.</p>
+            </header>
 
-            <!-- Sınav Seçim Ekranı -->
-            <section id="examSelectionContainer">
-                <h2>Simülasyon Merkezi</h2>
-                <p>Gerçek sınav deneyimi için bir deneme seçin.</p>
-                <div class="selection-group">
-                    <label for="exam-type-select">Sınav Türü:</label>
-                    <select id="exam-type-select" class="selection-select">
-                        <option value="">Sınav Türü Seçin</option>
-                        <option value="TYT">TYT</option>
-                        <option value="AYT">AYT</option>
-                    </select>
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="registered-exams">
+                        <i class="fas fa-calendar-check"></i>
+                        Kayıtlı Sınavlarım
+                    </button>
+                    <button class="tab-button" data-tab="practice-mode">
+                        <i class="fas fa-dumbbell"></i>
+                        Pratik Modu
+                    </button>
+                    <button class="tab-button" data-tab="exam-results">
+                        <i class="fas fa-chart-bar"></i>
+                        Sınav Sonuçlarım
+                    </button>
                 </div>
-                <div class="selection-group">
-                    <label for="subject-select">Ders:</label>
-                    <select id="subject-select" class="selection-select" disabled>
-                        <option value="">Önce Sınav Türü Seçin</option>
-                    </select>
-                </div>
-                <button id="startExamBtn" class="btn-action btn-primary" disabled>
-                    <i class="fas fa-play-circle"></i> Denemeye Başla
-                </button>
-            </section>
 
-            <!-- Sınav Alanı -->
-            <div id="examArea">
-                <!-- Sınav Header -->
-                <div class="exam-header">
-                    <div class="exam-header-left">
-                        <h2 id="examTitle">TYT - Türkçe</h2>
-                        <span class="question-progress">Soru <span id="currentQuestionNumber">1</span> / <span id="totalQuestions">40</span></span>
-                    </div>
-                    <div class="exam-header-right">
-                        <div class="timer">
-                            <i class="fas fa-clock"></i>
-                            <span id="timer">00:00:00</span>
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Kayıtlı Sınavlarım Tab -->
+                    <div id="registered-exams" class="tab-panel active">
+                        <div class="section-header">
+                            <h3>Kayıtlı Olduğunuz Sınavlar</h3>
+                            <p>Kayıt olduğunuz sınavlara buradan katılabilirsiniz.</p>
                         </div>
-                        <button id="finishExamBtn" class="btn-action btn-danger">
-                            <i class="fas fa-flag-checkered"></i>
-                            Testi Bitir
-                        </button>
-                    </div>
-                </div>
-
-                <div class="exam-body">
-                    <!-- Soru Paneli -->
-                    <div class="question-panel">
-                        <div class="question-content">
-                            <h3 id="questionTitle">Soru 1</h3>
-                            <p id="questionText">Lütfen bir deneme seçerek başlayın.</p>
-                            <div class="question-image" id="questionImage" style="display: none;"></div>
-                        </div>
-                        <div class="options-container" id="optionsContainer"></div>
-                        <div class="question-actions">
-                            <div class="left-actions">
-                                <button class="btn-action btn-secondary btn-flag" id="flagQuestionBtn">
-                                    <i class="far fa-flag"></i> <span>Soruyu İşaretle</span>
-                                </button>
-                                <button class="btn-action btn-secondary" id="clearAnswerBtn">
-                                    <i class="fas fa-eraser"></i> Cevabı Temizle
-                                </button>
-                            </div>
-                            <div class="nav-buttons">
-                                <button class="btn-action btn-secondary" id="prevQuestionBtn" disabled>
-                                    <i class="fas fa-chevron-left"></i> Önceki
-                                </button>
-                                <button class="btn-action btn-primary" id="nextQuestionBtn" disabled>
-                                    Sonraki <i class="fas fa-chevron-right"></i>
-                                </button>
+                        
+                        <div class="exam-grid" id="registered-exams-grid">
+                            <div class="loading-message">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Kayıtlı sınavlarınız yükleniyor...</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Optik Form Paneli -->
-                    <div class="answer-sheet-panel">
-                        <h4>Optik Form</h4>
-                        <div class="answer-grid" id="answerGrid">
-                            <!-- Numaralar JS ile oluşturulacak -->
+                    <!-- Pratik Modu Tab -->
+                    <div id="practice-mode" class="tab-panel">
+                        <div class="section-header">
+                            <h3>Pratik Çalışma Modu</h3>
+                            <p>Konu bazlı sorular çözerek kendinizi geliştirin.</p>
+                        </div>
+
+                        <div class="practice-options">
+                            <div class="practice-card">
+                                <div class="practice-icon">
+                                    <i class="fas fa-random"></i>
+                                </div>
+                                <h4>Rastgele Sorular</h4>
+                                <p>Karışık konulardan rastgele sorular çözün</p>
+                                <button class="btn-practice" onclick="startRandomPractice()">
+                                    <i class="fas fa-play"></i>
+                                    Başla
+                                </button>
+                            </div>
+
+                            <div class="practice-card">
+                                <div class="practice-icon">
+                                    <i class="fas fa-target"></i>
+                                </div>
+                                <h4>Konu Odaklı</h4>
+                                <p>Belirli bir konudan sorular seçin</p>
+                                <button class="btn-practice" onclick="showTopicSelection()">
+                                    <i class="fas fa-list"></i>
+                                    Konu Seç
+                                </button>
+                            </div>
+
+                            <div class="practice-card">
+                                <div class="practice-icon">
+                                    <i class="fas fa-heart-broken"></i>
+                                </div>
+                                <h4>Zayıf Konularım</h4>
+                                <p>Başarı oranı düşük konulardan çalışın</p>
+                                <button class="btn-practice" onclick="startWeakTopicsPractice()">
+                                    <i class="fas fa-chart-line"></i>
+                                    Çalış
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sınav Sonuçlarım Tab -->
+                    <div id="exam-results" class="tab-panel">
+                        <div class="section-header">
+                            <h3>Sınav Sonuçlarım</h3>
+                            <p>Tamamladığınız sınavların detaylı sonuçları.</p>
+                        </div>
+
+                        <div class="results-summary">
+                            <div class="summary-card">
+                                <div class="summary-icon">
+                                    <i class="fas fa-clipboard-check"></i>
+                                </div>
+                                <div class="summary-info">
+                                    <h4 id="total-exams">0</h4>
+                                    <p>Toplam Sınav</p>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <div class="summary-icon">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                                <div class="summary-info">
+                                    <h4 id="average-score">0%</h4>
+                                    <p>Ortalama Başarı</p>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <div class="summary-icon">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="summary-info">
+                                    <h4 id="best-score">0%</h4>
+                                    <p>En İyi Sonuç</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="results-table">
+                            <div class="table-header">
+                                <h4>Detaylı Sonuçlar</h4>
+                            </div>
+                            <div class="table-content">
+                                <div class="result-row header">
+                                    <div class="result-exam">Sınav Adı</div>
+                                    <div class="result-date">Tarih</div>
+                                    <div class="result-score">Puan</div>
+                                    <div class="result-correct">Doğru</div>
+                                    <div class="result-wrong">Yanlış</div>
+                                    <div class="result-success">Başarı %</div>
+                                    <div class="result-action">İşlem</div>
+                                </div>
+                                <div id="exam-results-content">
+                                    <div class="loading-row">
+                                        <div class="loading-text">Sınav sonuçlarınız yükleniyor...</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Sonuç Ekranı -->
-            <div class="results-container" id="resultsContainer">
-                <h2>Deneme Sonucu</h2>
-                <div class="results-stats">
-                    <div class="stat-item" id="resultsCorrect">
-                        <span class="stat-value">0</span><span class="stat-label">Doğru</span>
-                    </div>
-                    <div class="stat-item" id="resultsIncorrect">
-                        <span class="stat-value">0</span><span class="stat-label">Yanlış</span>
-                    </div>
-                    <div class="stat-item" id="resultsBlank">
-                        <span class="stat-value">0</span><span class="stat-label">Boş</span>
-                    </div>
-                    <div class="stat-item" id="resultsNet">
-                        <span class="stat-value">0.00</span><span class="stat-label">Net</span>
-                    </div>
-                </div>
-
-                <form id="submitResultsForm" asp-action="SubmitSolve" asp-controller="User" method="post" style="display: none;">
-                    <input type="hidden" id="userAnswersData" name="userAnswers" />
-                </form>
-
-                <div class="results-actions">
-                    <button id="saveResults" class="btn-action btn-primary"><i class="fas fa-save"></i> Sonuçları Kaydet</button>
-                    <a href="@Url.Action("Solve", "User")" class="btn-action btn-secondary"><i class="fas fa-redo"></i> Yeni Deneme</a>
-                    <a href="@Url.Action("Dashboard", "User")" class="btn-action btn-secondary"><i class="fas fa-compass"></i> Pusulaya Dön</a>
-                </div>
-            </div>
-
         </main>
     </div>
 
+    <style>
+        .tab-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            box-shadow: var(--shadow-medium);
+            overflow: hidden;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: var(--color-surface-hover);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 16px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-button:hover {
+            background: var(--color-surface-hover);
+            color: var(--color-primary);
+        }
+
+        .tab-button.active {
+            background: var(--color-surface);
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+        }
+
+        .tab-panel {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .section-header h3 {
+            color: var(--color-text-primary);
+            margin-bottom: 8px;
+            font-size: 1.5rem;
+        }
+
+        .section-header p {
+            color: var(--color-text-secondary);
+            font-size: 1rem;
+        }
+
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .exam-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .exam-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .exam-header h4 {
+            margin: 0;
+            color: var(--color-text-primary);
+            font-size: 1.1rem;
+        }
+
+        .exam-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .exam-status.scheduled {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .exam-status.inprogress {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .exam-status.completed {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .exam-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+
+        .exam-info span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-start-exam {
+            width: 100%;
+            background: var(--color-primary);
+            color: var(--color-text-inverse);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-start-exam:hover:not(:disabled) {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-start-exam:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .practice-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .practice-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .practice-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .practice-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .practice-card h4 {
+            color: var(--color-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .practice-card p {
+            color: var(--color-text-secondary);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .btn-practice {
+            background: var(--color-primary);
+            color: var(--color-text-inverse);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-practice:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .summary-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .summary-info h4 {
+            margin: 0;
+            color: var(--color-text-primary);
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .summary-info p {
+            margin: 4px 0 0;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .results-table {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .table-header {
+            background: var(--color-primary);
+            color: var(--color-text-inverse);
+            padding: 20px;
+        }
+
+        .table-header h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .result-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border);
+            align-items: center;
+        }
+
+        .result-row.header {
+            background: var(--color-surface-hover);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-row:hover:not(.header) {
+            background: var(--color-surface-hover);
+        }
+
+        .loading-message, .loading-row {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--color-text-secondary);
+        }
+
+        .loading-text {
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state h4 {
+            margin-bottom: 8px;
+            color: var(--color-text-primary);
+        }
+
+        .btn-view-result {
+            background: var(--color-primary);
+            color: var(--color-text-inverse);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-view-result:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+        }
+    </style>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // --- STATE MANAGEMENT ---
-            let currentQuestionIndex = 0;
-            let questions = [];
-            let userAnswers = []; // { questionId, selectedOptionId, isFlagged, status ('unseen', 'answered', 'skipped') }
-            let timerInterval;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab işlemleri
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
 
-            // --- UI ELEMENTS ---
-            const examSelectionContainer = document.getElementById('examSelectionContainer');
-            const examArea = document.getElementById('examArea');
-            const resultsContainer = document.getElementById('resultsContainer');
-            const startExamBtn = document.getElementById('startExamBtn');
-            const examTypeSelect = document.getElementById('exam-type-select');
-            const subjectSelect = document.getElementById('subject-select');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanels.forEach(panel => panel.classList.remove('active'));
 
-            // --- EXAM SELECTION LOGIC ---
-            const examSubjects = {
-                "TYT": [{id: 1, name: "Türkçe"}, {id: 2, name: "Sosyal Bilimler"}, {id: 3, name: "Temel Matematik"}, {id: 4, name: "Fen Bilimleri"}],
-                "AYT": [{id: 5, name: "Matematik"}, {id: 6, name: "Fizik"}, {id: 7, name: "Kimya"}, {id: 8, name: "Biyoloji"}, {id: 9, name: "Edebiyat-Sosyal Bilimler 1"}]
-            };
+                    this.classList.add('active');
+                    const targetTabId = this.getAttribute('data-tab');
+                    document.getElementById(targetTabId).classList.add('active');
 
-            examTypeSelect.addEventListener('change', function() {
-                const selectedType = this.value;
-                subjectSelect.innerHTML = '<option value="">Ders Seçin</option>';
-                if (selectedType && examSubjects[selectedType]) {
-                    examSubjects[selectedType].forEach(subject => {
-                        subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name}</option>`;
-                    });
-                    subjectSelect.disabled = false;
-                } else {
-                    subjectSelect.disabled = true;
-                }
-                startExamBtn.disabled = true;
-            });
-
-            subjectSelect.addEventListener('change', function() {
-                startExamBtn.disabled = !this.value;
-            });
-
-            startExamBtn.addEventListener('click', function() {
-                const topicId = subjectSelect.value;
-                // Backend'den soruları çekme (mevcut yapınızla benzer)
-                // fetch(`/User/GetFilteredQuestions?topicId=${topicId}`)...
-                // Şimdilik örnek verilerle devam edelim:
-                loadAndStartExam(topicId);
-            });
-
-            function loadAndStartExam(topicId) {
-                 // Gerçek uygulamada burası fetch ile dolacak
-                 fetch(`/User/GetFilteredQuestions?topicId=${topicId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.questions.length > 0) {
-                            questions = data.questions;
-
-                            // Sınavı başlat
-                            examSelectionContainer.style.display = 'none';
-                            examArea.style.display = 'flex';
-
-                            initializeExam();
-                        } else {
-                            alert('Seçilen derse ait soru bulunamadı.');
-                        }
-                    })
-                    .catch(err => {
-                        alert('Sınav yüklenirken bir hata oluştu.');
-                        console.error(err);
-                    });
-            }
-
-            function initializeExam() {
-                currentQuestionIndex = 0;
-                userAnswers = questions.map(q => ({
-                    questionId: q.id,
-                    selectedOptionId: null,
-                    isCorrect: null, // Sonuçta hesaplanacak
-                    isFlagged: false,
-                    status: 'unseen'
-                }));
-
-                // Header'ı güncelle
-                const examTypeText = examTypeSelect.options[examTypeSelect.selectedIndex].text;
-                const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text;
-                document.getElementById('examTitle').textContent = `${examTypeText} - ${subjectText}`;
-
-                // Optik formu oluştur
-                buildAnswerSheet();
-
-                // İlk soruyu göster
-                displayQuestion(currentQuestionIndex);
-
-                // Timer'ı başlat (soru başına 1.5 dakika)
-                const totalTimeInSeconds = questions.length * 90;
-                startTimer(totalTimeInSeconds);
-            }
-
-            // --- EXAM UI LOGIC ---
-
-            function displayQuestion(index) {
-                const question = questions[index];
-                const answer = userAnswers[index];
-
-                // Soru metnini ve numarasını güncelle
-                document.getElementById('questionTitle').textContent = `Soru ${index + 1}`;
-                document.getElementById('questionText').textContent = question.questionText;
-                document.getElementById('currentQuestionNumber').textContent = index + 1;
-                document.getElementById('totalQuestions').textContent = questions.length;
-
-                // Seçenekleri oluştur
-                const optionsContainer = document.getElementById('optionsContainer');
-                optionsContainer.innerHTML = '';
-                question.options.forEach(option => {
-                    const optionBtn = document.createElement('button');
-                    optionBtn.className = 'option-btn';
-                    optionBtn.dataset.optionId = option.id;
-                    optionBtn.innerHTML = `<span class="option-label">${option.label}</span><span class="option-text">${option.text}</span>`;
-                    if (answer.selectedOptionId === option.id) {
-                        optionBtn.classList.add('selected');
-                    }
-                    optionBtn.addEventListener('click', () => selectOption(option.id, option.isCorrect));
-                    optionsContainer.appendChild(optionBtn);
-                });
-
-                // Navigasyon ve diğer butonların durumunu güncelle
-                updateButtonsState();
-                updateAnswerSheetUI();
-            }
-
-            function selectOption(optionId, isCorrect) {
-                // Mevcut seçimi kaldır
-                document.querySelectorAll('.option-btn.selected').forEach(btn => btn.classList.remove('selected'));
-                // Yeni seçimi ekle
-                document.querySelector(`.option-btn[data-option-id='${optionId}']`).classList.add('selected');
-
-                // Cevabı kaydet
-                userAnswers[currentQuestionIndex].selectedOptionId = optionId;
-                userAnswers[currentQuestionIndex].isCorrect = isCorrect;
-                userAnswers[currentQuestionIndex].status = 'answered';
-
-                updateAnswerSheetUI();
-            }
-
-            function clearAnswer() {
-                 userAnswers[currentQuestionIndex].selectedOptionId = null;
-                 userAnswers[currentQuestionIndex].isCorrect = null;
-                 userAnswers[currentQuestionIndex].status = 'skipped'; // veya 'unseen'
-                 displayQuestion(currentQuestionIndex); // UI'ı yenile
-            }
-
-            function toggleFlag() {
-                const flagBtn = document.getElementById('flagQuestionBtn');
-                const answer = userAnswers[currentQuestionIndex];
-                answer.isFlagged = !answer.isFlagged;
-
-                flagBtn.classList.toggle('flagged', answer.isFlagged);
-                flagBtn.innerHTML = answer.isFlagged
-                    ? '<i class="fas fa-flag"></i> <span>İşareti Kaldır</span>'
-                    : '<i class="far fa-flag"></i> <span>Soruyu İşaretle</span>';
-
-                updateAnswerSheetUI();
-            }
-
-            function updateButtonsState() {
-                // Navigasyon
-                document.getElementById('prevQuestionBtn').disabled = currentQuestionIndex === 0;
-                const nextBtn = document.getElementById('nextQuestionBtn');
-                if (currentQuestionIndex === questions.length - 1) {
-                     nextBtn.innerHTML = 'Testi Bitir <i class="fas fa-flag-checkered"></i>';
-                } else {
-                     nextBtn.innerHTML = 'Sonraki <i class="fas fa-chevron-right"></i>';
-                }
-
-                // Flag butonu
-                const flagBtn = document.getElementById('flagQuestionBtn');
-                const isFlagged = userAnswers[currentQuestionIndex].isFlagged;
-                flagBtn.classList.toggle('flagged', isFlagged);
-                 flagBtn.innerHTML = isFlagged
-                    ? '<i class="fas fa-flag"></i> <span>İşareti Kaldır</span>'
-                    : '<i class="far fa-flag"></i> <span>Soruyu İşaretle</span>';
-
-                // Cevabı temizle butonu
-                document.getElementById('clearAnswerBtn').disabled = userAnswers[currentQuestionIndex].selectedOptionId === null;
-            }
-
-            function buildAnswerSheet() {
-                const grid = document.getElementById('answerGrid');
-                grid.innerHTML = '';
-                for (let i = 0; i < questions.length; i++) {
-                    const item = document.createElement('div');
-                    item.className = 'answer-grid-item';
-                    item.textContent = i + 1;
-                    item.dataset.index = i;
-                    item.addEventListener('click', () => jumpToQuestion(i));
-                    grid.appendChild(item);
-                }
-            }
-
-            function updateAnswerSheetUI() {
-                const items = document.querySelectorAll('.answer-grid-item');
-                items.forEach((item, index) => {
-                    const answer = userAnswers[index];
-                    item.classList.remove('current', 'answered', 'skipped', 'flagged');
-
-                    // Durum
-                    if (answer.status === 'answered') item.classList.add('answered');
-                    else if (answer.status === 'skipped') item.classList.add('skipped');
-
-                    // Mevcut soru
-                    if (index === currentQuestionIndex) item.classList.add('current');
-
-                    // İşaret
-                    const existingFlag = item.querySelector('.flag-indicator');
-                    if (existingFlag) existingFlag.remove();
-                    if(answer.isFlagged) {
-                        const flagIcon = document.createElement('i');
-                        flagIcon.className = 'fas fa-flag flag-indicator';
-                        item.appendChild(flagIcon);
+                    // Tab değiştirme sırasında verileri yükle
+                    if (targetTabId === 'registered-exams') {
+                        loadRegisteredExams();
+                    } else if (targetTabId === 'exam-results') {
+                        loadExamResults();
                     }
                 });
-            }
-
-            function jumpToQuestion(index) {
-                // Geçerli sorunun durumunu ayarla (eğer cevaplanmadıysa)
-                if (userAnswers[currentQuestionIndex].status === 'unseen') {
-                    userAnswers[currentQuestionIndex].status = 'skipped';
-                }
-                currentQuestionIndex = index;
-                displayQuestion(currentQuestionIndex);
-            }
-
-            function changeQuestion(direction) {
-                // Geçerli sorunun durumunu ayarla
-                 if (userAnswers[currentQuestionIndex].status === 'unseen') {
-                    userAnswers[currentQuestionIndex].status = 'skipped';
-                }
-
-                const newIndex = currentQuestionIndex + direction;
-                if (newIndex >= 0 && newIndex < questions.length) {
-                    currentQuestionIndex = newIndex;
-                    displayQuestion(currentQuestionIndex);
-                } else if (newIndex === questions.length) {
-                    finishExam(); // Son sorudan sonra "Testi Bitir"
-                }
-            }
-
-            // --- EVENT LISTENERS ---
-            document.getElementById('nextQuestionBtn').addEventListener('click', () => changeQuestion(1));
-            document.getElementById('prevQuestionBtn').addEventListener('click', () => changeQuestion(-1));
-            document.getElementById('flagQuestionBtn').addEventListener('click', toggleFlag);
-            document.getElementById('clearAnswerBtn').addEventListener('click', clearAnswer);
-            document.getElementById('finishExamBtn').addEventListener('click', () => {
-                 if (confirm('Testi bitirmek istediğinizden emin misiniz?')) {
-                    finishExam();
-                }
             });
 
-            // --- TIMER ---
-            function startTimer(duration) {
-                let timer = duration;
-                const timerEl = document.getElementById('timer');
-                timerInterval = setInterval(() => {
-                    let hours = Math.floor(timer / 3600);
-                    let minutes = Math.floor((timer % 3600) / 60);
-                    let seconds = timer % 60;
-
-                    hours = hours < 10 ? "0" + hours : hours;
-                    minutes = minutes < 10 ? "0" + minutes : minutes;
-                    seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                    timerEl.textContent = `${hours}:${minutes}:${seconds}`;
-
-                    if (--timer < 0) {
-                        clearInterval(timerInterval);
-                        alert("Süre doldu!");
-                        finishExam();
-                    }
-                }, 1000);
-            }
-
-            // --- RESULTS ---
-            function finishExam() {
-                clearInterval(timerInterval);
-                examArea.style.display = 'none';
-                resultsContainer.style.display = 'block';
-
-                let correct = 0;
-                let incorrect = 0;
-                let blank = 0;
-
-                userAnswers.forEach(answer => {
-                    if (answer.selectedOptionId === null) {
-                        blank++;
-                    } else if (answer.isCorrect) {
-                        correct++;
-                    } else {
-                        incorrect++;
-                    }
-                });
-
-                const net = correct - (incorrect / 4);
-
-                document.querySelector('#resultsCorrect .stat-value').textContent = correct;
-                document.querySelector('#resultsIncorrect .stat-value').textContent = incorrect;
-                document.querySelector('#resultsBlank .stat-value').textContent = blank;
-                document.querySelector('#resultsNet .stat-value').textContent = net.toFixed(2);
-
-                // Veriyi sunucuya göndermek için hazırla
-                const dataToSubmit = userAnswers.map(a => ({
-                    questionId: a.questionId,
-                    selectedOptionId: a.selectedOptionId,
-                    isCorrect: a.isCorrect === true, // null ise false olsun
-                    isAnswered: a.selectedOptionId !== null,
-                    timeSpent: 0 // Geliştirilebilir
-                }));
-                document.getElementById('userAnswersData').value = JSON.stringify(dataToSubmit);
-            }
-
-            document.getElementById('saveResults').addEventListener('click', function() {
-                // Formu submit etme mantığı, eski kodunuzdaki gibi kalabilir
-                document.getElementById('submitResultsForm').submit();
-                alert("Sonuçlar kaydediliyor...");
-            });
+            // Sayfa yüklendiğinde kayıtlı sınavları getir
+            loadRegisteredExams();
         });
+
+        function loadRegisteredExams() {
+            const examGrid = document.getElementById('registered-exams-grid');
+            examGrid.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i><span>Kayıtlı sınavlarınız yükleniyor...</span></div>';
+
+            fetch('/User/GetUserRegisteredExamsForSolve')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.exams.length > 0) {
+                        examGrid.innerHTML = '';
+                        data.exams.forEach(exam => {
+                            const examCard = createExamCard(exam);
+                            examGrid.appendChild(examCard);
+                        });
+                    } else {
+                        examGrid.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-times"></i>
+                                <h4>Kayıtlı Sınavınız Bulunmuyor</h4>
+                                <p>Simülasyon Merkezi'nden sınavlara kayıt olabilirsiniz.</p>
+                                <a href="/User/Exams" class="btn-start-exam" style="max-width: 200px; margin: 16px auto 0;">
+                                    <i class="fas fa-plus"></i>
+                                    Sınava Kayıt Ol
+                                </a>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    examGrid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h4>Hata Oluştu</h4>
+                            <p>Kayıtlı sınavlar yüklenirken bir hata oluştu.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        function createExamCard(exam) {
+            const card = document.createElement('div');
+            card.className = 'exam-card';
+
+            const statusClass = exam.status.toLowerCase().replace('inprogress', 'inprogress');
+            const statusText = exam.status === 'Scheduled' ? 'Programlı' : 
+                              exam.status === 'InProgress' ? 'Devam Ediyor' : 'Tamamlandı';
+
+            let buttonHtml = '';
+            if (exam.canStart) {
+                buttonHtml = `<button class="btn-start-exam" onclick="startExam('${exam.id}')">
+                    <i class="fas fa-play"></i>
+                    Sınava Başla
+                </button>`;
+            } else if (exam.status === 'Scheduled') {
+                buttonHtml = `<button class="btn-start-exam" disabled>
+                    <i class="fas fa-clock"></i>
+                    Henüz Başlamadı
+                </button>`;
+            } else {
+                buttonHtml = `<button class="btn-start-exam" disabled>
+                    <i class="fas fa-check"></i>
+                    Tamamlandı
+                </button>`;
+            }
+
+            card.innerHTML = `
+                <div class="exam-header">
+                    <h4>${exam.title}</h4>
+                    <span class="exam-status ${statusClass}">${statusText}</span>
+                </div>
+                <div class="exam-info">
+                    <span><i class="fas fa-clock"></i> ${exam.durationMinutes} dakika</span>
+                    <span><i class="fas fa-calendar"></i> ${exam.startTime}</span>
+                    ${exam.description ? `<span><i class="fas fa-info-circle"></i> ${exam.description}</span>` : ''}
+                </div>
+                ${buttonHtml}
+            `;
+
+            return card;
+        }
+
+        function startExam(examId) {
+            if (confirm('Sınavı başlatmak istediğinizden emin misiniz?')) {
+                window.location.href = `/User/StartAndGetExam?examId=${examId}`;
+            }
+        }
+
+        function loadExamResults() {
+            const examResultsContent = document.getElementById('exam-results-content');
+            
+            fetch('/User/GetUserExamHistory')
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        examResultsContent.innerHTML = '';
+                        
+                        // Özet bilgileri güncelle
+                        updateSummaryStats(data);
+                        
+                        data.forEach(exam => {
+                            const row = document.createElement('div');
+                            row.className = 'result-row';
+                            row.innerHTML = `
+                                <div class="result-exam">${exam.examName}</div>
+                                <div class="result-date">${exam.date}</div>
+                                <div class="result-score">${exam.score}</div>
+                                <div class="result-correct">${exam.correctAnswers}</div>
+                                <div class="result-wrong">${exam.wrongAnswers}</div>
+                                <div class="result-success">${exam.successRate}%</div>
+                                <div class="result-action">
+                                    <button class="btn-view-result" onclick="viewExamResult('${exam.examId}')">
+                                        <i class="fas fa-eye"></i>
+                                        Görüntüle
+                                    </button>
+                                </div>
+                            `;
+                            examResultsContent.appendChild(row);
+                        });
+                    } else {
+                        examResultsContent.innerHTML = `
+                            <div class="loading-row">
+                                <div class="loading-text">Henüz tamamlanmış sınavınız bulunmamaktadır.</div>
+                            </div>
+                        `;
+                        updateSummaryStats([]);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    examResultsContent.innerHTML = `
+                        <div class="loading-row">
+                            <div class="loading-text">Sınav sonuçları yüklenirken hata oluştu.</div>
+                        </div>
+                    `;
+                });
+        }
+
+        function updateSummaryStats(examResults) {
+            const totalExams = examResults.length;
+            const averageScore = totalExams > 0 ? 
+                (examResults.reduce((sum, exam) => sum + parseFloat(exam.successRate), 0) / totalExams).toFixed(1) : 0;
+            const bestScore = totalExams > 0 ? 
+                Math.max(...examResults.map(exam => parseFloat(exam.successRate))).toFixed(1) : 0;
+
+            document.getElementById('total-exams').textContent = totalExams;
+            document.getElementById('average-score').textContent = averageScore + '%';
+            document.getElementById('best-score').textContent = bestScore + '%';
+        }
+
+        function viewExamResult(examId) {
+            alert('Sınav detayları gösterimi henüz geliştirilmemiştir. Sınav ID: ' + examId);
+        }
+
+        // Pratik mod fonksiyonları
+        function startRandomPractice() {
+            alert('Rastgele pratik modu yakında eklenecek.');
+        }
+
+        function showTopicSelection() {
+            alert('Konu seçimi yakında eklenecek.');
+        }
+
+        function startWeakTopicsPractice() {
+            alert('Zayıf konular analizi yakında eklenecek.');
+        }
     </script>
 </body>
 </html>
