@@ -214,6 +214,7 @@
                                 <h3>Geçmiş Sınav Sonuçlarım</h3>
                             </div>
                             <div class="table-content">
+                            <div class="table-content">
                                 <div class="result-row header">
                                     <div class="result-exam">Sınav Adı</div>
                                     <div class="result-date">Tarih</div>
@@ -221,7 +222,7 @@
                                     <div class="result-correct">Doğru</div>
                                     <div class="result-wrong">Yanlış</div>
                                     <div class="result-success">Başarı %</div>
-                                    <div class="result-action">İşlem</div>
+                                  @*   <div class="result-action">İşlem</div> *@
                                 </div>
                                 <div id="exam-history-content">
                                     <div class="loading-row">
@@ -727,12 +728,7 @@
                                     <div class="result-correct">${exam.correctAnswers}</div>
                                     <div class="result-wrong">${exam.wrongAnswers}</div>
                                     <div class="result-success">${exam.successRate}%</div>
-                                    <div class="result-action">
-                                        <button class="btn-view-result" onclick="viewExamResult('${exam.examId}')">
-                                            <i class="fas fa-eye"></i>
-                                            Görüntüle
-                                        </button>
-                                    </div>
+                                  
                                 `;
                                 examHistoryContent.appendChild(row);
                             });
