@@ -208,7 +208,6 @@ namespace AkademikAi.Web.Controllers.UserController
                 return NotFound();
             }
 
-            // Eğer kullanıcı Teacher ise Admin paneline yönlendir
             if (user.UserRole == UserRole.Teacher)
             {
                 return RedirectToAction("Index", "Admin");
