@@ -82,6 +82,9 @@ builder.Services.AddScoped<IUserPerformanceSummaryService, UserPerformanceSummar
 builder.Services.AddScoped<IUserRecommendationService, UserRecommendationService>();
 builder.Services.AddScoped<IUserNotificationService, UserNotificationService>();
 
+// AI Question Service için HttpClient ve servis kaydı
+builder.Services.AddHttpClient<IAiQuestionService, AiQuestionService>();
+
 var app = builder.Build();
 
 // Seed database

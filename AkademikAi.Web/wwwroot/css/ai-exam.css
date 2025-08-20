@@ -1,0 +1,286 @@
+/* AI Exam Creation Styles */
+.ai-exam-form {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-exam-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.ai-exam-form h3 {
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.ai-exam-form h3::before {
+    content: '🤖';
+    margin-right: 10px;
+    font-size: 32px;
+}
+
+.ai-exam-form .form-group {
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.ai-exam-form label {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 16px;
+}
+
+.ai-exam-form input,
+.ai-exam-form select {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.ai-exam-form input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ai-exam-form input:focus,
+.ai-exam-form select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.ai-exam-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.ai-exam-form .btn-create-exam {
+    width: 100%;
+    padding: 18px 30px;
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.ai-exam-form .btn-create-exam::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.ai-exam-form .btn-create-exam:hover::before {
+    left: 100%;
+}
+
+.ai-exam-form .btn-create-exam:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(238, 90, 36, 0.4);
+}
+
+.ai-exam-form .btn-create-exam:active {
+    transform: translateY(0);
+}
+
+.ai-exam-form .btn-create-exam:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Loading Animation */
+.ai-exam-form .spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: text-bottom;
+    border: 0.125em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* AI Message Styles */
+.ai-exam-message {
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ai-exam-message-success {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border-left: 5px solid #2E7D32;
+}
+
+.ai-exam-message-error {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    color: white;
+    border-left: 5px solid #b71c1c;
+}
+
+.ai-exam-message .message-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ai-exam-message .message-content i {
+    font-size: 20px;
+}
+
+.ai-exam-message .message-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+    font-size: 18px;
+}
+
+.ai-exam-message .message-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ai-exam-form {
+        padding: 20px;
+        margin: 15px 0;
+    }
+    
+    .ai-exam-form h3 {
+        font-size: 24px;
+    }
+    
+    .ai-exam-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .ai-exam-form input,
+    .ai-exam-form select {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .ai-exam-form .btn-create-exam {
+        padding: 15px 25px;
+        font-size: 16px;
+    }
+}
+
+/* AI Form Enhancement */
+.ai-exam-form .form-group {
+    position: relative;
+}
+
+.ai-exam-form .form-group::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.ai-exam-form .form-group:focus-within::after {
+    width: 100%;
+}
+
+/* AI Icon Animation */
+.ai-exam-form h3::before {
+    animation: aiPulse 2s infinite;
+}
+
+@keyframes aiPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Form Validation Styles */
+.ai-exam-form input:invalid,
+.ai-exam-form select:invalid {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+.ai-exam-form input:valid,
+.ai-exam-form select:valid {
+    border-color: #4CAF50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}

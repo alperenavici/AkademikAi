@@ -16,6 +16,7 @@ namespace AkademikAi.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IQuestionRepository _questionRepository;
         private readonly IUserPerformanceSummaryService _performanceService;
+        private readonly IAiQuestionService _aiQuestionService;
 
         public ExamService(
         IExamRepository examRepository,
@@ -23,7 +24,8 @@ namespace AkademikAi.Service.Services
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IQuestionRepository questionRepository,
-        IUserPerformanceSummaryService performanceService) 
+        IUserPerformanceSummaryService performanceService,
+        IAiQuestionService aiQuestionService) 
         {
             _examRepository = examRepository;
             _userAnswersRepository = userAnswersRepository;
@@ -31,6 +33,7 @@ namespace AkademikAi.Service.Services
             _unitOfWork = unitOfWork;
             _questionRepository = questionRepository;
             _performanceService = performanceService;
+            _aiQuestionService = aiQuestionService;
         }
 
 
@@ -212,22 +215,26 @@ namespace AkademikAi.Service.Services
         }
         public async Task<Guid> CreateCustomExamFromUserRequestAsync(CustomExamCreateDto dto, Guid userId)
         {
-            var questions = await _questionRepository.GetRandomQuestionsByCriteriaAsync(
-                dto.TopicId,
-                (QuestionsDiff)dto.Difficulty, 
-                dto.QuestionCount
-            );
+            // AI'dan soru üret
+            var questions = await _aiQuestionService.GenerateQuestionsFromAiAsync(dto);
 
             if (questions == null || !questions.Any())
             {
-                throw new Exception("Belirtilen kriterlere uygun yeterli sayıda soru bulunamadı.");
+                throw new Exception("AI servisinden yeterli sayıda soru üretilemedi.");
             }
+
+            // Önce soruları veritabanına kaydet
+            foreach (var question in questions)
+            {
+                await _questionRepository.AddAsync(question);
+            }
+            await _unitOfWork.SaveChangesAsync(); // Soruları kaydet
 
             var newExam = new Exam
             {
                 Id = Guid.NewGuid(),
                 Title = dto.TestName,
-                Description = "Kullanıcı tarafından oluşturulan özel test.",
+                Description = "Kullanıcı tarafından oluşturulan özel test (AI ile).",
                 StartTime = DateTime.UtcNow, // Anında başlasın
                 EndTime = DateTime.UtcNow.AddYears(1), // Uzun bir bitiş tarihi verelim
                 DurationMinutes = dto.DurationMinutes,
@@ -236,14 +243,22 @@ namespace AkademikAi.Service.Services
                 CreatedByUserId = userId, // Kullanıcı tarafından oluşturulan sınavı işaretle
             };
 
+            // Sınav-Soru ilişkilerini oluştur
             int order = 1;
             foreach (var question in questions)
             {
-                newExam.ExamQuestions.Add(new ExamQuestions { QuestionId = question.Id, QuestionOrder = order++ });
+                newExam.ExamQuestions.Add(new ExamQuestions 
+                { 
+                    ExamId = newExam.Id,
+                    QuestionId = question.Id, 
+                    QuestionOrder = order++ 
+                });
             }
 
+            // Kullanıcıyı sınava kaydet
             newExam.Participants.Add(new ExamParticipant
             {
+                ExamId = newExam.Id,
                 UserId = userId,
                 Status = ExamParticipationStatus.Registered 
             });

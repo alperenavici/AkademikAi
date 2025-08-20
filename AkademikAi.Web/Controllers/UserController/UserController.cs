@@ -271,6 +271,32 @@ namespace AkademikAi.Web.Controllers.UserController
             ViewBag.AvailableExams = availableExams;
             return View(user);
         }
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCustomExamWithAi(CustomExamCreateDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Lütfen tüm alanları doğru bir şekilde doldurun." });
+            }
+
+            try
+            {
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Json(new { success = false, message = "Kullanıcı kimliği bulunamadı." });
+
+                var userId = Guid.Parse(userIdClaim);
+                var newExamId = await _examService.CreateCustomExamFromUserRequestAsync(dto, userId);
+
+                return Json(new { success = true, message = "AI ile özel testiniz başarıyla oluşturuldu!", examId = newExamId });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
         [HttpPost]
         [Authorize]
@@ -486,27 +512,18 @@ namespace AkademikAi.Web.Controllers.UserController
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetTopicsBySubject(string subjectId)
+        public async Task<IActionResult> GetTopicsBySubject(Guid subjectId)
         {
-            if (string.IsNullOrEmpty(subjectId) || !Guid.TryParse(subjectId, out Guid subjectGuid))
-            {
-                return BadRequest(new { message = "Geçersiz ders ID'si." });
-            }
-
             try
             {
-                var topics = await _topicService.GetTopicsBySubjectIdAsync(subjectGuid);
-
-                var result = topics.Select(t => new {
-                    id = t.Id,
-                    topicName = t.TopicName
-                }).ToList();
-
-                return Ok(result);
+                var topics = await _topicService.GetTopicsBySubjectIdAsync(subjectId);
+                var topicDtos = topics.Select(t => new { id = t.Id, topicName = t.TopicName }).ToList();
+                
+                return Json(new { success = true, topics = topicDtos });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Sunucu hatası: Konular yüklenemedi." });
+                return Json(new { success = false, message = ex.Message });
             }
         }
 
