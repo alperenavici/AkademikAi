@@ -68,9 +68,6 @@ async function handleAiExamSubmit(e) {
     const originalButtonText = submitButton.innerHTML;
 
     try {
-        // Disable form and show loading
-        setFormLoadingState(form, true, 'AI Sorular Üretiliyor...');
-
         // Get form data
         const formData = new FormData(form);
         const examData = {
@@ -87,6 +84,12 @@ async function handleAiExamSubmit(e) {
             return;
         }
 
+        // Show detailed loading modal
+        showAiLoadingModal(examData.QuestionCount);
+        
+        // Disable form and show loading
+        setFormLoadingState(form, true, 'AI Sorular Üretiliyor...');
+
         // Submit to AI exam creation endpoint
         const response = await fetch('/User/CreateCustomExamWithAi', {
             method: 'POST',
@@ -98,6 +101,9 @@ async function handleAiExamSubmit(e) {
         });
 
         const result = await response.json();
+
+        // Hide loading modal
+        hideAiLoadingModal();
 
         if (result.success) {
             showSuccessMessage('AI ile test başarıyla oluşturuldu! Sınava yönlendiriliyorsunuz...');
@@ -112,6 +118,7 @@ async function handleAiExamSubmit(e) {
 
     } catch (error) {
         console.error('AI test oluşturma hatası:', error);
+        hideAiLoadingModal();
         showErrorMessage('AI servisi ile iletişim kurulamadı. Lütfen tekrar deneyin.');
     } finally {
         // Restore form state
@@ -262,5 +269,186 @@ style.textContent = `
         width: 1rem;
         height: 1rem;
     }
+
+    /* AI Loading Modal Styles */
+    .ai-loading-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .ai-loading-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .ai-loading-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .ai-loading-progress {
+        margin: 20px 0;
+    }
+
+    .ai-loading-bar {
+        width: 100%;
+        height: 8px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .ai-loading-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #fff, #e0e0e0, #fff);
+        background-size: 200% 100%;
+        animation: ai-loading-animation 2s infinite;
+        width: 0%;
+        transition: width 0.5s ease;
+    }
+
+    @keyframes ai-loading-animation {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    .ai-loading-steps {
+        text-align: left;
+        margin-top: 20px;
+    }
+
+    .ai-loading-step {
+        padding: 8px 0;
+        opacity: 0.6;
+        transition: opacity 0.3s;
+    }
+
+    .ai-loading-step.active {
+        opacity: 1;
+        font-weight: 500;
+    }
+
+    .ai-loading-step.completed {
+        opacity: 0.8;
+        color: #90ee90;
+    }
+
+    .ai-robot-icon {
+        font-size: 30px;
+        animation: ai-robot-pulse 1.5s infinite;
+    }
+
+    @keyframes ai-robot-pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
 `;
 document.head.appendChild(style);
+
+// AI Loading Modal Functions
+function showAiLoadingModal(questionCount) {
+    const modal = document.createElement('div');
+    modal.className = 'ai-loading-modal';
+    modal.id = 'ai-loading-modal';
+    
+    modal.innerHTML = `
+        <div class="ai-loading-content">
+            <div class="ai-loading-title">
+                <span class="ai-robot-icon">🤖</span>
+                Yapay Zeka Soruları Hazırlıyor
+            </div>
+            
+            <div class="ai-loading-progress">
+                <div class="ai-loading-bar">
+                    <div class="ai-loading-fill" id="ai-progress-fill"></div>
+                </div>
+                <div id="ai-progress-text">AI motoru başlatılıyor...</div>
+            </div>
+            
+            <div class="ai-loading-steps">
+                <div class="ai-loading-step" id="step-1">📚 Ders ve konu analiz ediliyor</div>
+                <div class="ai-loading-step" id="step-2">🧠 ${questionCount} adet soru üretiliyor</div>
+                <div class="ai-loading-step" id="step-3">✅ Sorular kontrol ediliyor</div>
+                <div class="ai-loading-step" id="step-4">🎯 Test hazırlanıyor</div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Start progress animation
+    startAiLoadingAnimation();
+}
+
+function hideAiLoadingModal() {
+    const modal = document.getElementById('ai-loading-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function startAiLoadingAnimation() {
+    const progressFill = document.getElementById('ai-progress-fill');
+    const progressText = document.getElementById('ai-progress-text');
+    const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
+    
+    let currentStep = 0;
+    let progress = 0;
+    
+    const interval = setInterval(() => {
+        // Update progress bar
+        progress += Math.random() * 15 + 5;
+        if (progress > 95) progress = 95;
+        
+        progressFill.style.width = progress + '%';
+        
+        // Update steps
+        if (progress > 25 && currentStep === 0) {
+            document.getElementById(steps[0]).classList.add('active');
+            progressText.textContent = 'Ders ve konu bilgileri analiz ediliyor...';
+            currentStep++;
+        } else if (progress > 50 && currentStep === 1) {
+            document.getElementById(steps[0]).classList.remove('active');
+            document.getElementById(steps[0]).classList.add('completed');
+            document.getElementById(steps[1]).classList.add('active');
+            progressText.textContent = 'AI soruları üretiyor...';
+            currentStep++;
+        } else if (progress > 75 && currentStep === 2) {
+            document.getElementById(steps[1]).classList.remove('active');
+            document.getElementById(steps[1]).classList.add('completed');
+            document.getElementById(steps[2]).classList.add('active');
+            progressText.textContent = 'Sorular kontrol ediliyor...';
+            currentStep++;
+        } else if (progress > 90 && currentStep === 3) {
+            document.getElementById(steps[2]).classList.remove('active');
+            document.getElementById(steps[2]).classList.add('completed');
+            document.getElementById(steps[3]).classList.add('active');
+            progressText.textContent = 'Test hazırlanıyor...';
+            currentStep++;
+        }
+        
+        if (progress >= 95) {
+            clearInterval(interval);
+        }
+    }, 300);
+}
