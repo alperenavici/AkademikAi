@@ -2,12 +2,13 @@ using AkademikAi.Core.DTOs;
 using AkademikAi.Entity.Entites;
 using AkademikAi.Entity.Enums;
 using AkademikAi.Service.IServices;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace AkademikAi.Web.Controllers
+namespace AkademikAi.Web.Controllers.AdminController
 {
     [Authorize]
     public class AdminController : Controller
@@ -17,7 +18,8 @@ namespace AkademikAi.Web.Controllers
         private readonly ISubjectService _subjectService;
         private readonly ITopicService _topicService;
         private readonly IQuestionService _questionService;
-
+        private readonly SignInManager<AppUser> _signInManager;
+    
         public AdminController(
             UserManager<AppUser> userManager,
             IExamService examService,
@@ -32,16 +34,39 @@ namespace AkademikAi.Web.Controllers
             _questionService = questionService;
         }
 
-        // Admin ana sayfası
-        public async Task<IActionResult> Index()
+    
+
+        //Login
+        [HttpGet]
+        public IActionResult AdminLogin()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null || user.UserRole != UserRole.Teacher)
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null)
             {
-                return RedirectToAction("Dashboard", "User");
+                ModelState.AddModelError(string.Empty, "Geçersiz Kullanıcı Girişi.");
+                return View(dto);
             }
 
-            return View();
+            var result = await _signInManager.PasswordSignInAsync(user.UserName ?? string.Empty, dto.Password, isPersistent: false, lockoutOnFailure: false);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("dashboard", "User");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Geçersiz Kullanıcı Girişi");
+                return View(dto);
+            }
+
+
         }
 
         // Sınav Yönetimi Ana Sayfası

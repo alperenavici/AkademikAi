@@ -9,7 +9,9 @@ from flask_cors import CORS
 import random
 import json
 import google.generativeai as genai
+import requests
 import os
+import time
 
 app = Flask(__name__)
 CORS(app)  # Cross-origin resource sharing için
@@ -889,9 +891,10 @@ def find_best_match(target, options):
     
     return None
 
-def generate_questions_with_real_ai(subject, topic, difficulty, question_count, google_api_key):
-    """Gemini AI ile gerçek soru üretimi"""
+def generate_questions_with_real_ai(subject, topic, difficulty, question_count, google_api_key, deepseek_api_key=None):
+    """Önce Gemini AI, başarısız olursa DeepSeek AI ile soru üretimi"""
     
+    # Önce Gemini AI'yi dene
     try:
         print(f"[GEMINI] API Key alındı: {google_api_key[:10]}...")
         
@@ -964,8 +967,11 @@ Lütfen {question_count} adet soru üret ve sadece JSON formatında yanıt ver.
             questions = ai_response.get("questions", [])
             
             if not questions:
-                print("[GEMINI] Hata: Boş soru listesi döndü")
-                return generate_fallback_questions(subject, topic, difficulty, question_count)
+                print("[GEMINI] Hata: Boş soru listesi döndü, DeepSeek'e geçiliyor")
+                if deepseek_api_key:
+                    return generate_questions_with_deepseek(subject, topic, difficulty, question_count, deepseek_api_key)
+                else:
+                    return generate_fallback_questions(subject, topic, difficulty, question_count)
             
             print(f"[GEMINI] Başarılı: {len(questions)} soru üretildi")
             
@@ -973,10 +979,10 @@ Lütfen {question_count} adet soru üret ve sadece JSON formatında yanıt ver.
             formatted_questions = []
             for i, q in enumerate(questions[:question_count]):  # İstenen sayıda soru al
                 formatted_question = {
-                    "question": f"[TYT AI - Soru {i+1}] {q.get('question', 'Soru metni bulunamadı')}",
+                    "question": f"[TYT Gemini - Soru {i+1}] {q.get('question', 'Soru metni bulunamadı')}",
                     "options": q.get('options', ['A', 'B', 'C', 'D']),
                     "correct_answer": q.get('correct_answer', q.get('options', ['A'])[0]),
-                    "explanation": f"AI Çözüm: {q.get('explanation', 'Açıklama bulunamadı')}"
+                    "explanation": f"Gemini Çözüm: {q.get('explanation', 'Açıklama bulunamadı')}"
                 }
                 formatted_questions.append(formatted_question)
             
@@ -985,10 +991,142 @@ Lütfen {question_count} adet soru üret ve sadece JSON formatında yanıt ver.
         except json.JSONDecodeError as e:
             print(f"[GEMINI] JSON Parse Hatası: {e}")
             print(f"[GEMINI] Ham text: {response_text[:500]}...")
-            return generate_fallback_questions(subject, topic, difficulty, question_count)
+            print("[GEMINI] DeepSeek'e geçiliyor...")
+            if deepseek_api_key:
+                return generate_questions_with_deepseek(subject, topic, difficulty, question_count, deepseek_api_key)
+            else:
+                return generate_fallback_questions(subject, topic, difficulty, question_count)
             
     except Exception as e:
         print(f"[GEMINI] Genel Hata: {e}")
+        print("[GEMINI] DeepSeek'e geçiliyor...")
+        if deepseek_api_key:
+            return generate_questions_with_deepseek(subject, topic, difficulty, question_count, deepseek_api_key)
+        else:
+            return generate_fallback_questions(subject, topic, difficulty, question_count)
+
+def generate_questions_with_deepseek(subject, topic, difficulty, question_count, deepseek_api_key):
+    """DeepSeek AI ile soru üretimi"""
+    
+    try:
+        print(f"[DEEPSEEK] API Key alındı: {deepseek_api_key[:10]}...")
+        
+        # TYT seviyesine göre zorluk tanımı
+        difficulty_map = {
+            "easy": "kolay seviye, temel kavramları test eden",
+            "medium": "orta seviye, kavramları ilişkilendiren", 
+            "hard": "zor seviye, analitik düşünce gerektiren"
+        }
+        
+        difficulty_text = difficulty_map.get(difficulty, "orta seviye")
+        
+        # DeepSeek için TYT prompt'u
+        prompt = f"""Sen TYT (Temel Yeterlilik Testi) soru hazırlama uzmanısın. 
+
+GÖREV: {subject} dersi {topic} konusunda {difficulty_text} {question_count} adet çoktan seçmeli soru hazırla.
+
+KURALLAR:
+1. Her soru tam olarak 4 seçenek olmalı
+2. Sadece 1 doğru cevap olmalı
+3. TYT formatında ve Türkçe olmalı
+4. Güncel müfredata uygun olmalı
+5. Seçenekler mantıklı ve aldatıcı olmalı
+6. Açık ve anlaşılır dil kullan
+
+ÇIKTI FORMATI (JSON):
+{{
+  "questions": [
+    {{
+      "question": "Soru metni burada",
+      "options": ["A seçeneği", "B seçeneği", "C seçeneği", "D seçeneği"],
+      "correct_answer": "Doğru seçenek metni",
+      "explanation": "Doğru cevabın açıklaması"
+    }}
+  ]
+}}
+
+Lütfen {question_count} adet soru üret ve sadece JSON formatında yanıt ver."""
+
+        print(f"[DEEPSEEK] İstek gönderiliyor: {subject} - {topic} - {difficulty} - {question_count} soru")
+        
+        # DeepSeek API headers
+        headers = {
+            "Authorization": f"Bearer {deepseek_api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        # DeepSeek API payload
+        payload = {
+            "model": "deepseek-chat",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 2000
+        }
+        
+        # DeepSeek API'ye istek gönder
+        response = requests.post(
+            "https://api.deepseek.com/v1/chat/completions",
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code != 200:
+            print(f"[DEEPSEEK] API Hatası: {response.status_code} - {response.text}")
+            return generate_fallback_questions(subject, topic, difficulty, question_count)
+        
+        response_data = response.json()
+        response_text = response_data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        
+        print(f"[DEEPSEEK] Ham yanıt alındı: {len(response_text)} karakter")
+        
+        # JSON'u parse et
+        try:
+            # JSON'u temizle (markdown kod bloklarını kaldır)
+            if "```json" in response_text:
+                json_start = response_text.find("```json") + 7
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            elif "```" in response_text:
+                json_start = response_text.find("```") + 3
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            
+            # JSON parse et
+            ai_response = json.loads(response_text)
+            questions = ai_response.get("questions", [])
+            
+            if not questions:
+                print("[DEEPSEEK] Hata: Boş soru listesi döndü")
+                return generate_fallback_questions(subject, topic, difficulty, question_count)
+            
+            print(f"[DEEPSEEK] Başarılı: {len(questions)} soru üretildi")
+            
+            # AI'dan gelen soruları formatla
+            formatted_questions = []
+            for i, q in enumerate(questions[:question_count]):  # İstenen sayıda soru al
+                formatted_question = {
+                    "question": f"[TYT DeepSeek - Soru {i+1}] {q.get('question', 'Soru metni bulunamadı')}",
+                    "options": q.get('options', ['A', 'B', 'C', 'D']),
+                    "correct_answer": q.get('correct_answer', q.get('options', ['A'])[0]),
+                    "explanation": f"DeepSeek Çözüm: {q.get('explanation', 'Açıklama bulunamadı')}"
+                }
+                formatted_questions.append(formatted_question)
+            
+            return formatted_questions
+            
+        except json.JSONDecodeError as e:
+            print(f"[DEEPSEEK] JSON Parse Hatası: {e}")
+            print(f"[DEEPSEEK] Ham text: {response_text[:500]}...")
+            return generate_fallback_questions(subject, topic, difficulty, question_count)
+            
+    except Exception as e:
+        print(f"[DEEPSEEK] Genel Hata: {e}")
         return generate_fallback_questions(subject, topic, difficulty, question_count)
 
 def generate_fallback_questions(subject, topic, difficulty, question_count):
@@ -1103,6 +1241,7 @@ def generate_questions_endpoint():
         difficulty = data['difficulty']
         question_count = int(data['question_count'])
         google_api_key = data['google_api_key']
+        deepseek_api_key = data.get('deepseek_api_key')  # Opsiyonel
         
         # Google API Key'ini doğrula
         if not google_api_key or len(google_api_key) < 10:
@@ -1130,9 +1269,11 @@ def generate_questions_endpoint():
         if difficulty == 'mixed':
             difficulty = random.choice(['easy', 'medium', 'hard'])
         
-        # GERÇEK AI (Gemini) ile soruları üret
+        # GERÇEK AI (Gemini + DeepSeek fallback) ile soruları üret
         print(f"[ENDPOINT] Gemini AI kullanılarak soru üretiliyor...")
-        questions = generate_questions_with_real_ai(subject, topic, difficulty, question_count, google_api_key)
+        if deepseek_api_key:
+            print(f"[ENDPOINT] DeepSeek API Key de mevcut, fallback olarak kullanılabilir")
+        questions = generate_questions_with_real_ai(subject, topic, difficulty, question_count, google_api_key, deepseek_api_key)
         
         if not questions:
             return jsonify({
@@ -1175,6 +1316,7 @@ def home():
                 'difficulty': 'string (easy/medium/hard/mixed)',
                 'question_count': 'integer (1-50)',
                 'google_api_key': 'string (Google Gemini API Key)',
+                'deepseek_api_key': 'string (DeepSeek API Key - opsiyonel fallback)',
                 'question_type': 'string (opsiyonel)'
             }
         },

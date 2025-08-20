@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Login.css">
+    <link rel="stylesheet" href="~/css/Error.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-form">
+            <div class="form-wrapper">
+                <h2>GİRİŞ YAP</h2>
+                <p class="subtitle">Hesabınıza erişmek için bilgilerinizi girin.</p>
+
+                <form asp-action="AdminLogin" asp-controller="Admin" method="post">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="message-container message-success">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="message-container message-error">
+                            @ViewBag.Error
+                        </div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="message-container message-error">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <p>@error.ErrorMessage</p>
+                            }
+                        </div>
+                    }
+                    <div class="input-group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        <input type="email" name="email" placeholder="Email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <input type="password" name="password" placeholder="Şifre" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Giriş Yap</button>
+                </form>
+                <button type="button" class="btn-primary" onclick="window.location.href='/User/Register'">Kayıt Ol</button>
+
+                <div class="divider">
+                    <span>Login with Others</span>
+                </div>
+
+                <div class="social-logins">
+                    <a href="#" class="btn-social">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo">
+                        <span>Login with Google</span>
+                    </a>
+                    <a href="#" class="btn-social">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" alt="Facebook logo">
+                        <span>Login with Facebook</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-branding">
+            <img src="~/images/women.png" alt="Tablet kullanan kadın" class="branding-image">
+            <div class="glass-card">
+                <h3>
+                    En iyi şekilde <br>
+                    Çalışmanı <br>
+                    Sağlayacak <br>
+                    Kişisel Asistanın <br>
+                    Seni Bekliyor!
+                </h3>
+            </div>
+            <div class="spark-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.5 5L19 9.5l-5 2.5L12 17l-2.5-5L5 9.5l5-2.5z" /></svg>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

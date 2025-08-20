@@ -18,6 +18,7 @@ namespace AkademikAi.Service.Services
         private readonly IConfiguration _configuration;
         private readonly string _aiBaseUrl;
         private readonly string _googleApiKey;
+        private readonly string _deepSeekApiKey;
 
         public AiQuestionService(HttpClient httpClient, ILogger<AiQuestionService> logger, 
                                ISubjectService subjectService, ITopicService topicService,
@@ -30,6 +31,7 @@ namespace AkademikAi.Service.Services
             _configuration = configuration;
             _aiBaseUrl = _configuration["GoogleAI:BaseUrl"] ?? "http://127.0.0.1:8081";
             _googleApiKey = _configuration["GoogleAI:ApiKey"] ?? throw new ArgumentException("Google API Key bulunamadı!");
+            _deepSeekApiKey = _configuration["DeepSeekAI:ApiKey"] ?? throw new ArgumentException("DeepSeek API Key bulunamadı!");
         }
 
         public async Task<List<Questions>> GenerateQuestionsFromAiAsync(CustomExamCreateDto dto)
@@ -48,7 +50,8 @@ namespace AkademikAi.Service.Services
                     difficulty = GetDifficultyString(dto.Difficulty),
                     question_count = dto.QuestionCount,
                     question_type = "multiple_choice",
-                    google_api_key = _googleApiKey
+                    google_api_key = _googleApiKey,
+                    deepseek_api_key = _deepSeekApiKey
                 };
 
                 var json = JsonSerializer.Serialize(requestData);
