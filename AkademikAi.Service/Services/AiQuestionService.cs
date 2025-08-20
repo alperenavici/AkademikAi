@@ -2,6 +2,7 @@ using AkademikAi.Core.DTOs;
 using AkademikAi.Entity.Entites;
 using AkademikAi.Entity.Enums;
 using AkademikAi.Service.IServices;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
@@ -14,15 +15,26 @@ namespace AkademikAi.Service.Services
         private readonly ILogger<AiQuestionService> _logger;
         private readonly ISubjectService _subjectService;
         private readonly ITopicService _topicService;
-        private readonly string _aiBaseUrl = "http://127.0.0.1:8081";
+        private readonly IConfiguration _configuration;
+        private readonly string _aiBaseUrl;
+        private readonly string _googleApiKey;
 
         public AiQuestionService(HttpClient httpClient, ILogger<AiQuestionService> logger, 
-                               ISubjectService subjectService, ITopicService topicService)
+                               ISubjectService subjectService, ITopicService topicService,
+                               IConfiguration configuration)
         {
             _httpClient = httpClient;
             _logger = logger;
             _subjectService = subjectService;
             _topicService = topicService;
+            _configuration = configuration;
+            
+            // Configuration'dan ayarları al
+            _aiBaseUrl = _configuration["AiServices:AiServiceUrl"] ?? "http://127.0.0.1:8081";
+            _googleApiKey = _configuration["AiServices:GoogleApiKey"] ?? throw new InvalidOperationException("Google API Key bulunamadı");
+            
+            _logger.LogInformation($"AI Servisi URL: {_aiBaseUrl}");
+            _logger.LogInformation($"Google API Key yapılandırıldı: {_googleApiKey[..10]}...");
         }
 
         public async Task<List<Questions>> GenerateQuestionsFromAiAsync(CustomExamCreateDto dto)
@@ -40,7 +52,8 @@ namespace AkademikAi.Service.Services
                     topic = topicName,
                     difficulty = GetDifficultyString(dto.Difficulty),
                     question_count = dto.QuestionCount,
-                    question_type = "multiple_choice"
+                    question_type = "multiple_choice",
+                    google_api_key = _googleApiKey
                 };
 
                 var json = JsonSerializer.Serialize(requestData);
@@ -134,7 +147,8 @@ namespace AkademikAi.Service.Services
                     topic = topic,
                     difficulty = GetDifficultyString(difficulty),
                     question_count = 1,
-                    question_type = questionType
+                    question_type = questionType,
+                    google_api_key = _googleApiKey
                 };
 
                 var json = JsonSerializer.Serialize(requestData);
