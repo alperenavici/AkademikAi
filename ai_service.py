@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 AI Test Soru Üretim Servisi
-Bu dosya, localhost:8080 portunda çalışan basit bir AI servis örneğidir.
+Bu dosya, Google Gemini API ile gerçek soru üretimi yapar.
 """
 
 from flask import Flask, request, jsonify
@@ -17,8 +17,6 @@ CORS(app)  # Cross-origin resource sharing için
 # Google AI (Gemini) API Konfigürasyonu
 # API Key her istekle birlikte gelecek
 GOOGLE_API_KEY = None
-
-# Gemini modeli her istek için dinamik olarak oluşturulacak
 
 # Örnek soru veritabanı
 # TYT Standartlarına Uygun Soru Veritabanı
@@ -891,6 +889,108 @@ def find_best_match(target, options):
     
     return None
 
+def generate_questions_with_real_ai(subject, topic, difficulty, question_count, google_api_key):
+    """Gemini AI ile gerçek soru üretimi"""
+    
+    try:
+        print(f"[GEMINI] API Key alındı: {google_api_key[:10]}...")
+        
+        # Google API Key'ini konfigüre et
+        genai.configure(api_key=google_api_key)
+        
+        # Gemini modelini dinamik olarak oluştur
+        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        
+        # TYT seviyesine göre zorluk tanımı
+        difficulty_map = {
+            "easy": "kolay seviye, temel kavramları test eden",
+            "medium": "orta seviye, kavramları ilişkilendiren", 
+            "hard": "zor seviye, analitik düşünce gerektiren"
+        }
+        
+        difficulty_text = difficulty_map.get(difficulty, "orta seviye")
+        
+        # Gemini için TYT prompt'u
+        prompt = f"""
+Sen TYT (Temel Yeterlilik Testi) soru hazırlama uzmanısın. 
+
+GÖREV: {subject} dersi {topic} konusunda {difficulty_text} {question_count} adet çoktan seçmeli soru hazırla.
+
+KURALLAR:
+1. Her soru tam olarak 4 seçenek (A, B, C, D) olmalı
+2. Sadece 1 doğru cevap olmalı
+3. TYT formatında ve Türkçe olmalı
+4. Güncel müfredata uygun olmalı
+5. Seçenekler mantıklı ve aldatıcı olmalı
+6. Açık ve anlaşılır dil kullan
+
+ÇIKTI FORMATI (JSON):
+{{
+  "questions": [
+    {{
+      "question": "Soru metni burada",
+      "options": ["A seçeneği", "B seçeneği", "C seçeneği", "D seçeneği"],
+      "correct_answer": "Doğru seçenek metni",
+      "explanation": "Doğru cevabın açıklaması"
+    }}
+  ]
+}}
+
+Lütfen {question_count} adet soru üret ve sadece JSON formatında yanıt ver.
+"""
+
+        print(f"[GEMINI] İstek gönderiliyor: {subject} - {topic} - {difficulty} - {question_count} soru")
+        
+        # Gemini'ye istek gönder
+        response = model.generate_content(prompt)
+        response_text = response.text
+        
+        print(f"[GEMINI] Ham yanıt alındı: {len(response_text)} karakter")
+        
+        # JSON'u parse et
+        try:
+            # JSON'u temizle (markdown kod bloklarını kaldır)
+            if "```json" in response_text:
+                json_start = response_text.find("```json") + 7
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            elif "```" in response_text:
+                json_start = response_text.find("```") + 3
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            
+            # JSON parse et
+            ai_response = json.loads(response_text)
+            questions = ai_response.get("questions", [])
+            
+            if not questions:
+                print("[GEMINI] Hata: Boş soru listesi döndü")
+                return generate_fallback_questions(subject, topic, difficulty, question_count)
+            
+            print(f"[GEMINI] Başarılı: {len(questions)} soru üretildi")
+            
+            # AI'dan gelen soruları formatla
+            formatted_questions = []
+            for i, q in enumerate(questions[:question_count]):  # İstenen sayıda soru al
+                formatted_question = {
+                    "question": f"[TYT AI - Soru {i+1}] {q.get('question', 'Soru metni bulunamadı')}",
+                    "options": q.get('options', ['A', 'B', 'C', 'D']),
+                    "correct_answer": q.get('correct_answer', q.get('options', ['A'])[0]),
+                    "explanation": f"AI Çözüm: {q.get('explanation', 'Açıklama bulunamadı')}"
+                }
+                formatted_questions.append(formatted_question)
+            
+            return formatted_questions
+            
+        except json.JSONDecodeError as e:
+            print(f"[GEMINI] JSON Parse Hatası: {e}")
+            print(f"[GEMINI] Ham text: {response_text[:500]}...")
+            return generate_fallback_questions(subject, topic, difficulty, question_count)
+            
+    except Exception as e:
+        print(f"[GEMINI] Genel Hata: {e}")
+        return generate_fallback_questions(subject, topic, difficulty, question_count)
+
 def generate_fallback_questions(subject, topic, difficulty, question_count):
     """TYT standartlarında eşleşme bulunamadığında genel sorular üret"""
     
@@ -981,107 +1081,6 @@ def generate_fallback_questions(subject, topic, difficulty, question_count):
         generated_questions.append(modified_question)
     
     return generated_questions
-
-def generate_questions_with_real_ai(subject, topic, difficulty, question_count, google_api_key):
-    """Gemini AI ile gerçek soru üretimi"""
-    
-    try:
-        print(f"[GEMINI] API Key alındı: {google_api_key[:10]}...")
-        
-        # Google API Key'ini konfigüre et
-        genai.configure(api_key=google_api_key)
-        
-        # Gemini modelini dinamik olarak oluştur
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        # TYT seviyesine göre zorluk tanımı
-        difficulty_map = {
-            "easy": "kolay seviye, temel kavramları test eden",
-            "medium": "orta seviye, kavramları ilişkilendiren", 
-            "hard": "zor seviye, analitik düşünce gerektiren"
-        }
-        
-        difficulty_text = difficulty_map.get(difficulty, "orta seviye")
-        
-        # Gemini için TYT prompt'u
-        prompt = f"""
-Sen TYT (Temel Yeterlilik Testi) soru hazırlama uzmanısın. 
-
-GÖREV: {subject} dersi {topic} konusunda {difficulty_text} {question_count} adet çoktan seçmeli soru hazırla.
-
-KURALLAR:
-1. Her soru tam olarak 4 seçenek (A, B, C, D) olmalı
-2. Sadece 1 doğru cevap olmalı
-3. TYT formatında ve Türkçe olmalı
-4. Güncel müfredata uygun olmalı
-5. Seçenekler mantıklı ve aldatıcı olmalı
-6. Açık ve anlaşılır dil kullan
-
-ÇIKTI FORMATI (JSON):
-{{
-  "questions": [
-    {{
-      "question": "Soru metni burada",
-      "options": ["A seçeneği", "B seçeneği", "C seçeneği", "D seçeneği"],
-      "correct_answer": "Doğru seçenek metni",
-      "explanation": "Doğru cevabın açıklaması"
-    }}
-  ]
-}}
-
-Lütfen {question_count} adet soru üret ve sadece JSON formatında yanıt ver.
-"""
-
-        print(f"[GEMINI] İstek gönderiliyor: {subject} - {topic} - {difficulty} - {question_count} soru")
-        
-        # Gemini'ye istek gönder
-        response = model.generate_content(prompt)
-        response_text = response.text
-        
-        print(f"[GEMINI] Ham yanıt alındı: {len(response_text)} karakter")
-        
-        # JSON'u parse et
-        try:
-            # JSON'u temizle (markdown kod bloklarını kaldır)
-            if "```json" in response_text:
-                json_start = response_text.find("```json") + 7
-                json_end = response_text.find("```", json_start)
-                response_text = response_text[json_start:json_end].strip()
-            elif "```" in response_text:
-                json_start = response_text.find("```") + 3
-                json_end = response_text.find("```", json_start)
-                response_text = response_text[json_start:json_end].strip()
-            
-            # JSON parse et
-            ai_response = json.loads(response_text)
-            questions = ai_response.get("questions", [])
-            
-            if not questions:
-                print("[GEMINI] Hata: Boş soru listesi döndü")
-                return generate_fallback_questions(subject, topic, difficulty, question_count)
-            
-            print(f"[GEMINI] Başarılı: {len(questions)} soru üretildi")
-            
-            # AI'dan gelen soruları formatla
-            formatted_questions = []
-            for i, q in enumerate(questions[:question_count]):  # İstenen sayıda soru al
-                formatted_question = {
-                    "question": f"[TYT AI - Soru {i+1}] {q.get('question', 'Soru metni bulunamadı')}",
-                    "options": q.get('options', ['A', 'B', 'C', 'D']),
-                    "correct_answer": q.get('correct_answer', q.get('options', ['A'])[0]),
-                    "explanation": f"AI Çözüm: {q.get('explanation', 'Açıklama bulunamadı')}"
-                }
-                formatted_questions.append(formatted_question)
-            
-            return formatted_questions
-            
-        except json.JSONDecodeError as e:
-            print(f"[GEMINI] JSON Parse Hatası: {e}")
-            print(f"[GEMINI] Ham text: {response_text[:500]}...")
-            return generate_fallback_questions(subject, topic, difficulty, question_count)
-            
-    except Exception as e:
-        print(f"[GEMINI] Genel Hata: {e}")
-        return generate_fallback_questions(subject, topic, difficulty, question_count)
 
 @app.route('/generate_questions', methods=['POST'])
 def generate_questions_endpoint():
@@ -1175,6 +1174,7 @@ def home():
                 'topic': 'string (örn: Geometri)',
                 'difficulty': 'string (easy/medium/hard/mixed)',
                 'question_count': 'integer (1-50)',
+                'google_api_key': 'string (Google Gemini API Key)',
                 'question_type': 'string (opsiyonel)'
             }
         },
@@ -1182,12 +1182,10 @@ def home():
     })
 
 if __name__ == '__main__':
-    print("AI Test Soru Üretim Servisi başlatılıyor...")
-    print("Port: 8081")
-    print("URL: http://127.0.0.1:8081")
-    print("GEMINI AI entegrasyonu aktif!")
-    print("API Key: Her istekle configuration'dan alınacak")
-    print("Kullanılabilir dersler:", list(SAMPLE_QUESTIONS.keys()))
+    print("🤖 AI Test Soru Üretim Servisi başlatılıyor...")
+    print("📍 Port: 8081")
+    print("🌐 URL: http://127.0.0.1:8081")
+    print("📚 Kullanılabilir dersler:", list(SAMPLE_QUESTIONS.keys()))
     print("=" * 50)
     
     app.run(host='127.0.0.1', port=8081, debug=True)

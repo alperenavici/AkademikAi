@@ -2,8 +2,8 @@ using AkademikAi.Core.DTOs;
 using AkademikAi.Entity.Entites;
 using AkademikAi.Entity.Enums;
 using AkademikAi.Service.IServices;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using System.Text;
 using System.Text.Json;
 
@@ -28,13 +28,8 @@ namespace AkademikAi.Service.Services
             _subjectService = subjectService;
             _topicService = topicService;
             _configuration = configuration;
-            
-            // Configuration'dan ayarları al
-            _aiBaseUrl = _configuration["AiServices:AiServiceUrl"] ?? "http://127.0.0.1:8081";
-            _googleApiKey = _configuration["AiServices:GoogleApiKey"] ?? throw new InvalidOperationException("Google API Key bulunamadı");
-            
-            _logger.LogInformation($"AI Servisi URL: {_aiBaseUrl}");
-            _logger.LogInformation($"Google API Key yapılandırıldı: {_googleApiKey[..10]}...");
+            _aiBaseUrl = _configuration["GoogleAI:BaseUrl"] ?? "http://127.0.0.1:8081";
+            _googleApiKey = _configuration["GoogleAI:ApiKey"] ?? throw new ArgumentException("Google API Key bulunamadı!");
         }
 
         public async Task<List<Questions>> GenerateQuestionsFromAiAsync(CustomExamCreateDto dto)
@@ -147,8 +142,7 @@ namespace AkademikAi.Service.Services
                     topic = topic,
                     difficulty = GetDifficultyString(difficulty),
                     question_count = 1,
-                    question_type = questionType,
-                    google_api_key = _googleApiKey
+                    question_type = questionType
                 };
 
                 var json = JsonSerializer.Serialize(requestData);
