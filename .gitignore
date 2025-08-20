@@ -67,3 +67,5 @@ coverage/
 # Paket
 .paket/
 paket-files/ 
+/AkademikAi.Web/appsettings.json
+/requirements.txt
