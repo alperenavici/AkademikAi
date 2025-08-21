@@ -98,27 +98,53 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 5px; /* Butonlar arasına biraz boşluk eklendi */
+    margin-top: 10px; /* Butonlar arasına biraz boşluk eklendi */
 }
 
 .btn-primary {
-    background-color: #6c63ff;
-    color: #fff;
+    width: 100%;
+    padding: 12px;
+    background-color: #6a49f2;
+    color: #ffffff;
+    border: none;
+    border-radius: 18px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 10px;
+    margin-bottom:10px;
+    z-index: 5;
 }
 
     .btn-primary:hover {
-        background-color: #574ffc;
+        background-color: #5837d0;
         transform: translateY(-2px);
-        box-shadow: 0 5px 10px rgba(108, 99, 255, 0.3);
     }
 
-.btn-secondary {
-    background-color: #ebeaff;
-    color: #6c63ff;
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #333333;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
-    .btn-secondary:hover {
-        background-color: #d9d6ff;
+    .btn-social:hover {
+        background-color: #f9f9f9;
+        border-color: #c0c0c0;
+    }
+
+    .btn-social img {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
     }
 
 /* --- SAĞ TARAF: GÖRSELLER --- */

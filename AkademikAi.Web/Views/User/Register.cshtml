@@ -76,14 +76,18 @@
                     <button type="submit" class="btn btn-primary">Kayıt Ol</button>
                     
                 </form>
-                <form asp-action="/User/Login" method="get">
-                    <p class="text-center w-100">
-                        Zaten bir hesabınız var mı?
-                    </p>
-                    <p class="input-group">
-                        <button type="button" class="btn btn-secondary btn-sm">Giriş Yap</button>
-                    </p>
-                </form>
+                <div class="social-logins">
+                    <a asp-action="GoogleLogin" asp-controller="User" class="btn-social">
+                        @if (TempData["ErrorMessage"] != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @TempData["ErrorMessage"]
+                            </div>
+                        }
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo">
+                        <i class="fab fa-google"></i> Google Kayıt Ol
+                    </a>
+                </div>
                 <button type="button" class="btn btn-secondary" onclick="history.back()">Geri Dön</button>
 
             </div>

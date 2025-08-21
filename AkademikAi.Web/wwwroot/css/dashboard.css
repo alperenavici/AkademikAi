@@ -1,7 +1,7 @@
 ﻿/* --- TASARIM SİSTEMİ: DEĞİŞKENLER --- */
 :root {
     --bg-main: #F8F9FA;
-    --bg-panel: #FFFFFF;
+    --bg-panel:#dee2e6;
     --primary: #005f73;
     --accent: #ee9b00;
     --success: #94d2bd;
@@ -32,6 +32,7 @@ body {
 .dashboard-container {
     display: flex;
     min-height: 100vh;
+    align-items: flex-start; /* dikey hizalama için */
 }
 
 .sidebar {
@@ -42,6 +43,9 @@ body {
     flex-direction: column;
     padding: 24px;
     transition: width 0.3s ease;
+    margin:0;
+    left:0;
+    position:relative;
 }
 
 .sidebar-header .logo {

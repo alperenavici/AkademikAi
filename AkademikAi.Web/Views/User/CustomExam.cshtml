@@ -12,6 +12,80 @@
     <link rel="stylesheet" href="~/css/custom-exam.css" />
     <link rel="stylesheet" href="~/css/design-system.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- YENİ CSS STİLLERİ BURAYA EKLENEBİLİR VEYA MEVCUT CSS DOSYASINA EKLENEBİLİR -->
+    <style>
+        .exam-footer {
+            padding: 15px 30px;
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .footer-nav-buttons .nav-btn {
+            margin-right: 10px;
+        }
+
+        .footer-action-buttons .btn-grid {
+            margin-right: 10px;
+        }
+
+        /* Eski stilleri etkilememek için yeni buton sınıfları */
+        .nav-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #f7f7f7;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease-in-out;
+        }
+
+            .nav-btn:disabled {
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+
+            .nav-btn:not(:disabled):hover {
+                background-color: #e9e9e9;
+                border-color: #b3b3b3;
+            }
+
+        .nav-btn-next {
+            background-color: #007bff; /* Ana Eylem Rengi */
+            color: white;
+            border-color: #007bff;
+        }
+
+            .nav-btn-next:not(:disabled):hover {
+                background-color: #0056b3;
+                border-color: #0056b3;
+            }
+
+        .btn-finish-exam {
+            background-color: #28a745; /* Bitirme Butonu Rengi */
+            color: white;
+            border: none;
+        }
+
+            .btn-finish-exam:hover {
+                background-color: #218838;
+            }
+
+        .btn-grid {
+            background-color: transparent;
+            border: 1px solid #ccc;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -19,11 +93,11 @@
         <div class="loading-content">
             <div class="loading-spinner">
                 <div class="spinner"></div>
-        </div>
+            </div>
             <h2 class="loading-title">Testiniz Hazırlanıyor...</h2>
             <p class="loading-text">Sorular yükleniyor, lütfen bekleyiniz</p>
+        </div>
     </div>
-</div>
 
     <!-- Exam Container -->
     <div id="exam-container" class="exam-container" style="display: none;">
@@ -34,15 +108,13 @@
                     <i class="fas fa-arrow-left"></i>
                     <span>Çıkış</span>
                 </button>
-    </div>
-
+            </div>
             <div class="header-center">
                 <h1 id="exam-title" class="exam-title">Test Adı</h1>
                 <div class="exam-meta">
                     <span id="exam-description">Test açıklaması</span>
                 </div>
-    </div>
-
+            </div>
             <div class="header-right">
                 <div class="timer-container">
                     <i class="fas fa-clock timer-icon"></i>
@@ -66,9 +138,16 @@
             </div>
         </div>
 
-        <!-- Question Navigation -->
-        <div class="question-navigation">
-            <div class="nav-buttons">
+        <!-- Question Content -->
+        <main class="question-content">
+            <div id="question-card" class="question-card">
+                <!-- Question will be loaded here -->
+            </div>
+        </main>
+
+        <!-- YENİLENMİŞ BUTON ALANI -->
+        <footer class="exam-footer">
+            <div class="footer-nav-buttons">
                 <button id="prev-button" class="nav-btn nav-btn-prev" disabled>
                     <i class="fas fa-chevron-left"></i>
                     Önceki
@@ -78,21 +157,18 @@
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
-            
-            <div class="question-grid-toggle">
-                <button id="question-grid-btn" class="btn-grid">
+
+            <div class="footer-action-buttons">
+                <button id="question-grid-btn" class="nav-btn btn-grid">
                     <i class="fas fa-th-large"></i>
                     Soru Haritası
                 </button>
+                <button id="finish-exam-btn" class="nav-btn btn-finish-exam">
+                    <i class="fas fa-check-circle"></i>
+                    Testi Bitir
+                </button>
             </div>
-        </div>
-
-        <!-- Question Content -->
-        <main class="question-content">
-            <div id="question-card" class="question-card">
-                <!-- Question will be loaded here -->
-            </div>
-        </main>
+        </footer>
 
         <!-- Question Grid Modal -->
         <div id="question-grid-modal" class="modal-overlay" style="display: none;">
@@ -123,16 +199,8 @@
                     </div>
                 </div>
             </div>
-                                </div>
-
-        <!-- Finish Exam Button -->
-        <div class="finish-section">
-            <button id="finish-exam-btn" class="btn-finish-exam">
-                <i class="fas fa-check-circle"></i>
-                Testi Bitir
-            </button>
-                                    </div>
-                                </div>
+        </div>
+    </div>
 
     <!-- Hidden Form for Submission -->
     <form id="submitExamForm" style="display: none;">

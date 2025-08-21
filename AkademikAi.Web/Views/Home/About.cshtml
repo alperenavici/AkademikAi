@@ -2,16 +2,15 @@
     ViewData["Title"] = "Home Page";
 }
 
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AkademikAi - Hızlı Öğren, Motive Kal, Akıllı Çalış</title>
+    <title>AkademikAi - Hakkımızda</title>
+    <link href="~/css/active.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="~/css/active.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* --- TEMEL STİLLER VE RESETLEME --- */
@@ -77,114 +76,121 @@
                 font-weight: 500;
             }
 
+     
 
-
-        /* --- HERO / ANA BÖLÜM --- */
-        .hero-section {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-top: 2rem;
-            min-height: 60vh;
-        }
-
-        .hero-left {
-            /* Sol tarafın sağ taraftan biraz daha fazla yer kaplamasını sağlıyoruz. */
-            flex: 1.1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .hero-right {
-            flex: 0.9;
-        }
-
-        /* --- YENİ VE KARARLI YAPI --- */
-        .device-stack {
-            /* Bu bizim ana konumlandırma konteynerimiz.
-                           Tüm görseller ve metinler buna göre hizalanacak. */
-            position: relative;
+        /* --- SAYFA ÖZEL STİLLERİ (About) --- */
+        .page-hero {
             width: 100%;
-            max-width: 800px; /* Laptop görselinin maksimum genişliği */
-            /* Görselin en-boy oranını koruyarak küçülmesini sağlar.
-                           Bu, kaymayı önleyen en önemli kısımdır. */
-            aspect-ratio: 700 / 460;
+            background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2.5rem; /* İç boşluğu artırdık */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+            text-align: center; /* İçeriği ortaladık */
         }
 
-            .device-stack img {
-                /* Görsellerin konteyner dışına taşmasını engeller. */
-                position: absolute;
-                object-fit: contain;
-            }
-
-        .laptop-frame {
-            width: 120%;
-            height: 120%;
-            top: 5%;
-            right: 0%;
-            z-index: 1; /* En alttaki katman */
-        }
-
-        .phone-frame {
-            width: 19%; /* Genişliği ana konteynere göre oranlı */
-            bottom: 45%;
-            right: 10%;
-            z-index: 1;
-        }
-
-        .screen-content {
-            position: absolute;
-            z-index: 2;
-            top: 68%;
-            left: 25%;
-            transform: translate(-50%, -50%);
-            width: 50%;
-            text-align: left;
-            padding: 0.5rem;
-        }
-
-            .screen-content h1 {
-                font-size: clamp(1.5rem, 2vw, 4rem); /* Ekran boyutuna göre esnek font boyutu */
+            .page-hero h1 {
                 font-weight: 800;
-                line-height: 1.2;
+                font-size: clamp(2rem, 5vw, 2.75rem); /* Başlık boyutunu artırdık */
                 color: #111827;
+                margin-bottom: 1rem;
             }
 
-            .screen-content p {
-                font-size: clamp(0.5rem, 1.5vw, 0.85rem); /* Esnek font boyutu */
+            .page-hero p {
                 color: #4b5563;
-                margin: 0.5rem auto 0;
-                line-height: 1.5;
-                max-width: 100%;
+                max-width: 700px; /* Paragrafın çok geniş olmasını engelledik */
+                margin: 0 auto;
+                font-size: 1.1rem;
+                line-height: 1.6;
             }
 
-            .screen-content .cta-button {
-                margin-top: 0.2rem;
-                margin-left: 0;
-                padding: clamp(0.1rem, 0.5vw, 0.3rem) clamp(0.4rem, 1vw, 1rem);
-                background-color: #1d4ed8;
-                color: #ffffff;
-                border: none;
-                border-radius: 5px;
-                font-size: clamp(0.7rem, 1.5vw, 0.9rem);
-                font-weight: 500;
-                cursor: pointer;
-                transition: background-color 0.2s;
-                transform: scale(0.9);
-            }
-
-                .screen-content .cta-button:hover {
-                    background-color: #1e40af;
-                }
-
-        .hero-right .woman-image {
-            width: 150%;
-            max-width: 510px;
-            height: auto;
-            display: block;
-            margin-left: auto;
+        .section {
+            margin-top: 3rem; /* Bölümler arası boşluğu artırdık */
         }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Sütunları eşit genişlikte yaptık */
+            gap: 2rem;
+            align-items: stretch; /* Kartların aynı yüksekliğe sahip olmasını sağlar */
+        }
+
+        .about-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2rem; /* İç boşluğu artırdık */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+            display: flex;
+            flex-direction: column; /* Kart içeriğini dikeyde hizalamak için */
+        }
+
+            .about-card h3 {
+                font-size: 1.25rem; /* Başlık boyutunu büyüttük */
+                font-weight: 700;
+                margin-bottom: 1rem;
+            }
+
+            .about-card p {
+                font-size: 1rem;
+                line-height: 1.6;
+                color: #4b5563;
+                flex-grow: 1; /* Paragrafın kalan boşluğu doldurmasını sağlar */
+            }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem; /* Boşluğu artırdık */
+            margin-top: 1.5rem;
+        }
+
+        .stat {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+            .stat .value {
+                font-size: 2rem; /* Değerleri daha belirgin yaptık */
+                font-weight: 800;
+                color: #1d4ed8;
+            }
+
+            .stat .label {
+                color: #6b7280;
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-top: 0.25rem;
+            }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Tek sütunlu hale getirdik */
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px; /* Diğer kartlarla uyumlu hale getirdik */
+            padding: 1.5rem;
+        }
+
+            .feature-card h4 {
+                font-weight: 700;
+                margin-bottom: .5rem;
+                font-size: 1.1rem;
+            }
+
+            .feature-card p {
+                color: #4b5563;
+                font-size: .95rem;
+                line-height: 1.5;
+            }
 
         /* --- RESPONSIVE / MOBİL UYUMLULUK --- */
         @@media (max-width: 992px) {
@@ -192,39 +198,8 @@
                 display: none; /* Menüyü gizle */
             }
 
-            .hero-section {
-                /* Düzeni dikey (alt alta) yap */
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .hero-right {
-                order: -1; /* Kadın görselini en üste al */
-                margin-bottom: 2rem;
-            }
-
-                .hero-right .woman-image {
-                    max-width: 350px;
-                    margin: 0 auto;
-                }
-            /* Mobil görünümde cihaz görsellerini gizle ve metni normal akışa döndür */
-            .device-stack {
-                position: static;
-                aspect-ratio: auto; /* Oranlamayı iptal et */
-                max-width: 500px; /* Metin genişliğini sınırla */
-                margin: 0 auto;
-            }
-
-            .laptop-frame,
-            .phone-frame {
-                display: none; /* Cihazları gizle */
-            }
-
-            .screen-content {
-                position: static;
-                transform: none; /* Konumlandırmayı sıfırla */
-                width: 100%;
-                padding: 0;
+            .about-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -237,12 +212,16 @@
                 font-size: 1.5rem;
             }
 
-            .screen-content h1 {
-                font-size: 2.2rem; /* En küçük ekranlar için başlık boyutu */
+            .page-hero h1 {
+                font-size: 1.8rem;
             }
 
-            .hero-right .woman-image {
-                max-width: 90%; /* Görselin ekranı doldurmasını sağla */
+            .page-hero p {
+                font-size: 1rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr; /* İstatistikleri alt alta göster */
             }
         }
     </style>
@@ -255,24 +234,66 @@
             <div class="logo">AkademikAi.com</div>
             <nav class="nav-links">
                 <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                <!-- Aktif sayfayı belirtmek için "active" sınıfı eklendi -->
                 <a asp-controller="Home" asp-action="About" class="active">Hakkımızda</a>
-                 <a asp-controller="Home" asp-action="Contact">İletişim</a>
+                <a asp-controller="Home" asp-action="Contact">İletişim</a>
                 <a asp-controller="Home" asp-action="Payment">Ödeme</a>
             </nav>
             <div class="user-actions">
                 <a asp-controller="User" asp-action="Login">Log In</a>
                 <a asp-controller="User" asp-action="Register">Sign Up</a>
-
             </div>
         </header>
 
-        <!-- HERO SECTION -->
-        <main class="hero-section">
-          
+        <!-- ANA İÇERİK -->
+        <!-- "hero-section" sınıfı kaldırıldı ve yerine standart <main> etiketi kullanıldı -->
+        <main>
+            <div class="page-hero">
+                <h1>Hakkımızda</h1>
+                <p>AkademikAI, öğrencilerin daha hızlı öğrenmesini, motive kalmasını ve akıllı çalışmasını sağlayan yapay zeka destekli bir öğrenme platformudur.</p>
+            </div>
 
-           
+            <section class="section about-grid">
+                <div class="about-card">
+                    <h3>Neden AkademikAI?</h3>
+                    <p>Performans odaklı analizlerle kişiye özel çalışma planları oluşturuyor, güçlü ve zayıf yönlerinizi tespit ederek hedefinize en verimli şekilde ulaşmanıza yardımcı oluyoruz.</p>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="value">+50K</div>
+                            <div class="label">Öğrenci</div>
+                        </div>
+                        <div class="stat">
+                            <div class="value">+1M</div>
+                            <div class="label">Çözülen Soru</div>
+                        </div>
+                        <div class="stat">
+                            <div class="value">98%</div>
+                            <div class="label">Memnuniyet</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-card">
+                    <h3>Yaklaşımımız</h3>
+                    <p>Yapay zekâ ile desteklenen içerikler, adaptif testler ve ilerleme takibi sayesinde öğrenme sürecinizi kişiselleştiriyoruz. Her adımda yanınızdayız.</p>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Kişiselleştirilmiş Plan</h4>
+                            <p>Hedeflerinize göre günlük ve haftalık çalışma planları.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Akıllı Analiz</h4>
+                            <p>Güçlü ve gelişime açık yönleri anında görün.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Motivasyon</h4>
+                            <p>Rozetler, seriler ve bildirimlerle sürekli destek.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
 </body>
+</html>
 </html>

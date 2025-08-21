@@ -1,19 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Payment Page";
 }
-
 
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AkademikAi - Hızlı Öğren, Motive Kal, Akıllı Çalış</title>
+    <title>AkademikAi - Planlar ve Fiyatlandırma</title>
+    <link href="~/css/active.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="~/css/active.css" rel="stylesheet" />
-
     <style>
         /* --- TEMEL STİLLER VE RESETLEME --- */
         * {
@@ -40,7 +38,6 @@
             color: inherit;
         }
 
-        /* --- HEADER / ÜST BİLGİ --- */
         .header {
             display: flex;
             justify-content: space-between;
@@ -79,153 +76,143 @@
             }
 
 
-
-        /* --- HERO / ANA BÖLÜM --- */
-        .hero-section {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-top: 2rem;
-            min-height: 60vh;
-        }
-
-        .hero-left {
-            /* Sol tarafın sağ taraftan biraz daha fazla yer kaplamasını sağlıyoruz. */
-            flex: 1.1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .hero-right {
-            flex: 0.9;
-        }
-
-        /* --- YENİ VE KARARLI YAPI --- */
-        .device-stack {
-            /* Bu bizim ana konumlandırma konteynerimiz.
-                                           Tüm görseller ve metinler buna göre hizalanacak. */
-            position: relative;
+        /* --- SAYFA ÖZEL STİLLERİ (Payment) --- */
+        .page-hero {
             width: 100%;
-            max-width: 800px; /* Laptop görselinin maksimum genişliği */
-            /* Görselin en-boy oranını koruyarak küçülmesini sağlar.
-                                           Bu, kaymayı önleyen en önemli kısımdır. */
-            aspect-ratio: 700 / 460;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+            text-align: center;
         }
 
-            .device-stack img {
-                /* Görsellerin konteyner dışına taşmasını engeller. */
-                position: absolute;
-                object-fit: contain;
-            }
-
-        .laptop-frame {
-            width: 120%;
-            height: 120%;
-            top: 5%;
-            right: 0%;
-            z-index: 1; /* En alttaki katman */
-        }
-
-        .phone-frame {
-            width: 19%; /* Genişliği ana konteynere göre oranlı */
-            bottom: 45%;
-            right: 10%;
-            z-index: 1;
-        }
-
-        .screen-content {
-            position: absolute;
-            z-index: 2;
-            top: 68%;
-            left: 25%;
-            transform: translate(-50%, -50%);
-            width: 50%;
-            text-align: left;
-            padding: 0.5rem;
-        }
-
-            .screen-content h1 {
-                font-size: clamp(1.5rem, 2vw, 4rem); /* Ekran boyutuna göre esnek font boyutu */
+            .page-hero h1 {
                 font-weight: 800;
-                line-height: 1.2;
+                font-size: clamp(2rem, 5vw, 2.75rem);
                 color: #111827;
+                margin-bottom: 1rem;
             }
 
-            .screen-content p {
-                font-size: clamp(0.5rem, 1.5vw, 0.85rem); /* Esnek font boyutu */
+            .page-hero p {
                 color: #4b5563;
-                margin: 0.5rem auto 0;
-                line-height: 1.5;
-                max-width: 100%;
+                max-width: 700px;
+                margin: 0 auto;
+                font-size: 1.1rem;
+                line-height: 1.6;
             }
 
-            .screen-content .cta-button {
-                margin-top: 0.2rem;
-                margin-left: 0;
-                padding: clamp(0.1rem, 0.5vw, 0.3rem) clamp(0.4rem, 1vw, 1rem);
-                background-color: #1d4ed8;
-                color: #ffffff;
-                border: none;
-                border-radius: 5px;
-                font-size: clamp(0.7rem, 1.5vw, 0.9rem);
-                font-weight: 500;
-                cursor: pointer;
-                transition: background-color 0.2s;
-                transform: scale(0.9);
-            }
-
-                .screen-content .cta-button:hover {
-                    background-color: #1e40af;
-                }
-
-        .hero-right .woman-image {
-            width: 150%;
-            max-width: 510px;
-            height: auto;
-            display: block;
-            margin-left: auto;
+        .plans {
+            margin-top: 3rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            align-items: stretch;
         }
+
+        .plan {
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .plan:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            }
+
+        .plan-content {
+            flex-grow: 1; /* İçeriğin butonu aşağı itmesini sağlar */
+        }
+
+        /* Popüler planı öne çıkaran stil */
+        .plan.popular {
+            border-color: #1d4ed8;
+            transform: scale(1.05); /* Popüler planı biraz büyütür */
+        }
+
+            .plan.popular:hover {
+                transform: scale(1.05) translateY(-5px);
+            }
+
+        .plan .title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .plan .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #111827;
+            margin: 1rem 0;
+        }
+
+            .plan .price span {
+                font-size: 1rem;
+                font-weight: 500;
+                color: #6b7280;
+            }
+
+        .plan .features {
+            display: grid;
+            gap: 0.75rem;
+            color: #4b5563;
+            margin-bottom: 2rem;
+        }
+
+        .features .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cta {
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: .85rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s, transform .1s;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+            .cta:hover {
+                background: #1e40af;
+                transform: translateY(-2px);
+            }
+
+        /* Başlangıç ve Takım planlarının buton stilleri */
+        .plan:not(.popular) .cta {
+            background-color: #ffffff;
+            color: #1d4ed8;
+            border: 2px solid #e5e7eb;
+        }
+
+            .plan:not(.popular) .cta:hover {
+                background-color: #f9fafb;
+                border-color: #d1d5db;
+            }
 
         /* --- RESPONSIVE / MOBİL UYUMLULUK --- */
         @@media (max-width: 992px) {
             .header .nav-links {
-                display: none; /* Menüyü gizle */
+                display: none;
             }
 
-            .hero-section {
-                /* Düzeni dikey (alt alta) yap */
-                flex-direction: column;
-                text-align: center;
+            .plans {
+                grid-template-columns: 1fr;
             }
 
-            .hero-right {
-                order: -1; /* Kadın görselini en üste al */
-                margin-bottom: 2rem;
-            }
-
-                .hero-right .woman-image {
-                    max-width: 350px;
-                    margin: 0 auto;
-                }
-            /* Mobil görünümde cihaz görsellerini gizle ve metni normal akışa döndür */
-            .device-stack {
-                position: static;
-                aspect-ratio: auto; /* Oranlamayı iptal et */
-                max-width: 500px; /* Metin genişliğini sınırla */
-                margin: 0 auto;
-            }
-
-            .laptop-frame,
-            .phone-frame {
-                display: none; /* Cihazları gizle */
-            }
-
-            .screen-content {
-                position: static;
-                transform: none; /* Konumlandırmayı sıfırla */
-                width: 100%;
-                padding: 0;
+            .plan.popular {
+                transform: scale(1); /* Mobil ve tablette büyütme efektini kaldır */
             }
         }
 
@@ -237,14 +224,6 @@
             .header .logo {
                 font-size: 1.5rem;
             }
-
-            .screen-content h1 {
-                font-size: 2.2rem; /* En küçük ekranlar için başlık boyutu */
-            }
-
-            .hero-right .woman-image {
-                max-width: 90%; /* Görselin ekranı doldurmasını sağla */
-            }
         }
     </style>
 </head>
@@ -255,10 +234,11 @@
         <header class="header">
             <div class="logo">AkademikAi.com</div>
             <nav class="nav-links">
-                <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                <a asp-controller="Home" asp-action="Index" >Ana Sayfa</a>
                 <a asp-controller="Home" asp-action="About">Hakkımızda</a>
                 <a asp-controller="Home" asp-action="Contact">İletişim</a>
                 <a asp-controller="Home" asp-action="Payment" class="active">Ödeme</a>
+
             </nav>
             <div class="user-actions">
                 <a asp-controller="User" asp-action="Login">Log In</a>
@@ -267,12 +247,56 @@
             </div>
         </header>
 
-        <!-- HERO SECTION -->
-        <main class="hero-section">
+        <!-- ANA İÇERİK -->
+        <main>
+            <div class="page-hero">
+                <h1>Size Uygun Planı Seçin</h1>
+                <p>Potansiyelinizi ortaya çıkarmak için ilk adımı atın. Tüm planlarımızda esneklik ve şeffaflık sunuyoruz.</p>
+            </div>
 
-
-
-
+            <section class="plans">
+                <!-- Başlangıç Planı -->
+                <div class="plan">
+                    <div class="plan-content">
+                        <div class="title">Başlangıç</div>
+                        <div class="price">₺0</div>
+                        <div class="features">
+                            <div class="feature-item">✔ Günlük 5 soru hakkı</div>
+                            <div class="feature-item">✔ Temel performans takibi</div>
+                            <div class="feature-item">✔ Standart analizler</div>
+                        </div>
+                    </div>
+                    <button class="cta">Ücretsiz Başla</button>
+                </div>
+                <!-- Pro Planı (Popüler) -->
+                <div class="plan popular">
+                    <div class="plan-content">
+                        <div class="title">Pro</div>
+                        <div class="price">₺129 <span>/ay</span></div>
+                        <div class="features">
+                            <div class="feature-item">✔ Sınırsız soru çözümü</div>
+                            <div class="feature-item">✔ Gelişmiş akıllı analizler</div>
+                            <div class="feature-item">✔ Kişiselleştirilmiş çalışma planı</div>
+                            <div class="feature-item">✔ Motivasyon ve hedef takibi</div>
+                        </div>
+                    </div>
+                    <button class="cta">Hemen Başla</button>
+                </div>
+                <!-- Takım Planı -->
+                <div class="plan">
+                    <div class="plan-content">
+                        <div class="title">Takım</div>
+                        <div class="price">₺499 <span>/ay</span></div>
+                        <div class="features">
+                            <div class="feature-item">✔ 10 kullanıcıya kadar destek</div>
+                            <div class="feature-item">✔ Yönetici ve takip paneli</div>
+                            <div class="feature-item">✔ Grup raporları ve analizler</div>
+                            <div class="feature-item">✔ Öncelikli e-posta desteği</div>
+                        </div>
+                    </div>
+                    <button class="cta">İletişime Geç</button>
+                </div>
+            </section>
         </main>
     </div>
 

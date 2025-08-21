@@ -4,6 +4,9 @@ using AkademikAi.Entity.Enums;
 using AkademikAi.Service.IServices;
 using AkademikAi.Service.Services;
 using AkademikAi.Web.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -69,6 +72,68 @@ namespace AkademikAi.Web.Controllers.UserController
 
 
         }
+
+        public IActionResult GoogleLogin()
+        {
+            var redirectUrl = Url.Action("GoogleResponse", "User");
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+
+            if (result?.Succeeded != true)
+            {
+                TempData["ErrorMessage"] = "Google ile kimlik doğrulama başarısız oldu.";
+                return RedirectToAction("Login", "User");
+            }
+
+            var claims = result.Principal.Claims;
+            var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+            // --- DEĞİŞİKLİK BURADA BAŞLIYOR ---
+            // Sadece tam adı değil, adı ve soyadını ayrı ayrı alıyoruz.
+            var givenName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value; // Bu genellikle "Ad" olur
+            var surname = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;     // Bu da "Soyad"
+
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["ErrorMessage"] = "Google hesabınızdan e-posta bilgisi alınamadı.";
+                return RedirectToAction("Login", "User");
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                user = new AppUser
+                {
+                    UserName = email,
+                    Email = email,
+                    Name = givenName,     
+                    Surname = surname,    
+                    EmailConfirmed = true
+                };
+                var createUserResult = await _userManager.CreateAsync(user);
+
+                if (!createUserResult.Succeeded)
+                {
+                    var errorString = string.Join(", ", createUserResult.Errors.Select(e => e.Description));
+                    TempData["ErrorMessage"] = $"Hesabınız oluşturulamadı: {errorString}";
+                    return RedirectToAction("Login", "User");
+                }
+            }
+
+            // --- DEĞİŞİKLİK BURADA BİTİYOR ---
+
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            return RedirectToAction("Dashboard", "User");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

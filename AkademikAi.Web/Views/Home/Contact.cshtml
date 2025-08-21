@@ -1,18 +1,16 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Contact Page";
 }
-
 
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AkademikAi - Hızlı Öğren, Motive Kal, Akıllı Çalış</title>
+    <title>AkademikAi - İletişim</title>
+    <link href="~/css/active.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="~/css/active.css" rel="stylesheet" />
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* --- TEMEL STİLLER VE RESETLEME --- */
@@ -40,7 +38,6 @@
             color: inherit;
         }
 
-        /* --- HEADER / ÜST BİLGİ --- */
         .header {
             display: flex;
             justify-content: space-between;
@@ -79,153 +76,150 @@
             }
 
 
-
-        /* --- HERO / ANA BÖLÜM --- */
-        .hero-section {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-top: 2rem;
-            min-height: 60vh;
-        }
-
-        .hero-left {
-            /* Sol tarafın sağ taraftan biraz daha fazla yer kaplamasını sağlıyoruz. */
-            flex: 1.1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .hero-right {
-            flex: 0.9;
-        }
-
-        /* --- YENİ VE KARARLI YAPI --- */
-        .device-stack {
-            /* Bu bizim ana konumlandırma konteynerimiz.
-                                   Tüm görseller ve metinler buna göre hizalanacak. */
-            position: relative;
+        /* --- SAYFA ÖZEL STİLLERİ (Contact) --- */
+        .page-hero {
             width: 100%;
-            max-width: 800px; /* Laptop görselinin maksimum genişliği */
-            /* Görselin en-boy oranını koruyarak küçülmesini sağlar.
-                                   Bu, kaymayı önleyen en önemli kısımdır. */
-            aspect-ratio: 700 / 460;
+            background: linear-gradient(135deg, #ecfeff 0%, #ffffff 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+            text-align: center;
         }
 
-            .device-stack img {
-                /* Görsellerin konteyner dışına taşmasını engeller. */
-                position: absolute;
-                object-fit: contain;
-            }
-
-        .laptop-frame {
-            width: 120%;
-            height: 120%;
-            top: 5%;
-            right: 0%;
-            z-index: 1; /* En alttaki katman */
-        }
-
-        .phone-frame {
-            width: 19%; /* Genişliği ana konteynere göre oranlı */
-            bottom: 45%;
-            right: 10%;
-            z-index: 1;
-        }
-
-        .screen-content {
-            position: absolute;
-            z-index: 2;
-            top: 68%;
-            left: 25%;
-            transform: translate(-50%, -50%);
-            width: 50%;
-            text-align: left;
-            padding: 0.5rem;
-        }
-
-            .screen-content h1 {
-                font-size: clamp(1.5rem, 2vw, 4rem); /* Ekran boyutuna göre esnek font boyutu */
+            .page-hero h1 {
                 font-weight: 800;
-                line-height: 1.2;
+                font-size: clamp(2rem, 5vw, 2.75rem);
                 color: #111827;
+                margin-bottom: 1rem;
             }
 
-            .screen-content p {
-                font-size: clamp(0.5rem, 1.5vw, 0.85rem); /* Esnek font boyutu */
+            .page-hero p {
                 color: #4b5563;
-                margin: 0.5rem auto 0;
-                line-height: 1.5;
-                max-width: 100%;
+                max-width: 700px;
+                margin: 0 auto;
+                font-size: 1.1rem;
+                line-height: 1.6;
             }
 
-            .screen-content .cta-button {
-                margin-top: 0.2rem;
-                margin-left: 0;
-                padding: clamp(0.1rem, 0.5vw, 0.3rem) clamp(0.4rem, 1vw, 1rem);
-                background-color: #1d4ed8;
-                color: #ffffff;
-                border: none;
-                border-radius: 5px;
-                font-size: clamp(0.7rem, 1.5vw, 0.9rem);
-                font-weight: 500;
-                cursor: pointer;
-                transition: background-color 0.2s;
-                transform: scale(0.9);
-            }
-
-                .screen-content .cta-button:hover {
-                    background-color: #1e40af;
-                }
-
-        .hero-right .woman-image {
-            width: 150%;
-            max-width: 510px;
-            height: auto;
-            display: block;
-            margin-left: auto;
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr; /* Form alanını biraz daha geniş tuttuk */
+            gap: 2rem;
+            margin-top: 3rem;
+            align-items: stretch; /* Kartların aynı yükseklikte olmasını sağlar */
         }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+        }
+
+            .card h3 {
+                font-size: 1.25rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem; /* Başlık altı boşluğu artırdık */
+            }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+        }
+
+            .form .row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+
+        .label {
+            font-weight: 600;
+            font-size: .9rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .input, .textarea, .select {
+            width: 100%;
+            padding: .75rem 1rem;
+            border: 1px solid #d1d5db; /* Kenarlık rengini biraz belirginleştirdik */
+            border-radius: 8px; /* Kenar yuvarlaklığını diğer elementlerle uyumlu hale getirdik */
+            background: #ffffff;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+            .input:focus, .textarea:focus, .select:focus {
+                border-color: #1d4ed8;
+                box-shadow: 0 0 0 3px rgba(29,78,216,.1);
+            }
+
+        .textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        /* Butonun formun en altında kalmasını sağlar */
+        .form-footer {
+            margin-top: auto; /* Kalan boşluğu yukarı iter */
+            padding-top: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #1d4ed8;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: .85rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s, transform .1s;
+            width: 100%; /* Butonun tam genişlikte olmasını sağladık */
+            font-size: 1rem;
+        }
+
+            .btn-primary:hover {
+                background: #1e40af;
+                transform: translateY(-2px);
+            }
+
+        .info-list {
+            display: grid;
+            gap: 1.5rem; /* Liste elemanları arası boşluğu artırdık */
+        }
+
+        .info-item {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+            .info-item strong {
+                color: #111827;
+                font-weight: 600;
+            }
+
+            .info-item span {
+                color: #4b5563;
+            }
 
         /* --- RESPONSIVE / MOBİL UYUMLULUK --- */
         @@media (max-width: 992px) {
             .header .nav-links {
-                display: none; /* Menüyü gizle */
+                display: none;
             }
 
-            .hero-section {
-                /* Düzeni dikey (alt alta) yap */
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .hero-right {
-                order: -1; /* Kadın görselini en üste al */
-                margin-bottom: 2rem;
-            }
-
-                .hero-right .woman-image {
-                    max-width: 350px;
-                    margin: 0 auto;
-                }
-            /* Mobil görünümde cihaz görsellerini gizle ve metni normal akışa döndür */
-            .device-stack {
-                position: static;
-                aspect-ratio: auto; /* Oranlamayı iptal et */
-                max-width: 500px; /* Metin genişliğini sınırla */
-                margin: 0 auto;
-            }
-
-            .laptop-frame,
-            .phone-frame {
-                display: none; /* Cihazları gizle */
-            }
-
-            .screen-content {
-                position: static;
-                transform: none; /* Konumlandırmayı sıfırla */
-                width: 100%;
-                padding: 0;
+            .contact-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -238,12 +232,8 @@
                 font-size: 1.5rem;
             }
 
-            .screen-content h1 {
-                font-size: 2.2rem; /* En küçük ekranlar için başlık boyutu */
-            }
-
-            .hero-right .woman-image {
-                max-width: 90%; /* Görselin ekranı doldurmasını sağla */
+            .form .row {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -259,6 +249,7 @@
                 <a asp-controller="Home" asp-action="About">Hakkımızda</a>
                 <a asp-controller="Home" asp-action="Contact" class="active">İletişim</a>
                 <a asp-controller="Home" asp-action="Payment">Ödeme</a>
+
             </nav>
             <div class="user-actions">
                 <a asp-controller="User" asp-action="Login">Log In</a>
@@ -267,14 +258,72 @@
             </div>
         </header>
 
-        <!-- HERO SECTION -->
-        <main class="hero-section">
-            
+        <!-- ANA İÇERİK -->
+        <main>
+            <div class="page-hero">
+                <h1>İletişim</h1>
+                <p>Sorularınız, önerileriniz veya destek talepleriniz için bize ulaşmaktan çekinmeyin.</p>
+            </div>
 
-            
-
+            <section class="contact-grid">
+                <!-- Sol Taraf: İletişim Formu -->
+                <div class="card">
+                    <h3>Bize Mesaj Gönderin</h3>
+                    <form class="form">
+                        <div class="row">
+                            <div>
+                                <label class="label" for="fullName">Ad Soyad</label>
+                                <input id="fullName" class="input" type="text" placeholder="Adınız ve soyadınız" />
+                            </div>
+                            <div>
+                                <label class="label" for="email">E-posta Adresi</label>
+                                <input id="email" class="input" type="email" placeholder="ornek@eposta.com" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="label" for="subject">Konu</label>
+                            <select id="subject" class="select">
+                                <option>Genel Soru</option>
+                                <option>Teknik Destek</option>
+                                <option>İşbirliği ve Öneri</option>
+                                <option>Geri Bildirim</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label" for="message">Mesajınız</label>
+                            <textarea id="message" class="textarea" placeholder="Mesajınızı buraya yazın..."></textarea>
+                        </div>
+                        <div class="form-footer">
+                            <button type="button" class="btn-primary">Gönder</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Sağ Taraf: İletişim Bilgileri -->
+                <div class="card">
+                    <h3>İletişim Bilgileri</h3>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <strong>E-posta:</strong>
+                            <span>destek@akademikai.com</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Telefon:</strong>
+                            <span>+90 (555) 123 45 67</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Adres:</strong>
+                            <span>Teknopark, İstanbul, Türkiye</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Çalışma Saatleri:</strong>
+                            <span>Hafta içi 09:00 - 18:00</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
 </body>
+</html>
 </html>
