@@ -13,11 +13,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create issues from CSV file
-        uses: peter-evans/create-issue-from-file@v5
+      # DOĞRU EYLEMİ (ALETİ) KULLANIYORUZ
+      - name: Create issues from CSV
+        uses: peter-evans/bulk-issue-creator@v4 # Eylem adını düzelttik
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          filepath: ./gorevler.csv
-          issue-title: '[Görev Raporu] {csv.title}'
-          issue-body: '{csv.body}'
-          issue-labels: '{csv.labels}'
+          filepath: ./gorevler.csv # Bu eylem 'filepath' komutunu anlıyor
+
+          # BU EYLEMİN ANLADIĞI DOĞRU PARAMETRELER VE SÖZ DİZİMİ
+          title: '[Görev Raporu] {{ title }}'
+          body: '{{ body }}'
+          labels: '{{ labels }}'
