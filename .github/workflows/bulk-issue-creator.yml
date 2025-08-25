@@ -1,0 +1,25 @@
+name: Bulk Issue Creator from Report
+
+# BU BÖLÜMÜN DOĞRU OLDUĞUNDAN EMİN OLUN
+on:
+  workflow_dispatch:
+
+# YETKİ SORUNU İÇİN BU BÖLÜMÜ DE EKLEYİN (ÖNCEKİ ADIMDAKİ)
+permissions:
+  issues: write
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create issues from CSV file
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          filepath: ./gorevler.csv
+          issue-title: '[Görev Raporu] ${{ csv.title }}'
+          issue-body: ${{ csv.body }}
+          issue-labels: ${{ csv.labels }}
